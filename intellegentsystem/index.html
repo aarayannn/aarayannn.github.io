@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSAF - Kalkulator Parameter Hidroponik Pakcoy</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c8a56;
+            --secondary: #f5f5f5;
+            --text: #333;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            background-color: var(--secondary);
+            font-size: 16px;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .panel {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+            font-size: 1.3rem;
+            margin-top: 0;
+        }
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+        h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1f6a42;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .optimal-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .param-card {
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .week-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 5px;
+        }
+        .week {
+            text-align: center;
+            padding: 8px 5px;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 80px;
+            cursor: pointer;
+            background-color: #eee;
+            font-size: 0.9rem;
+        }
+        .week.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .result-box {
+            background-color: #e8f5e9;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        .input-section {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .file-input {
+            margin: 12px 0;
+        }
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            padding: 8px;
+            background-color: white;
+            font-size: 0.85rem;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab {
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-size: 0.95rem;
+        }
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .decision-info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+                font-size: 17px;
+            }
+            .panel {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.3rem;
+            }
+            button {
+                width: auto;
+            }
+            .week {
+                padding: 10px;
+                font-size: 1rem;
+            }
+            table {
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            .panel {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>INSAF Kalkulator Parameter Hidroponik Pakcoy</h1>
+            <p>Sistem Perhitungan Parameter Optimal (25 Hari)</p>
+        </header>
+
+        <div class="panel">
+            <h2>Fase Pertumbuhan Pakcoy</h2>
+            
+            <div class="week-selector">
+                <div class="week active" id="week1" data-week="1">
+                    <h3>Minggu 1</h3>
+                    <p>Hari 1-7</p>
+                </div>
+                <div class="week" id="week2" data-week="2">
+                    <h3>Minggu 2</h3>
+                    <p>Hari 8-14</p>
+                </div>
+                <div class="week" id="week3" data-week="3">
+                    <h3>Minggu 3</h3>
+                    <p>Hari 15-21</p>
+                </div>
+                <div class="week" id="week4" data-week="4">
+                    <h3>Minggu 4</h3>
+                    <p>Hari 22-25</p>
+                </div>
+            </div>
+            
+            <div class="param-card">
+                <h3>Parameter Optimal</h3>
+                <table>
+                    <tr>
+                        <th>Minggu</th>
+                        <th>PPM Optimal</th>
+                        <th>pH Optimal</th>
+                        <th>Suhu Air (°C)</th>
+                    </tr>
+                    <tr>
+                        <td>1 (Semai)</td>
+                        <td class="optimal-value">400-500</td>
+                        <td class="optimal-value">5.5-6.0</td>
+                        <td class="optimal-value">22-24</td>
+                    </tr>
+                    <tr>
+                        <td>2 (Vegetatif)</td>
+                        <td class="optimal-value">600-800</td>
+                        <td class="optimal-value">5.8-6.2</td>
+                        <td class="optimal-value">24-26</td>
+                    </tr>
+                    <tr>
+                        <td>3 (Vegetatif)</td>
+                        <td class="optimal-value">800-1000</td>
+                        <td class="optimal-value">6.0-6.3</td>
+                        <td class="optimal-value">24-26</td>
+                    </tr>
+                    <tr>
+                        <td>4 (Generatif)</td>
+                        <td class="optimal-value">1000-1200</td>
+                        <td class="optimal-value">6.0-6.5</td>
+                        <td class="optimal-value">22-24</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Kalkulator Parameter</h2>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="manual">Input Manual</div>
+                <div class="tab" data-tab="csv">Import CSV</div>
+            </div>
+            
+            <div class="tab-content active" id="manual-tab">
+                <div class="param-card">
+                    <h3>Masukkan Data Monitoring</h3>
+                    
+                    <div class="input-section">
+                        <label for="current-week">Minggu ke:</label>
+                        <select id="current-week">
+                            <option value="1">Minggu 1 (Hari 1-7)</option>
+                            <option value="2">Minggu 2 (Hari 8-14)</option>
+                            <option value="3">Minggu 3 (Hari 15-21)</option>
+                            <option value="4">Minggu 4 (Hari 22-25)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="ppm-values">Data PPM (pisahkan dengan koma):</label>
+                        <input type="text" id="ppm-values" placeholder="Contoh: 450.5, 480.2, 420.8, 490.3">
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="ph-values">Data pH (pisahkan dengan koma):</label>
+                        <input type="text" id="ph-values" placeholder="Contoh: 5.72, 5.83, 5.91, 5.65">
+                    </div>
+                    
+                    <button id="calculate-btn">Hitung Parameter Optimal</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="csv-tab">
+                <div class="param-card">
+                    <h3>Import Data dari CSV</h3>
+                    
+                    <div class="file-input">
+                        <label for="csv-file">Pilih File CSV:</label>
+                        <input type="file" id="csv-file" accept=".csv">
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="csv-week">Pilih Minggu untuk Dianalisis:</label>
+                        <select id="csv-week">
+                            <option value="1">Minggu 1 (Hari 1-7)</option>
+                            <option value="2">Minggu 2 (Hari 8-14)</option>
+                            <option value="3">Minggu 3 (Hari 15-21)</option>
+                            <option value="4">Minggu 4 (Hari 22-25)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="data-preview" id="csv-preview">
+                        <p>Data akan muncul di sini setelah file dipilih</p>
+                    </div>
+                    
+                    <button id="analyze-btn" disabled>Analisis Data CSV</button>
+                </div>
+            </div>
+            
+            <div class="result-box" id="result-box" style="display: none;">
+                <h3>Hasil Perhitungan</h3>
+                <p><strong>Parameter optimal untuk minggu ini:</strong></p>
+                <p>PPM: <span id="result-ppm"></span></p>
+                <p>pH: <span id="result-ph"></span></p>
+                <p>Suhu Air: <span id="result-temp"></span></p>
+                
+                <div class="decision-info" id="decision-info">
+                    <p>Keputusan algoritma: <span id="decision-text"></span></p>
+                </div>
+                
+                <h4>Rekomendasi untuk Blynk/Arduino:</h4>
+                <div class="param-card">
+                    <p>Gunakan nilai-nilai berikut sebagai setpoint:</p>
+                    <p><strong>PPM:</strong> <span id="blynk-ppm"></span></p>
+                    <p><strong>pH:</strong> <span id="blynk-ph"></span></p>
+                    <p><strong>Suhu:</strong> <span id="blynk-temp"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Panduan Penggunaan</h2>
+            <div class="param-card">
+                <h3>Cara Menggunakan</h3>
+                <ol>
+                    <li><strong>Input Manual:</strong>
+                        <ul>
+                            <li>Catat data PPM dan pH dari Blynk</li>
+                            <li>Masukkan data (pisahkan dengan koma)</li>
+                            <li>Klik "Hitung Parameter Optimal"</li>
+                        </ul>
+                    </li>
+                    <li><strong>Import CSV:</strong>
+                        <ul>
+                            <li>Export data dari Blynk format CSV</li>
+                            <li>Pastikan ada kolom: ppm, ph</li>
+                            <li>Upload file dan pilih minggu</li>
+                            <li>Klik "Analisis Data CSV"</li>
+                        </ul>
+                    </li>
+                    <li>Gunakan hasil sebagai setpoint di Blynk/Arduino</li>
+                    <li>Ulangi setiap minggu</li>
+                </ol>
+                
+                <h3>Algoritma Decision Tree</h3>
+                <p>Sistem menggunakan algoritma pohon keputusan untuk:</p>
+                <ul>
+                    <li>Menganalisis stabilitas parameter</li>
+                    <li>Mendeteksi anomali dalam data</li>
+                    <li>Memberikan rekomendasi penyesuaian</li>
+                </ul>
+                
+                <h3>Tips Penting</h3>
+                <ul>
+                    <li>Minggu 1: PPM rendah untuk perkembangan akar</li>
+                    <li>Minggu 2-3: Tingkatkan PPM untuk pertumbuhan daun</li>
+                    <li>Minggu 4: Kurangi PPM jika daun menguning</li>
+                    <li>Jaga suhu air stabil</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Optimal parameters for Pakcoy (25 days growth)
+        const weekParameters = {
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0, temp: 23 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2, temp: 25 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3, temp: 25 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5, temp: 23 }
+        };
+
+        // DOM elements
+        const weekElements = document.querySelectorAll('.week');
+        const currentWeekSelect = document.getElementById('current-week');
+        const ppmValuesInput = document.getElementById('ppm-values');
+        const phValuesInput = document.getElementById('ph-values');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultBox = document.getElementById('result-box');
+        const resultPpm = document.getElementById('result-ppm');
+        const resultPh = document.getElementById('result-ph');
+        const resultTemp = document.getElementById('result-temp');
+        const blynkPpm = document.getElementById('blynk-ppm');
+        const blynkPh = document.getElementById('blynk-ph');
+        const blynkTemp = document.getElementById('blynk-temp');
+        const csvFileInput = document.getElementById('csv-file');
+        const csvWeekSelect = document.getElementById('csv-week');
+        const csvPreview = document.getElementById('csv-preview');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const decisionText = document.getElementById('decision-text');
+
+        // Initialize
+        function init() {
+            setupEventListeners();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Week selection
+            weekElements.forEach(el => {
+                el.addEventListener('click', function() {
+                    weekElements.forEach(w => w.classList.remove('active'));
+                    this.classList.add('active');
+                    currentWeekSelect.value = this.dataset.week;
+                    csvWeekSelect.value = this.dataset.week;
+                });
+            });
+            
+            // Current week select change
+            currentWeekSelect.addEventListener('change', function() {
+                weekElements.forEach(w => w.classList.remove('active'));
+                document.getElementById(`week${this.value}`).classList.add('active');
+                csvWeekSelect.value = this.value;
+            });
+            
+            // CSV week select change
+            csvWeekSelect.addEventListener('change', function() {
+                weekElements.forEach(w => w.classList.remove('active'));
+                document.getElementById(`week${this.value}`).classList.add('active');
+                currentWeekSelect.value = this.value;
+            });
+            
+            // Calculate button
+            calculateBtn.addEventListener('click', calculateOptimalParameters);
+            
+            // Analyze button
+            analyzeBtn.addEventListener('click', analyzeCSVData);
+            
+            // CSV file input
+            csvFileInput.addEventListener('change', handleCSVUpload);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Update tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Handle CSV file upload
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            analyzeBtn.disabled = true;
+            csvPreview.innerHTML = "<p>Memproses file CSV...</p>";
+            
+            Papa.parse(file, {
+                header: true,
+                complete: function(results) {
+                    if (results.data.length === 0) {
+                        csvPreview.innerHTML = "<p>File CSV tidak mengandung data</p>";
+                        return;
+                    }
+                    
+                    // Validate required columns
+                    const firstRow = results.data[0];
+                    if (!firstRow.hasOwnProperty('ppm') || !firstRow.hasOwnProperty('ph')) {
+                        csvPreview.innerHTML = "<p>File CSV harus memiliki kolom 'ppm' dan 'ph'</p>";
+                        return;
+                    }
+                    
+                    // Display sample data
+                    let previewHTML = `<p>Data CSV (${results.data.length} baris):</p>`;
+                    previewHTML += `<div style="overflow-x:auto;"><table><tr>${Object.keys(firstRow).map(k => `<th>${k}</th>`).join('')}</tr>`;
+                    
+                    // Show first 3 rows
+                    for (let i = 0; i < Math.min(3, results.data.length); i++) {
+                        previewHTML += `<tr>${Object.values(results.data[i]).map(v => `<td>${v}</td>`).join('')}</tr>`;
+                    }
+                    
+                    if (results.data.length > 3) {
+                        previewHTML += `<tr><td colspan="${Object.keys(firstRow).length}">... dan ${results.data.length - 3} baris lainnya</td></tr>`;
+                    }
+                    
+                    previewHTML += "</table></div>";
+                    csvPreview.innerHTML = previewHTML;
+                    
+                    // Store the parsed data
+                    csvPreview.dataset.parsedData = JSON.stringify(results.data);
+                    analyzeBtn.disabled = false;
+                },
+                error: function(error) {
+                    csvPreview.innerHTML = `<p>Error membaca file CSV: ${error.message}</p>`;
+                }
+            });
+        }
+
+        // Decision Tree Algorithm
+        function analyzeWithDecisionTree(week, values, parameter) {
+            const params = weekParameters[week];
+            const min = parameter === 'ppm' ? params.ppmMin : params.phMin;
+            const max = parameter === 'ppm' ? params.ppmMax : params.phMax;
+            
+            // Calculate statistics
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const range = Math.max(...values) - Math.min(...values);
+            const stability = range / (max - min);
+            
+            // Decision tree rules
+            if (values.some(v => v < min * 0.8 || v > max * 1.2)) {
+                return {
+                    decision: "Terdapat nilai ekstrim yang perlu diperiksa",
+                    adjustment: 0,
+                    confidence: "rendah"
+                };
+            } else if (stability > 0.5) {
+                return {
+                    decision: "Parameter tidak stabil, perlu penyesuaian",
+                    adjustment: (avg - (min + max)/2) * 0.5,
+                    confidence: "sedang"
+                };
+            } else if (avg < min) {
+                return {
+                    decision: "Parameter terlalu rendah, perlu dinaikkan",
+                    adjustment: (min - avg) * 0.7,
+                    confidence: "tinggi"
+                };
+            } else if (avg > max) {
+                return {
+                    decision: "Parameter terlalu tinggi, perlu diturunkan",
+                    adjustment: (max - avg) * 0.7,
+                    confidence: "tinggi"
+                };
+            } else {
+                return {
+                    decision: "Parameter dalam range optimal",
+                    adjustment: 0,
+                    confidence: "tinggi"
+                };
+            }
+        }
+
+        // Analyze CSV data
+        function analyzeCSVData() {
+            const week = parseInt(csvWeekSelect.value);
+            const params = weekParameters[week];
+            
+            if (!csvPreview.dataset.parsedData) {
+                alert("Tidak ada data CSV yang valid untuk dianalisis");
+                return;
+            }
+            
+            const csvData = JSON.parse(csvPreview.dataset.parsedData);
+            
+            // Extract ppm and ph values
+            const ppmValues = csvData.map(row => parseFloat(row.ppm)).filter(val => !isNaN(val));
+            const phValues = csvData.map(row => parseFloat(row.ph)).filter(val => !isNaN(val));
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Data CSV tidak mengandung nilai PPM atau pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values (more robust than average)
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
+        }
+
+        // Calculate optimal parameters
+        function calculateOptimalParameters() {
+            const week = parseInt(currentWeekSelect.value);
+            const params = weekParameters[week];
+            
+            // Parse input values
+            const ppmValues = parseInputValues(ppmValuesInput.value);
+            const phValues = parseInputValues(phValuesInput.value);
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Masukkan data PPM dan pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
+        }
+
+        // Show calculation results
+        function showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis) {
+            // Format numbers to show 1 decimal place for PPM and 2 for pH
+            resultPpm.textContent = `${optimalPpm.toFixed(1)} (range optimal: ${params.ppmMin}-${params.ppmMax})`;
+            resultPh.textContent = `${optimalPh.toFixed(2)} (range optimal: ${params.phMin}-${params.phMax})`;
+            resultTemp.textContent = `${params.temp}°C`;
+            
+            // Display decision tree analysis
+            const decisions = [];
+            if (ppmAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`PPM: ${ppmAnalysis.decision}`);
+            }
+            if (phAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`pH: ${phAnalysis.decision}`);
+            }
+            
+            if (decisions.length > 0) {
+                decisionText.textContent = decisions.join(" | ");
+                document.getElementById('decision-info').style.display = 'block';
+            } else {
+                decisionText.textContent = "Semua parameter dalam range optimal";
+                document.getElementById('decision-info').style.display = 'block';
+            }
+            
+            // Blynk/Arduino recommended values
+            blynkPpm.textContent = optimalPpm.toFixed(1);
+            blynkPh.textContent = optimalPh.toFixed(2);
+            blynkTemp.textContent = `${params.temp}°C`;
+            
+            resultBox.style.display = 'block';
+            
+            // Scroll to results
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Parse comma-separated input values
+        function parseInputValues(input) {
+            return input.split(',')
+                .map(val => parseFloat(val.trim()))
+                .filter(val => !isNaN(val));
+        }
+
+        // Calculate median of an array
+        function calculateMedian(values) {
+            if (values.length === 0) return 0;
+            
+            const sorted = [...values].sort((a, b) => a - b);
+            const half = Math.floor(sorted.length / 2);
+            
+            if (sorted.length % 2) {
+                return sorted[half];
+            }
+            return (sorted[half - 1] + sorted[half]) / 2;
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
