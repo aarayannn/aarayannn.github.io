@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INSAF - Kalkulator Parameter Hidroponik Pakcoy</title>
+    <title>Kalkulator Parameter Hidroponik</title>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
     <style>
         :root {
@@ -32,7 +32,7 @@
             text-align: center;
         }
         .container {
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
         }
         .panel {
@@ -56,10 +56,6 @@
         h3 {
             font-size: 1.1rem;
             margin-top: 0;
-        }
-        h4 {
-            font-size: 1rem;
-            margin-bottom: 10px;
         }
         button {
             background-color: var(--primary);
@@ -156,6 +152,13 @@
             background-color: white;
             font-size: 0.85rem;
         }
+        .decision-info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
         .tab-container {
             display: flex;
             margin-bottom: 10px;
@@ -180,13 +183,6 @@
         }
         .tab-content.active {
             display: block;
-        }
-        .decision-info {
-            background-color: #e3f2fd;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
         }
 
         /* Responsive adjustments */
@@ -218,24 +214,13 @@
                 font-size: 1rem;
             }
         }
-
-        @media (min-width: 768px) {
-            .container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-            }
-            .panel {
-                margin-bottom: 0;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>INSAF Kalkulator Parameter Hidroponik Pakcoy</h1>
-            <p>Sistem Perhitungan Parameter Optimal (25 Hari)</p>
+            <h1>Kalkulator Parameter Hidroponik</h1>
+            <p>Sistem Perhitungan PPM dan pH Optimal</p>
         </header>
 
         <div class="panel">
@@ -267,31 +252,26 @@
                         <th>Minggu</th>
                         <th>PPM Optimal</th>
                         <th>pH Optimal</th>
-                        <th>Suhu Air (°C)</th>
                     </tr>
                     <tr>
                         <td>1 (Semai)</td>
                         <td class="optimal-value">400-500</td>
                         <td class="optimal-value">5.5-6.0</td>
-                        <td class="optimal-value">22-24</td>
                     </tr>
                     <tr>
                         <td>2 (Vegetatif)</td>
                         <td class="optimal-value">600-800</td>
                         <td class="optimal-value">5.8-6.2</td>
-                        <td class="optimal-value">24-26</td>
                     </tr>
                     <tr>
                         <td>3 (Vegetatif)</td>
                         <td class="optimal-value">800-1000</td>
                         <td class="optimal-value">6.0-6.3</td>
-                        <td class="optimal-value">24-26</td>
                     </tr>
                     <tr>
                         <td>4 (Generatif)</td>
                         <td class="optimal-value">1000-1200</td>
                         <td class="optimal-value">6.0-6.5</td>
-                        <td class="optimal-value">22-24</td>
                     </tr>
                 </table>
             </div>
@@ -365,7 +345,6 @@
                 <p><strong>Parameter optimal untuk minggu ini:</strong></p>
                 <p>PPM: <span id="result-ppm"></span></p>
                 <p>pH: <span id="result-ph"></span></p>
-                <p>Suhu Air: <span id="result-temp"></span></p>
                 
                 <div class="decision-info" id="decision-info">
                     <p>Keputusan algoritma: <span id="decision-text"></span></p>
@@ -376,50 +355,7 @@
                     <p>Gunakan nilai-nilai berikut sebagai setpoint:</p>
                     <p><strong>PPM:</strong> <span id="blynk-ppm"></span></p>
                     <p><strong>pH:</strong> <span id="blynk-ph"></span></p>
-                    <p><strong>Suhu:</strong> <span id="blynk-temp"></span></p>
                 </div>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h2>Panduan Penggunaan</h2>
-            <div class="param-card">
-                <h3>Cara Menggunakan</h3>
-                <ol>
-                    <li><strong>Input Manual:</strong>
-                        <ul>
-                            <li>Catat data PPM dan pH dari Blynk</li>
-                            <li>Masukkan data (pisahkan dengan koma)</li>
-                            <li>Klik "Hitung Parameter Optimal"</li>
-                        </ul>
-                    </li>
-                    <li><strong>Import CSV:</strong>
-                        <ul>
-                            <li>Export data dari Blynk format CSV</li>
-                            <li>Pastikan ada kolom: ppm, ph</li>
-                            <li>Upload file dan pilih minggu</li>
-                            <li>Klik "Analisis Data CSV"</li>
-                        </ul>
-                    </li>
-                    <li>Gunakan hasil sebagai setpoint di Blynk/Arduino</li>
-                    <li>Ulangi setiap minggu</li>
-                </ol>
-                
-                <h3>Algoritma Decision Tree</h3>
-                <p>Sistem menggunakan algoritma pohon keputusan untuk:</p>
-                <ul>
-                    <li>Menganalisis stabilitas parameter</li>
-                    <li>Mendeteksi anomali dalam data</li>
-                    <li>Memberikan rekomendasi penyesuaian</li>
-                </ul>
-                
-                <h3>Tips Penting</h3>
-                <ul>
-                    <li>Minggu 1: PPM rendah untuk perkembangan akar</li>
-                    <li>Minggu 2-3: Tingkatkan PPM untuk pertumbuhan daun</li>
-                    <li>Minggu 4: Kurangi PPM jika daun menguning</li>
-                    <li>Jaga suhu air stabil</li>
-                </ul>
             </div>
         </div>
     </div>
@@ -427,10 +363,10 @@
     <script>
         // Optimal parameters for Pakcoy (25 days growth)
         const weekParameters = {
-            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0, temp: 23 },
-            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2, temp: 25 },
-            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3, temp: 25 },
-            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5, temp: 23 }
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5 }
         };
 
         // DOM elements
@@ -442,10 +378,8 @@
         const resultBox = document.getElementById('result-box');
         const resultPpm = document.getElementById('result-ppm');
         const resultPh = document.getElementById('result-ph');
-        const resultTemp = document.getElementById('result-temp');
         const blynkPpm = document.getElementById('blynk-ppm');
         const blynkPh = document.getElementById('blynk-ph');
-        const blynkTemp = document.getElementById('blynk-temp');
         const csvFileInput = document.getElementById('csv-file');
         const csvWeekSelect = document.getElementById('csv-week');
         const csvPreview = document.getElementById('csv-preview');
@@ -676,7 +610,6 @@
             // Format numbers to show 1 decimal place for PPM and 2 for pH
             resultPpm.textContent = `${optimalPpm.toFixed(1)} (range optimal: ${params.ppmMin}-${params.ppmMax})`;
             resultPh.textContent = `${optimalPh.toFixed(2)} (range optimal: ${params.phMin}-${params.phMax})`;
-            resultTemp.textContent = `${params.temp}°C`;
             
             // Display decision tree analysis
             const decisions = [];
@@ -698,7 +631,6 @@
             // Blynk/Arduino recommended values
             blynkPpm.textContent = optimalPpm.toFixed(1);
             blynkPh.textContent = optimalPh.toFixed(2);
-            blynkTemp.textContent = `${params.temp}°C`;
             
             resultBox.style.display = 'block';
             
