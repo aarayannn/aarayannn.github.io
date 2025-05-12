@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSAF - Upload Parameter Hidroponik Pakcoy</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --primary-bg: #ecfdf5;
+            --secondary: #f5f5f5;
+            --text: #333;
+            --text-light: #666;
+            --border: #e5e7eb;
+            --border-dark: #d1d5db;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --success: #10b981;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(to bottom, var(--primary-bg), #f0fdfa);
+            min-height: 100vh;
+            font-size: 16px;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+            position: relative;
+        }
+        
+        header p {
+            margin-top: 10px;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .logo {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: bold;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header .icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        button:disabled {
+            background-color: var(--border-dark);
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background-color: #e0f2fe;
+            border-left-color: var(--info);
+            color: #1e40af;
+        }
+        
+        .alert-success {
+            background-color: #dcfce7;
+            border-left-color: var(--success);
+            color: #166534;
+        }
+        
+        .alert-warning {
+            background-color: #fef3c7;
+            border-left-color: var(--warning);
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            border-left-color: var(--danger);
+            color: #991b1b;
+        }
+        
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-title svg {
+            margin-right: 8px;
+        }
+        
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            padding: 10px;
+            background-color: #f9fafb;
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        
+        th {
+            background-color: var(--primary-bg);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        tr:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .editable {
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid transparent;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .editable:hover {
+            border-color: var(--primary);
+            background-color: white;
+        }
+        
+        .editable:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #e5e7eb;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-secondary {
+            background-color: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-info {
+            background-color: var(--info);
+        }
+        
+        .btn-info:hover {
+            background-color: #2563eb;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.875rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-success {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .step {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex-grow: 1;
+        }
+        
+        .step.completed .step-number {
+            background-color: var(--success);
+        }
+        
+        .step.active .step-number {
+            background-color: var(--info);
+        }
+        
+        .step.disabled .step-number {
+            background-color: var(--border-dark);
+        }
+        
+        .step.disabled {
+            opacity: 0.7;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .card-header {
+                padding: 12px 15px;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"></div>
+            <h1>INSAF - Upload Parameter Hidroponik Pakcoy</h1>
+            <p>Upload Parameter Otomatis untuk Siklus 25 Hari</p>
+        </header>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v8"></path>
+                        <path d="M4.93 10.93l1.41 1.41"></path>
+                        <path d="M2 18h2"></path>
+                        <path d="M20 18h2"></path>
+                        <path d="M19.07 10.93l-1.41 1.41"></path>
+                        <path d="M22 22H2"></path>
+                        <path d="M16 16c0-2.21-1.79-4-4-4s-4 1.79-4 4"></path>
+                        <path d="M12 12v-2"></path>
+                    </svg>
+                </div>
+                Parameter Pertumbuhan Pakcoy (25 Hari)
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Informasi
+                    </div>
+                    <p>Tabel di bawah ini berisi parameter optimal untuk setiap minggu pertumbuhan pakcoy. Anda dapat menyesuaikan nilai-nilai ini sesuai kebutuhan sebelum mengupload ke ESP.</p>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="weekly">Parameter Mingguan</div>
+                    <div class="tab" data-tab="daily">Parameter Harian (25 Hari)</div>
+                </div>
+
+                <div class="tab-content active" id="weekly-tab">
+                    <div class="table-container">
+                        <table id="parameter-table">
+                            <thead>
+                                <tr>
+                                    <th>Minggu</th>
+                                    <th>Hari</th>
+                                    <th>PPM Min</th>
+                                    <th>PPM Max</th>
+                                    <th>pH Min</th>
+                                    <th>pH Max</th>
+                                    <th>Suhu (°C)</th>
+                                    <th>Fase</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1-7</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMin" data-week="1">400</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMax" data-week="1">500</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMin" data-week="1">5.5</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMax" data-week="1">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-week="1">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>8-14</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMin" data-week="2">600</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMax" data-week="2">800</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMin" data-week="2">5.8</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMax" data-week="2">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-week="2">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>15-21</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMin" data-week="3">800</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMax" data-week="3">1000</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMin" data-week="3">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMax" data-week="3">6.3</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-week="3">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>22-25</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMin" data-week="4">1000</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppmMax" data-week="4">1200</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMin" data-week="4">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="phMax" data-week="4">6.5</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-week="4">23</span></td>
+                                    <td>Generatif</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="daily-tab">
+                    <div class="table-container">
+                        <table id="daily-parameter-table">
+                            <thead>
+                                <tr>
+                                    <th>Hari</th>
+                                    <th>PPM Target</th>
+                                    <th>pH Target</th>
+                                    <th>Suhu (°C)</th>
+                                    <th>Fase</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Hari 1-7 (Minggu 1) -->
+                                <tr>
+                                    <td>1</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="1">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="1">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="1">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="2">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="2">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="2">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="3">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="3">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="3">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="4">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="4">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="4">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="5">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="5">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="5">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="6">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="6">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="6">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="7">450</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="7">5.7</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="7">23</span></td>
+                                    <td>Semai</td>
+                                </tr>
+                                
+                                <!-- Hari 8-14 (Minggu 2) -->
+                                <tr>
+                                    <td>8</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="8">650</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="8">5.9</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="8">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>9</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="9">650</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="9">5.9</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="9">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>10</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="10">700</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="10">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="10">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>11</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="11">700</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="11">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="11">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>12</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="12">750</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="12">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="12">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>13</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="13">750</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="13">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="13">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>14</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="14">800</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="14">6.0</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="14">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                
+                                <!-- Hari 15-21 (Minggu 3) -->
+                                <tr>
+                                    <td>15</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="15">850</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="15">6.1</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="15">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>16</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="16">850</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="16">6.1</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="16">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>17</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="17">900</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="17">6.1</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="17">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>18</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="18">900</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="18">6.1</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="18">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>19</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="19">950</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="19">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="19">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>20</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="20">950</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="20">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="20">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                <tr>
+                                    <td>21</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="21">1000</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="21">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="21">25</span></td>
+                                    <td>Vegetatif</td>
+                                </tr>
+                                
+                                <!-- Hari 22-25 (Minggu 4) -->
+                                <tr>
+                                    <td>22</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="22">1050</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="22">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="22">23</span></td>
+                                    <td>Generatif</td>
+                                </tr>
+                                <tr>
+                                    <td>23</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="23">1100</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="23">6.2</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="23">23</span></td>
+                                    <td>Generatif</td>
+                                </tr>
+                                <tr>
+                                    <td>24</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="24">1150</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="24">6.3</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="24">23</span></td>
+                                    <td>Generatif</td>
+                                </tr>
+                                <tr>
+                                    <td>25</td>
+                                    <td><span class="editable" contenteditable="true" data-param="ppm" data-day="25">1200</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="ph" data-day="25">6.3</span></td>
+                                    <td><span class="editable" contenteditable="true" data-param="temp" data-day="25">23</span></td>
+                                    <td>Generatif</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button id="reset-params-btn" class="btn-secondary">Reset Parameter Default</button>
+                    <button id="save-params-btn">Simpan Parameter</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                        <path d="M12 12h.01"></path>
+                        <path d="M17 12h.01"></path>
+                        <path d="M7 12h.01"></path>
+                    </svg>
+                </div>
+                Upload ke ESP8266/ESP32
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Perhatian
+                    </div>
+                    <p>Pastikan ESP Anda terhubung ke komputer melalui USB dan browser Anda mendukung Web Serial API (Chrome, Edge, atau Opera).</p>
+                </div>
+
+                <div class="step-container">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Konfigurasi Koneksi</h3>
+                            <div class="form-group">
+                                <label for="wifi-ssid">WiFi SSID:</label>
+                                <input type="text" id="wifi-ssid" placeholder="Nama jaringan WiFi">
+                            </div>
+                            <div class="form-group">
+                                <label for="wifi-password">WiFi Password:</label>
+                                <input type="password" id="wifi-password" placeholder="Password WiFi">
+                            </div>
+                            <div class="form-group">
+                                <label for="blynk-token">Blynk Auth Token (opsional):</label>
+                                <input type="text" id="blynk-token" placeholder="Token autentikasi Blynk">
+                            </div>
+                            <button id="next-step1-btn">Lanjutkan</button>
+                        </div>
+                    </div>
+
+                    <div class="step disabled" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Pilih Perangkat</h3>
+                            <div class="form-group">
+                                <label for="board-type">Tipe Board:</label>
+                                <select id="board-type">
+                                    <option value="esp8266">ESP8266 (NodeMCU, Wemos D1 Mini)</option>
+                                    <option value="esp32">ESP32</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pin-config">Konfigurasi Pin:</label>
+                                <div class="table-container">
+                                    <table id="pin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Sensor/Aktuator</th>
+                                                <th>Pin</th>
+                                                <th>Deskripsi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Sensor Suhu (DS18B20)</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="temp">D2</span></td>
+                                                <td>Pin data sensor suhu</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sensor PPM/TDS/EC</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="ppm">A0</span></td>
+                                                <td>Pin analog sensor PPM</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sensor pH</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="ph">D1</span></td>
+                                                <td>Pin analog/digital sensor pH</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relay Pompa Nutrisi</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="nutrisi">D5</span></td>
+                                                <td>Pin relay untuk pompa nutrisi</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relay pH Up</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="phUp">D6</span></td>
+                                                <td>Pin relay untuk pompa pH Up</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relay pH Down</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="phDown">D7</span></td>
+                                                <td>Pin relay untuk pompa pH Down</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Relay Pendingin (opsional)</td>
+                                                <td><span class="editable" contenteditable="true" data-pin="cooler">D8</span></td>
+                                                <td>Pin relay untuk pendingin</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button id="prev-step2-btn" class="btn-secondary">Kembali</button>
+                                <button id="next-step2-btn">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step disabled" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Hubungkan ESP</h3>
+                            <p>Klik tombol di bawah untuk menghubungkan ke ESP melalui port serial.</p>
+                            <button id="connect-serial-btn">Hubungkan ke ESP</button>
+                            <div class="data-preview" id="serial-status">
+                                Status koneksi akan muncul di sini...
+                            </div>
+                            <div class="btn-group">
+                                <button id="prev-step3-btn" class="btn-secondary">Kembali</button>
+                                <button id="next-step3-btn" disabled>Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step disabled" id="step4">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Upload Firmware</h3>
+                            <p>Firmware akan dibuat berdasarkan parameter yang telah Anda atur.</p>
+                            <div class="form-group">
+                                <label for="upload-mode">Mode Upload:</label>
+                                <select id="upload-mode">
+                                    <option value="weekly">Parameter Mingguan</option>
+                                    <option value="daily">Parameter Harian (25 Hari)</option>
+                                    <option value="current">Hanya Hari/Minggu Saat Ini</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="current-week-container">
+                                <label for="current-week">Minggu Pertumbuhan Saat Ini:</label>
+                                <select id="current-week">
+                                    <option value="1">Minggu 1 (Hari 1-7)</option>
+                                    <option value="2">Minggu 2 (Hari 8-14)</option>
+                                    <option value="3">Minggu 3 (Hari 15-21)</option>
+                                    <option value="4">Minggu 4 (Hari 22-25)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="current-day-container" style="display: none;">
+                                <label for="current-day">Hari Pertumbuhan Saat Ini:</label>
+                                <select id="current-day">
+                                    <!-- Options will be generated by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="update-interval">Interval Update (detik):</label>
+                                <input type="number" id="update-interval" value="30" min="10" max="3600">
+                            </div>
+                            <button id="generate-firmware-btn">Generate & Upload Firmware</button>
+                            <div class="progress-bar" id="upload-progress">
+                                <div class="progress-bar-fill"></div>
+                            </div>
+                            <div class="data-preview" id="upload-log">
+                                Log upload akan muncul di sini...
+                            </div>
+                            <div class="btn-group">
+                                <button id="prev-step4-btn" class="btn-secondary">Kembali</button>
+                                <button id="finish-btn" disabled>Selesai</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                </div>
+                Panduan Penggunaan
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Cara Menggunakan
+                    </div>
+                    <ol>
+                        <li>Sesuaikan parameter pertumbuhan pada tabel jika diperlukan</li>
+                        <li>Masukkan informasi WiFi dan Blynk (opsional)</li>
+                        <li>Pilih tipe board ESP dan sesuaikan konfigurasi pin</li>
+                        <li>Hubungkan ESP ke komputer melalui USB</li>
+                        <li>Klik "Hubungkan ke ESP" dan pilih port serial yang sesuai</li>
+                        <li>Pilih mode upload dan minggu/hari pertumbuhan saat ini</li>
+                        <li>Klik "Generate & Upload Firmware" untuk mengunggah firmware ke ESP</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-warning">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Persyaratan
+                    </div>
+                    <ul>
+                        <li>Browser yang mendukung Web Serial API (Chrome, Edge, atau Opera)</li>
+                        <li>ESP8266 atau ESP32 yang terhubung ke komputer melalui USB</li>
+                        <li>Driver CH340/CP210x terinstal di komputer Anda</li>
+                        <li>Sensor dan aktuator yang terhubung sesuai dengan konfigurasi pin</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-success">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                        Tips
+                    </div>
+                    <ul>
+                        <li>Mode "Parameter Mingguan" mengupload parameter untuk setiap minggu dan ESP akan otomatis menyesuaikan berdasarkan hari</li>
+                        <li>Mode "Parameter Harian" mengupload parameter untuk setiap hari dari 25 hari siklus pertumbuhan</li>
+                        <li>Mode "Hanya Hari/Minggu Saat Ini" hanya mengupload parameter untuk hari atau minggu yang sedang berjalan</li>
+                        <li>Parameter akan disimpan di EEPROM ESP sehingga tetap tersimpan meskipun ESP restart</li>
+                        <li>Gunakan Blynk untuk monitoring jarak jauh (opsional)</li>
+                        <li>Pastikan sensor dikalibrasi dengan benar sebelum digunakan</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 INSAF - Kalkulator Parameter Hidroponik Pakcoy. Dibuat dengan ❤️ untuk petani hidroponik.</p>
+        </div>
+    </div>
+
+    <script>
+        // Parameter default untuk setiap minggu
+        const defaultParameters = {
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0, temp: 23 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2, temp: 25 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3, temp: 25 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5, temp: 23 }
+        };
+
+        // Parameter default untuk setiap hari
+        const defaultDailyParameters = {};
+        
+        // Inisialisasi parameter harian default
+        function initDefaultDailyParameters() {
+            // Minggu 1 (Hari 1-7)
+            for (let day = 1; day <= 7; day++) {
+                defaultDailyParameters[day] = { ppm: 450, ph: 5.7, temp: 23 };
+            }
+            
+            // Minggu 2 (Hari 8-14)
+            defaultDailyParameters[8] = { ppm: 650, ph: 5.9, temp: 25 };
+            defaultDailyParameters[9] = { ppm: 650, ph: 5.9, temp: 25 };
+            defaultDailyParameters[10] = { ppm: 700, ph: 6.0, temp: 25 };
+            defaultDailyParameters[11] = { ppm: 700, ph: 6.0, temp: 25 };
+            defaultDailyParameters[12] = { ppm: 750, ph: 6.0, temp: 25 };
+            defaultDailyParameters[13] = { ppm: 750, ph: 6.0, temp: 25 };
+            defaultDailyParameters[14] = { ppm: 800, ph: 6.0, temp: 25 };
+            
+            // Minggu 3 (Hari 15-21)
+            defaultDailyParameters[15] = { ppm: 850, ph: 6.1, temp: 25 };
+            defaultDailyParameters[16] = { ppm: 850, ph: 6.1, temp: 25 };
+            defaultDailyParameters[17] = { ppm: 900, ph: 6.1, temp: 25 };
+            defaultDailyParameters[18] = { ppm: 900, ph: 6.1, temp: 25 };
+            defaultDailyParameters[19] = { ppm: 950, ph: 6.2, temp: 25 };
+            defaultDailyParameters[20] = { ppm: 950, ph: 6.2, temp: 25 };
+            defaultDailyParameters[21] = { ppm: 1000, ph: 6.2, temp: 25 };
+            
+            // Minggu 4 (Hari 22-25)
+            defaultDailyParameters[22] = { ppm: 1050, ph: 6.2, temp: 23 };
+            defaultDailyParameters[23] = { ppm: 1100, ph: 6.2, temp: 23 };
+            defaultDailyParameters[24] = { ppm: 1150, ph: 6.3, temp: 23 };
+            defaultDailyParameters[25] = { ppm: 1200, ph: 6.3, temp: 23 };
+        }
+
+        // Default pin configuration
+        const defaultPins = {
+            temp: "D2",
+            ppm: "A0",
+            ph: "D1",
+            nutrisi: "D5",
+            phUp: "D6",
+            phDown: "D7",
+            cooler: "D8"
+        };
+
+        // Global variables
+        let port;
+        let reader;
+        let writer;
+        let readLoopActive = false;
+        let currentParameters = JSON.parse(JSON.stringify(defaultParameters));
+        let currentDailyParameters = {};
+        let currentPins = JSON.parse(JSON.stringify(defaultPins));
+        let uploadInProgress = false;
+
+        // DOM elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const resetParamsBtn = document.getElementById('reset-params-btn');
+        const saveParamsBtn = document.getElementById('save-params-btn');
+        const nextStep1Btn = document.getElementById('next-step1-btn');
+        const prevStep2Btn = document.getElementById('prev-step2-btn');
+        const nextStep2Btn = document.getElementById('next-step2-btn');
+        const connectSerialBtn = document.getElementById('connect-serial-btn');
+        const prevStep3Btn = document.getElementById('prev-step3-btn');
+        const nextStep3Btn = document.getElementById('next-step3-btn');
+        const generateFirmwareBtn = document.getElementById('generate-firmware-btn');
+        const prevStep4Btn = document.getElementById('prev-step4-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const serialStatus = document.getElementById('serial-status');
+        const uploadLog = document.getElementById('upload-log');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBarFill = uploadProgress.querySelector('.progress-bar-fill');
+        const wifiSsid = document.getElementById('wifi-ssid');
+        const wifiPassword = document.getElementById('wifi-password');
+        const blynkToken = document.getElementById('blynk-token');
+        const boardType = document.getElementById('board-type');
+        const uploadMode = document.getElementById('upload-mode');
+        const currentWeek = document.getElementById('current-week');
+        const currentDay = document.getElementById('current-day');
+        const currentWeekContainer = document.getElementById('current-week-container');
+        const currentDayContainer = document.getElementById('current-day-container');
+        const updateInterval = document.getElementById('update-interval');
+
+        // Step elements
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
+
+        // Initialize
+        function init() {
+            // Initialize default daily parameters
+            initDefaultDailyParameters();
+            
+            // Create a deep copy of the default daily parameters
+            currentDailyParameters = JSON.parse(JSON.stringify(defaultDailyParameters));
+            
+            // Populate current day dropdown
+            populateCurrentDayDropdown();
+            
+            // Load parameters from localStorage if available
+            loadParametersFromStorage();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Check if Web Serial API is supported
+            checkWebSerialSupport();
+        }
+
+        // Populate current day dropdown
+        function populateCurrentDayDropdown() {
+            currentDay.innerHTML = '';
+            
+            for (let day = 1; day <= 25; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                
+                // Determine which week this day belongs to
+                let week;
+                if (day <= 7) week = 1;
+                else if (day <= 14) week = 2;
+                else if (day <= 21) week = 3;
+                else week = 4;
+                
+                option.textContent = `Hari ${day} (Minggu ${week})`;
+                currentDay.appendChild(option);
+            }
+        }
+
+        // Check if Web Serial API is supported
+        function checkWebSerialSupport() {
+            if (!('serial' in navigator)) {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger';
+                alert.innerHTML = `
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        Browser Tidak Didukung
+                    </div>
+                    <p>Browser Anda tidak mendukung Web Serial API. Silakan gunakan Chrome, Edge, atau Opera versi terbaru.</p>
+                `;
+                document.querySelector('.container').insertBefore(alert, document.querySelector('.card'));
+                
+                // Disable connect button
+                connectSerialBtn.disabled = true;
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Find the parent tab container
+                    const tabContainer = this.parentElement;
+                    
+                    // Update tabs in this container only
+                    const siblingTabs = tabContainer.querySelectorAll('.tab');
+                    siblingTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Find the related tab contents
+                    const tabContent = document.getElementById(`${tabId}-tab`);
+                    
+                    // Find all tab contents that are siblings of the related content
+                    const siblingContents = Array.from(tabContent.parentElement.children).filter(el => el.classList.contains('tab-content'));
+                    siblingContents.forEach(c => c.classList.remove('active'));
+                    tabContent.classList.add('active');
+                });
+            });
+            
+            // Reset parameters button
+            resetParamsBtn.addEventListener('click', resetParameters);
+            
+            // Save parameters button
+            saveParamsBtn.addEventListener('click', saveParameters);
+            
+            // Step navigation buttons
+            nextStep1Btn.addEventListener('click', () => {
+                step1.classList.remove('active');
+                step1.classList.add('completed');
+                step2.classList.remove('disabled');
+                step2.classList.add('active');
+            });
+            
+            prevStep2Btn.addEventListener('click', () => {
+                step2.classList.remove('active');
+                step2.classList.add('disabled');
+                step1.classList.remove('completed');
+                step1.classList.add('active');
+            });
+            
+            nextStep2Btn.addEventListener('click', () => {
+                step2.classList.remove('active');
+                step2.classList.add('completed');
+                step3.classList.remove('disabled');
+                step3.classList.add('active');
+            });
+            
+            prevStep3Btn.addEventListener('click', () => {
+                step3.classList.remove('active');
+                step3.classList.add('disabled');
+                step2.classList.remove('completed');
+                step2.classList.add('active');
+            });
+            
+            nextStep3Btn.addEventListener('click', () => {
+                step3.classList.remove('active');
+                step3.classList.add('completed');
+                step4.classList.remove('disabled');
+                step4.classList.add('active');
+            });
+            
+            prevStep4Btn.addEventListener('click', () => {
+                step4.classList.remove('active');
+                step4.classList.add('disabled');
+                step3.classList.remove('completed');
+                step3.classList.add('active');
+            });
+            
+            finishBtn.addEventListener('click', () => {
+                alert('Proses upload selesai! ESP akan mulai bekerja dengan parameter yang telah diatur.');
+                window.location.reload();
+            });
+            
+            // Connect serial button
+            connectSerialBtn.addEventListener('click', connectToSerial);
+            
+            // Generate and upload firmware button
+            generateFirmwareBtn.addEventListener('click', generateAndUploadFirmware);
+            
+            // Board type change
+            boardType.addEventListener('change', updatePinLabels);
+            
+            // Upload mode change
+            uploadMode.addEventListener('change', function() {
+                if (this.value === 'current') {
+                    // Show the appropriate container based on the selected mode
+                    if (document.querySelector('.tab[data-tab="weekly"].active')) {
+                        currentWeekContainer.style.display = 'block';
+                        currentDayContainer.style.display = 'none';
+                    } else {
+                        currentWeekContainer.style.display = 'none';
+                        currentDayContainer.style.display = 'block';
+                    }
+                } else if (this.value === 'weekly') {
+                    currentWeekContainer.style.display = 'none';
+                    currentDayContainer.style.display = 'none';
+                } else if (this.value === 'daily') {
+                    currentWeekContainer.style.display = 'none';
+                    currentDayContainer.style.display = 'none';
+                }
+            });
+            
+            // Save pin configuration when edited
+            document.querySelectorAll('#pin-table .editable').forEach(el => {
+                el.addEventListener('blur', () => {
+                    const pin = el.getAttribute('data-pin');
+                    currentPins[pin] = el.textContent;
+                    localStorage.setItem('insaf-pins', JSON.stringify(currentPins));
+                });
+            });
+            
+            // Save parameters when edited
+            document.querySelectorAll('#parameter-table .editable').forEach(el => {
+                el.addEventListener('blur', () => {
+                    const param = el.getAttribute('data-param');
+                    const week = parseInt(el.getAttribute('data-week'));
+                    currentParameters[week][param] = parseFloat(el.textContent);
+                    localStorage.setItem('insaf-parameters', JSON.stringify(currentParameters));
+                });
+            });
+            
+            // Save daily parameters when edited
+            document.querySelectorAll('#daily-parameter-table .editable').forEach(el => {
+                el.addEventListener('blur', () => {
+                    const param = el.getAttribute('data-param');
+                    const day = parseInt(el.getAttribute('data-day'));
+                    currentDailyParameters[day][param] = parseFloat(el.textContent);
+                    localStorage.setItem('insaf-daily-parameters', JSON.stringify(currentDailyParameters));
+                });
+            });
+        }
+
+        // Load parameters from localStorage
+        function loadParametersFromStorage() {
+            // Load parameters
+            const storedParams = localStorage.getItem('insaf-parameters');
+            if (storedParams) {
+                currentParameters = JSON.parse(storedParams);
+                updateParameterTable();
+            }
+            
+            // Load daily parameters
+            const storedDailyParams = localStorage.getItem('insaf-daily-parameters');
+            if (storedDailyParams) {
+                currentDailyParameters = JSON.parse(storedDailyParams);
+                updateDailyParameterTable();
+            }
+            
+            // Load pins
+            const storedPins = localStorage.getItem('insaf-pins');
+            if (storedPins) {
+                currentPins = JSON.parse(storedPins);
+                updatePinTable();
+            }
+            
+            // Load WiFi and Blynk settings
+            const wifiSsidStored = localStorage.getItem('insaf-wifi-ssid');
+            if (wifiSsidStored) {
+                wifiSsid.value = wifiSsidStored;
+            }
+            
+            const wifiPasswordStored = localStorage.getItem('insaf-wifi-password');
+            if (wifiPasswordStored) {
+                wifiPassword.value = wifiPasswordStored;
+            }
+            
+            const blynkTokenStored = localStorage.getItem('insaf-blynk-token');
+            if (blynkTokenStored) {
+                blynkToken.value = blynkTokenStored;
+            }
+        }
+
+        // Update parameter table with current values
+        function updateParameterTable() {
+            for (let week = 1; week <= 4; week++) {
+                const params = currentParameters[week];
+                for (const param in params) {
+                    const el = document.querySelector(`#parameter-table .editable[data-param="${param}"][data-week="${week}"]`);
+                    if (el) {
+                        el.textContent = params[param];
+                    }
+                }
+            }
+        }
+
+        // Update daily parameter table with current values
+        function updateDailyParameterTable() {
+            for (let day = 1; day <= 25; day++) {
+                const params = currentDailyParameters[day];
+                for (const param in params) {
+                    const el = document.querySelector(`#daily-parameter-table .editable[data-param="${param}"][data-day="${day}"]`);
+                    if (el) {
+                        el.textContent = params[param];
+                    }
+                }
+            }
+        }
+
+        // Update pin table with current values
+        function updatePinTable() {
+            for (const pin in currentPins) {
+                const el = document.querySelector(`#pin-table .editable[data-pin="${pin}"]`);
+                if (el) {
+                    el.textContent = currentPins[pin];
+                }
+            }
+        }
+
+        // Update pin labels based on board type
+        function updatePinLabels() {
+            const isESP32 = boardType.value === 'esp32';
+            
+            // Update pin labels for ESP32 vs ESP8266
+            if (isESP32) {
+                // Convert ESP8266 pin names to ESP32 equivalents
+                for (const pin in currentPins) {
+                    if (currentPins[pin].startsWith('D')) {
+                        // Convert D0-D8 to GPIO pins for ESP32
+                        const pinNum = parseInt(currentPins[pin].substring(1));
+                        switch (pinNum) {
+                            case 0: currentPins[pin] = "GPIO16"; break;
+                            case 1: currentPins[pin] = "GPIO5"; break;
+                            case 2: currentPins[pin] = "GPIO4"; break;
+                            case 3: currentPins[pin] = "GPIO0"; break;
+                            case 4: currentPins[pin] = "GPIO2"; break;
+                            case 5: currentPins[pin] = "GPIO14"; break;
+                            case 6: currentPins[pin] = "GPIO12"; break;
+                            case 7: currentPins[pin] = "GPIO13"; break;
+                            case 8: currentPins[pin] = "GPIO15"; break;
+                            default: currentPins[pin] = `GPIO${pinNum}`;
+                        }
+                    } else if (currentPins[pin] === 'A0') {
+                        currentPins[pin] = "GPIO36"; // ADC1_0
+                    }
+                }
+            } else {
+                // Convert ESP32 pin names to ESP8266 equivalents
+                for (const pin in currentPins) {
+                    if (currentPins[pin].startsWith('GPIO')) {
+                        // Convert GPIO pins to D0-D8 for ESP8266
+                        const pinNum = parseInt(currentPins[pin].substring(4));
+                        switch (pinNum) {
+                            case 16: currentPins[pin] = "D0"; break;
+                            case 5: currentPins[pin] = "D1"; break;
+                            case 4: currentPins[pin] = "D2"; break;
+                            case 0: currentPins[pin] = "D3"; break;
+                            case 2: currentPins[pin] = "D4"; break;
+                            case 14: currentPins[pin] = "D5"; break;
+                            case 12: currentPins[pin] = "D6"; break;
+                            case 13: currentPins[pin] = "D7"; break;
+                            case 15: currentPins[pin] = "D8"; break;
+                            case 36: currentPins[pin] = "A0"; break;
+                            default: currentPins[pin] = `D${pinNum}`;
+                        }
+                    }
+                }
+            }
+            
+            updatePinTable();
+            localStorage.setItem('insaf-pins', JSON.stringify(currentPins));
+        }
+
+        // Reset parameters to default
+        function resetParameters() {
+            if (confirm('Apakah Anda yakin ingin mereset semua parameter ke nilai default?')) {
+                currentParameters = JSON.parse(JSON.stringify(defaultParameters));
+                currentDailyParameters = JSON.parse(JSON.stringify(defaultDailyParameters));
+                updateParameterTable();
+                updateDailyParameterTable();
+                localStorage.setItem('insaf-parameters', JSON.stringify(currentParameters));
+                localStorage.setItem('insaf-daily-parameters', JSON.stringify(currentDailyParameters));
+                alert('Parameter telah direset ke nilai default.');
+            }
+        }
+
+        // Save parameters
+        function saveParameters() {
+            localStorage.setItem('insaf-parameters', JSON.stringify(currentParameters));
+            localStorage.setItem('insaf-daily-parameters', JSON.stringify(currentDailyParameters));
+            localStorage.setItem('insaf-pins', JSON.stringify(currentPins));
+            localStorage.setItem('insaf-wifi-ssid', wifiSsid.value);
+            localStorage.setItem('insaf-wifi-password', wifiPassword.value);
+            localStorage.setItem('insaf-blynk-token', blynkToken.value);
+            
+            alert('Parameter berhasil disimpan!');
+        }
+
+        // Connect to serial port
+        async function connectToSerial() {
+            if (port) {
+                await disconnectFromSerial();
+                return;
+            }
+            
+            try {
+                // Request a serial port
+                port = await navigator.serial.requestPort();
+                
+                // Open the port with appropriate settings
+                await port.open({ 
+                    baudRate: 115200,
+                    dataBits: 8,
+                    stopBits: 1,
+                    parity: "none",
+                    flowControl: "none"
+                });
+                
+                serialStatus.textContent = `Terhubung ke ${port.getInfo().usbVendorId}:${port.getInfo().usbProductId}`;
+                connectSerialBtn.textContent = 'Putuskan Koneksi';
+                nextStep3Btn.disabled = false;
+                
+                // Start reading from the serial port
+                startSerialRead();
+                
+            } catch (error) {
+                console.error('Error connecting to serial port:', error);
+                serialStatus.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Disconnect from serial port
+        async function disconnectFromSerial() {
+            if (!port) return;
+            
+            readLoopActive = false;
+            
+            try {
+                // Close the reader
+                if (reader) {
+                    await reader.cancel();
+                }
+                
+                // Close the writer
+                if (writer) {
+                    await writer.close();
+                }
+                
+                // Close the port
+                await port.close();
+                
+                port = null;
+                reader = null;
+                writer = null;
+                
+                serialStatus.textContent = 'Koneksi terputus';
+                connectSerialBtn.textContent = 'Hubungkan ke ESP';
+                nextStep3Btn.disabled = true;
+                
+            } catch (error) {
+                console.error('Error disconnecting from serial port:', error);
+                serialStatus.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Start reading from serial port
+        async function startSerialRead() {
+            if (!port) return;
+            
+            readLoopActive = true;
+            
+            try {
+                reader = port.readable.getReader();
+                
+                // Listen to data coming from the serial device
+                while (readLoopActive) {
+                    const { value, done } = await reader.read();
+                    
+                    if (done) {
+                        // Reader has been canceled
+                        break;
+                    }
+                    
+                    // Convert the received data to a string
+                    const textDecoder = new TextDecoder();
+                    const text = textDecoder.decode(value);
+                    
+                    // Display the received data
+                    serialStatus.textContent += text;
+                    
+                    // Keep only the last 500 characters to prevent the log from growing too large
+                    if (serialStatus.textContent.length > 500) {
+                        serialStatus.textContent = serialStatus.textContent.substring(serialStatus.textContent.length - 500);
+                    }
+                    
+                    // Auto-scroll to the bottom
+                    serialStatus.scrollTop = serialStatus.scrollHeight;
+                }
+                
+                // Release the reader
+                reader.releaseLock();
+                
+            } catch (error) {
+                console.error('Error reading from serial port:', error);
+                serialStatus.textContent += `\nError: ${error.message}`;
+            }
+        }
+
+        // Write to serial port
+        async function writeToSerial(data) {
+            if (!port) return;
+            
+            try {
+                writer = port.writable.getWriter();
+                
+                // Convert the string to a Uint8Array
+                const textEncoder = new TextEncoder();
+                const dataArray = textEncoder.encode(data);
+                
+                // Write the data to the serial port
+                await writer.write(dataArray);
+                
+                // Release the writer
+                writer.releaseLock();
+                
+                return true;
+                
+            } catch (error) {
+                console.error('Error writing to serial port:', error);
+                uploadLog.textContent += `\nError: ${error.message}`;
+                return false;
+            }
+        }
+
+        // Generate and upload firmware
+        async function generateAndUploadFirmware() {
+            if (!port) {
+                alert('Silakan hubungkan ke ESP terlebih dahulu!');
+                return;
+            }
+            
+            if (uploadInProgress) {
+                alert('Upload sedang berlangsung. Harap tunggu...');
+                return;
+            }
+            
+            uploadInProgress = true;
+            generateFirmwareBtn.disabled = true;
+            uploadLog.textContent = 'Memulai proses upload...';
+            progressBarFill.style.width = '0%';
+            
+            try {
+                // Save all settings
+                saveParameters();
+                
+                // Generate firmware code
+                const firmwareCode = generateFirmwareCode();
+                
+                // Show progress
+                uploadLog.textContent += '\nFirmware berhasil dibuat.';
+                progressBarFill.style.width = '20%';
+                
+                // Prepare ESP for upload
+                uploadLog.textContent += '\nMempersiapkan ESP untuk upload...';
+                await writeToSerial('\n');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Send firmware to ESP
+                uploadLog.textContent += '\nMengirim firmware ke ESP...';
+                progressBarFill.style.width = '30%';
+                
+                // Send firmware in chunks to avoid buffer overflow
+                const chunkSize = 500;
+                const chunks = [];
+                for (let i = 0; i < firmwareCode.length; i += chunkSize) {
+                    chunks.push(firmwareCode.substring(i, i + chunkSize));
+                }
+                
+                for (let i = 0; i < chunks.length; i++) {
+                    await writeToSerial(chunks[i]);
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    
+                    // Update progress
+                    const progress = 30 + Math.floor((i / chunks.length) * 50);
+                    progressBarFill.style.width = `${progress}%`;
+                    uploadLog.textContent = `Upload firmware: ${Math.floor((i + 1) / chunks.length * 100)}%`;
+                }
+                
+                // Send end of transmission marker
+                await writeToSerial('\n###END###\n');
+                
+                uploadLog.textContent += '\nVerifikasi firmware...';
+                progressBarFill.style.width = '90%';
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                uploadLog.textContent += '\nMemulai ulang ESP...';
+                progressBarFill.style.width = '100%';
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                uploadLog.textContent += '\n\nUpload selesai! ESP akan mulai bekerja dengan parameter yang telah diatur.';
+                
+                // Enable finish button
+                finishBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Error uploading firmware:', error);
+                uploadLog.textContent += `\nError: ${error.message}`;
+                progressBarFill.style.width = '0%';
+            } finally {
+                uploadInProgress = false;
+                generateFirmwareBtn.disabled = false;
+            }
+        }
+
+        // Generate firmware code based on parameters
+        function generateFirmwareCode() {
+            const mode = uploadMode.value;
+            const week = parseInt(currentWeek.value);
+            const day = parseInt(currentDay.value);
+            const interval = parseInt(updateInterval.value);
+            const isESP32 = boardType.value === 'esp32';
+            
+            // Generate code
+            let code = `
+/*
+* INSAF Hidroponik Pakcoy - Sistem Otomatis
+* 
+* Sistem kontrol otomatis untuk hidroponik pakcoy yang mengatur:
+* - PPM/EC nutrisi
+* - pH larutan
+* - Suhu air
+* 
+* Dibuat otomatis oleh INSAF Web Uploader
+`;
+
+            if (mode === 'weekly') {
+                code += `* Mode: Parameter Mingguan (Siklus 25 Hari)
+`;
+            } else if (mode === 'daily') {
+                code += `* Mode: Parameter Harian (25 Hari)
+`;
+            } else if (mode === 'current') {
+                if (document.querySelector('.tab[data-tab="weekly"].active')) {
+                    code += `* Minggu pertumbuhan saat ini: ${week} (Hari ${week === 1 ? '1-7' : week === 2 ? '8-14' : week === 3 ? '15-21' : '22-25'})
+`;
+                } else {
+                    code += `* Hari pertumbuhan saat ini: ${day} (Minggu ${day <= 7 ? 1 : day <= 14 ? 2 : day <= 21 ? 3 : 4})
+`;
+                }
+
+            }
+            code += `*/
+
+${isESP32 ? '#include <WiFi.h>' : '#include <ESP8266WiFi.h>'}
+${isESP32 ? '#include <BlynkSimpleESP32.h>' : '#include <BlynkSimpleEsp8266.h>'}
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <EEPROM.h>
+
+// ===== KONFIGURASI WIFI & BLYNK =====
+char ssid[] = "${wifiSsid.value}";
+char pass[] = "${wifiPassword.value}";
+char auth[] = "${blynkToken.value}";
+
+// ===== PIN KONFIGURASI =====
+#define ONE_WIRE_BUS ${currentPins.temp}     // Pin DS18B20 (sensor suhu)
+#define PPM_PIN ${currentPins.ppm}           // Pin sensor PPM/TDS/EC
+#define PH_PIN ${currentPins.ph}             // Pin sensor pH
+#define RELAY_NUTRISI ${currentPins.nutrisi} // Pin relay untuk pompa nutrisi
+#define RELAY_PH_UP ${currentPins.phUp}      // Pin relay untuk pompa pH up
+#define RELAY_PH_DOWN ${currentPins.phDown}  // Pin relay untuk pompa pH down
+#define RELAY_COOLER ${currentPins.cooler}   // Pin relay untuk pendingin (opsional)
+
+// ===== INTERVAL UPDATE =====
+#define UPDATE_INTERVAL ${interval * 1000}  // Interval update dalam milidetik
+#define CONTROL_INTERVAL ${interval * 2000} // Interval kontrol aktuator
+#define BLYNK_INTERVAL ${interval * 1000 / 3}   // Interval update Blynk
+
+// ===== ALAMAT EEPROM =====
+#define EEPROM_PPM_ADDR 0
+#define EEPROM_PH_ADDR 4
+#define EEPROM_TEMP_ADDR 8
+#define EEPROM_INITIALIZED_ADDR 12
+#define EEPROM_DAY_ADDR 16
+#define EEPROM_MODE_ADDR 20
+
+// ===== INISIALISASI SENSOR & TIMER =====
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+BlynkTimer timer;
+
+// ===== VARIABEL GLOBAL =====
+float currentPpm = 0;
+float currentPh = 0;
+float currentTemp = 0;
+bool autoMode = true;
+unsigned long lastControlTime = 0;
+unsigned long lastBlynkUpdate = 0;
+`;
+
+            // Add parameters based on mode
+            if (mode === 'weekly' || (mode === 'current' && document.querySelector('.tab[data-tab="weekly"].active'))) {
+                code += `
+// ===== MINGGU PERTUMBUHAN =====
+int growthDay = 1; // Hari saat ini (1-25)
+int growthWeek = 1; // Minggu saat ini (1-4)
+
+// Parameter optimal untuk setiap minggu
+struct WeekParameters {
+  float ppmMin;
+  float ppmMax;
+  float phMin;
+  float phMax;
+  float tempOptimal;
+};
+
+// Parameter untuk setiap minggu pertumbuhan
+WeekParameters weekParams[4] = {
+  {${currentParameters[1].ppmMin}, ${currentParameters[1].ppmMax}, ${currentParameters[1].phMin}, ${currentParameters[1].phMax}, ${currentParameters[1].temp}}, // Minggu 1
+  {${currentParameters[2].ppmMin}, ${currentParameters[2].ppmMax}, ${currentParameters[2].phMin}, ${currentParameters[2].phMax}, ${currentParameters[2].temp}}, // Minggu 2
+  {${currentParameters[3].ppmMin}, ${currentParameters[3].ppmMax}, ${currentParameters[3].phMin}, ${currentParameters[3].phMax}, ${currentParameters[3].temp}}, // Minggu 3
+  {${currentParameters[4].ppmMin}, ${currentParameters[4].ppmMax}, ${currentParameters[4].phMin}, ${currentParameters[4].phMax}, ${currentParameters[4].temp}}  // Minggu 4
+};
+
+// Parameter target (akan diupdate berdasarkan minggu)
+float PPM_TARGET = ${(currentParameters[1].ppmMin + currentParameters[1].ppmMax) / 2};
+float PH_TARGET = ${(currentParameters[1].phMin + currentParameters[1].phMax) / 2};
+float TEMP_TARGET = ${currentParameters[1].temp};
+
+// Toleransi untuk kontrol
+#define PPM_TOLERANCE 50.0
+#define PH_TOLERANCE 0.2
+#define TEMP_TOLERANCE 2.0
+`;
+
+            } else if (mode === 'daily' || (mode === 'current' && document.querySelector('.tab[data-tab="daily"].active'))) {
+                code += `
+// ===== HARI PERTUMBUHAN =====
+int growthDay = 1; // Hari saat ini (1-25)
+
+// Parameter optimal untuk setiap hari
+struct DayParameters {
+  float ppm;
+  float ph;
+  float temp;
+};
+
+// Parameter untuk setiap hari pertumbuhan
+DayParameters dayParams[25] = {
+`;
+
+                // Add parameters for each day
+                for (let i = 1; i <= 25; i++) {
+                    code += `  {${currentDailyParameters[i].ppm}, ${currentDailyParameters[i].ph}, ${currentDailyParameters[i].temp}}${i < 25 ? ',' : ''} // Hari ${i}\n`;
+
+                }
+
+                code += `};
+
+// Parameter target (akan diupdate berdasarkan hari)
+float PPM_TARGET = ${currentDailyParameters[1].ppm};
+float PH_TARGET = ${currentDailyParameters[1].ph};
+float TEMP_TARGET = ${currentDailyParameters[1].temp};
+
+// Toleransi untuk kontrol
+#define PPM_TOLERANCE 50.0
+#define PH_TOLERANCE 0.2
+#define TEMP_TOLERANCE 2.0
+`;
+
+            }
+
+            // Add setup and loop functions
+
+            code += `
+
+// ===== KALIBRASI SENSOR =====
+// Faktor kalibrasi untuk sensor (sesuaikan dengan sensor Anda)
+#define PPM_CALIBRATION_FACTOR 1.0
+#define PH_CALIBRATION_FACTOR 1.0
+#define PH_OFFSET 0.0
+
+void setup() {
+  // Inisialisasi Serial Monitor
+  Serial.begin(115200);
+  Serial.println("\\n\\nINSAF Hidroponik Pakcoy - Sistem Otomatis");
+  Serial.println("Dibuat otomatis oleh INSAF Web Uploader");
+
+  // Inisialisasi EEPROM
+  EEPROM.begin(32);
+
+  // Inisialisasi pin relay sebagai output
+  pinMode(RELAY_NUTRISI, OUTPUT);
+  pinMode(RELAY_PH_UP, OUTPUT);
+  pinMode(RELAY_PH_DOWN, OUTPUT);
+  pinMode(RELAY_COOLER, OUTPUT);
+ 
+  // Matikan semua relay pada awalnya (relay aktif LOW)
+  digitalWrite(RELAY_NUTRISI, HIGH);
+  digitalWrite(RELAY_PH_UP, HIGH);
+  digitalWrite(RELAY_PH_DOWN, HIGH);
+  digitalWrite(RELAY_COOLER, HIGH);
+  
+  // Inisialisasi sensor suhu
+  sensors.begin();
+
+  // Cek apakah EEPROM sudah diinisialisasi
+  if (EEPROM.read(EEPROM_INITIALIZED_ADDR) != 42) {
+    // EEPROM belum diinisialisasi, simpan nilai default
+    Serial.println("Inisialisasi EEPROM dengan nilai default...");
+    saveParametersToEEPROM();
+    EEPROM.write(EEPROM_INITIALIZED_ADDR, 42);
+    EEPROM.commit();
+  } else {
+    // EEPROM sudah diinisialisasi, baca nilai yang tersimpan
+    Serial.println("Membaca parameter dari EEPROM...");
+    loadParametersFromEEPROM();
+  }
+ 
+  // Hubungkan ke WiFi dan Blynk jika token tersedia
+  if (strlen(auth) > 0) {
+    Serial.println("Menghubungkan ke Blynk...");
+    Blynk.begin(auth, ssid, pass);
+  } else if (strlen(ssid) > 0) {
+    Serial.println("Menghubungkan ke WiFi...");
+    WiFi.begin(ssid, pass);
+  }
+ 
+  // Atur timer untuk membaca sensor dan mengirim data
+  timer.setInterval(UPDATE_INTERVAL, updateSensors);
+  timer.setInterval(CONTROL_INTERVAL, controlActuators);
+  timer.setInterval(BLYNK_INTERVAL, updateBlynk);
+  
+  // Tampilkan parameter target
+  Serial.println("Parameter target saat ini:");
+  Serial.println("PPM: " + String(PPM_TARGET));
+  Serial.println("pH: " + String(PH_TARGET));
+  Serial.println("Suhu: " + String(TEMP_TARGET) + "°C");
+`;
+            // Add mode-specific setup code
+            if (mode === 'weekly') {
+                code += `  Serial.println("Mode: Parameter Mingguan (Siklus 25 Hari)");
+`;
+
+            } else if (mode === 'daily') {
+                code += `  Serial.println("Mode: Parameter Harian (25 Hari)");
+`;
+
+            } else if (mode === 'current') {
+                if (document.querySelector('.tab[data-tab="weekly"].active')) {
+                    code += `  // Set minggu pertumbuhan saat ini
+  growthWeek = ${week};
+  growthDay = ${(week - 1) * 7 + 1};
+  updateWeeklyParameters();
+  Serial.println("Minggu pertumbuhan saat ini: " + String(growthWeek));
+`;
+
+                } else {
+                    code += `  // Set hari pertumbuhan saat ini
+  growthDay = ${day};
+  updateDailyParameters();
+  Serial.println("Hari pertumbuhan saat ini: " + String(growthDay));
+`;
+                }
+            }
+
+            // Add loop and other functions
+            code += `}
+
+void loop() {
+  if (strlen(auth) > 0) {
+    Blynk.run();
+  }
+  timer.run();
+}
+
+// Baca sensor dan update nilai
+void updateSensors() {
+  // Baca sensor suhu
+  sensors.requestTemperatures();
+  currentTemp = sensors.getTempCByIndex(0);
+
+  // Baca sensor PPM
+  int ppmRaw = analogRead(PPM_PIN);
+  float voltage = ppmRaw * (${isESP32 ? '3.3' : '3.3'} / ${isESP32 ? '4095.0' : '1023.0'});
+  currentPpm = (133.42 * voltage * voltage * voltage - 255.86 * voltage * voltage + 857.39 * voltage) * PPM_CALIBRATION_FACTOR;
+
+  // Baca sensor pH
+  int phRaw = analogRead(PH_PIN);
+  float phVoltage = phRaw * (${isESP32 ? '3.3' : '3.3'} / ${isESP32 ? '4095.0' : '1023.0'});
+  currentPh = (3.5 * phVoltage) * PH_CALIBRATION_FACTOR + PH_OFFSET;
+ 
+  // Tampilkan nilai sensor
+  Serial.println("Nilai sensor saat ini:");
+  Serial.println("PPM: " + String(currentPpm));
+  Serial.println("pH: " + String(currentPh));
+  Serial.println("Suhu: " + String(currentTemp) + "°C");
+}
+
+// Kontrol aktuator berdasarkan nilai sensor
+void controlActuators() {
+  // Kontrol pompa nutrisi berdasarkan PPM
+  if (currentPpm < PPM_TARGET - PPM_TOLERANCE) {
+    digitalWrite(RELAY_NUTRISI, LOW); // Aktifkan pompa nutrisi
+    Serial.println("Pompa nutrisi: AKTIF");
+  } else {
+    digitalWrite(RELAY_NUTRISI, HIGH); // Matikan pompa nutrisi
+    Serial.println("Pompa nutrisi: MATI");
+  }
+ 
+  // Kontrol pH Up/Down berdasarkan pH
+  if (currentPh < PH_TARGET - PH_TOLERANCE) {
+    digitalWrite(RELAY_PH_UP, LOW); // Aktifkan pompa pH Up
+    digitalWrite(RELAY_PH_DOWN, HIGH); // Pastikan pH Down mati
+    Serial.println("Pompa pH Up: AKTIF, pH Down: MATI");
+  } else if (currentPh > PH_TARGET + PH_TOLERANCE) {
+    digitalWrite(RELAY_PH_UP, HIGH); // Pastikan pH Up mati
+    digitalWrite(RELAY_PH_DOWN, LOW); // Aktifkan pompa pH Down
+    Serial.println("Pompa pH Up: MATI, pH Down: AKTIF");
+  } else {
+    digitalWrite(RELAY_PH_UP, HIGH); // Matikan kedua pompa pH
+    digitalWrite(RELAY_PH_DOWN, HIGH);
+    Serial.println("Pompa pH Up & Down: MATI");
+  }
+
+  // Kontrol pendingin berdasarkan suhu
+  if (currentTemp > TEMP_TARGET + TEMP_TOLERANCE) {
+    digitalWrite(RELAY_COOLER, LOW); // Aktifkan pendingin
+    Serial.println("Pendingin: AKTIF");
+  } else if (currentTemp < TEMP_TARGET - TEMP_TOLERANCE) {
+    digitalWrite(RELAY_COOLER, HIGH); // Matikan pendingin
+    Serial.println("Pendingin: MATI");
+  }
+}
+
+// Update Blynk dengan nilai sensor dan status
+void updateBlynk() {
+  if (strlen(auth) > 0 && Blynk.connected()) {
+    // Kirim nilai sensor ke Blynk
+    Blynk.virtualWrite(V1, currentPpm);
+    Blynk.virtualWrite(V2, currentPh);
+    Blynk.virtualWrite(V3, currentTemp);
+
+    // Kirim status relay ke Blynk
+    Blynk.virtualWrite(V4, digitalRead(RELAY_NUTRISI) == LOW ? 1 : 0);
+    Blynk.virtualWrite(V5, digitalRead(RELAY_PH_UP) == LOW ? 1 : 0);
+    Blynk.virtualWrite(V6, digitalRead(RELAY_PH_DOWN) == LOW ? 1 : 0);
+    Blynk.virtualWrite(V7, digitalRead(RELAY_COOLER) == LOW ? 1 : 0);
+    
+    // Kirim parameter target ke Blynk
+    Blynk.virtualWrite(V8, PPM_TARGET);
+    Blynk.virtualWrite(V9, PH_TARGET);
+    Blynk.virtualWrite(V10, TEMP_TARGET);
+    
+    // Kirim hari/minggu pertumbuhan ke Blynk
+    Blynk.virtualWrite(V11, growthDay);
+
+`;
+
+            if (mode === 'weekly' || (mode === 'current' && document.querySelector('.tab[data-tab="weekly"].active'))) {
+                code += `    Blynk.virtualWrite(V12, growthWeek);
+
+`;
+            }
+
+            code += `  }
+}
+
+// Simpan parameter ke EEPROM
+void saveParametersToEEPROM() {
+  EEPROM.put(EEPROM_PPM_ADDR, PPM_TARGET);
+  EEPROM.put(EEPROM_PH_ADDR, PH_TARGET);
+  EEPROM.put(EEPROM_TEMP_ADDR, TEMP_TARGET);
+  EEPROM.put(EEPROM_DAY_ADDR, growthDay);
+`;
+
+            if (mode === 'weekly' || mode === 'daily') {
+                code += `  EEPROM.put(EEPROM_MODE_ADDR, ${mode === 'weekly' ? '1' : '2'});
+`;
+            }
+
+            code += `  EEPROM.commit();
+  Serial.println("Parameter disimpan ke EEPROM");
+}
+
+// Baca parameter dari EEPROM
+void loadParametersFromEEPROM() {
+  EEPROM.get(EEPROM_PPM_ADDR, PPM_TARGET);
+  EEPROM.get(EEPROM_PH_ADDR, PH_TARGET);
+  EEPROM.get(EEPROM_TEMP_ADDR, TEMP_TARGET);
+  EEPROM.get(EEPROM_DAY_ADDR, growthDay);
+
+  // Validasi nilai yang dibaca
+  if (isnan(PPM_TARGET) || PPM_TARGET < 100 || PPM_TARGET > 2000) {
+    PPM_TARGET = 450; // Nilai default jika tidak valid
+  }
+
+  if (isnan(PH_TARGET) || PH_TARGET < 4 || PH_TARGET > 8) {
+    PH_TARGET = 5.8; // Nilai default jika tidak valid
+  }
+ 
+  if (isnan(TEMP_TARGET) || TEMP_TARGET < 15 || TEMP_TARGET > 35) {
+    TEMP_TARGET = 25; // Nilai default jika tidak valid
+  }
+
+  if (growthDay < 1 || growthDay > 25) {
+    growthDay = 1; // Nilai default jika tidak valid
+  }
+
+  // Hitung minggu berdasarkan hari
+  if (growthDay <= 7) {
+    growthWeek = 1;
+  } else if (growthDay <= 14) {
+    growthWeek = 2;
+  } else if (growthDay <= 21) {
+    growthWeek = 3;
+  } else {
+    growthWeek = 4;
+  }
+
+  Serial.println("Parameter dibaca dari EEPROM");
+}
+`;
+
+            // Add mode-specific functions
+            if (mode === 'weekly' || (mode === 'current' && document.querySelector('.tab[data-tab="weekly"].active'))) {
+                code += `
+// Update parameter berdasarkan minggu pertumbuhan
+void updateWeeklyParameters() {
+  // Sesuaikan indeks array (0-based)
+  int weekIndex = growthWeek - 1;
+  
+  // Pastikan indeks valid
+  if (weekIndex < 0) weekIndex = 0;
+  if (weekIndex > 3) weekIndex = 3;
+  
+  // Update parameter target
+  PPM_TARGET = (weekParams[weekIndex].ppmMin + weekParams[weekIndex].ppmMax) / 2;
+  PH_TARGET = (weekParams[weekIndex].phMin + weekParams[weekIndex].phMax) / 2;
+  TEMP_TARGET = weekParams[weekIndex].tempOptimal;
+  
+  // Simpan parameter ke EEPROM
+  saveParametersToEEPROM();
+  
+  Serial.println("Parameter diupdate untuk Minggu " + String(growthWeek));
+  Serial.println("PPM Target: " + String(PPM_TARGET));
+  Serial.println("pH Target: " + String(PH_TARGET));
+  Serial.println("Suhu Target: " + String(TEMP_TARGET) + "°C");
+}
+
+// Fungsi untuk increment hari dan minggu
+void incrementDay() {
+  growthDay++;
+  
+  // Cek apakah perlu update minggu
+  if (growthDay <= 7) {
+    growthWeek = 1;
+  } else if (growthDay <= 14) {
+    growthWeek = 2;
+  } else if (growthDay <= 21) {
+    growthWeek = 3;
+  } else if (growthDay <= 25) {
+    growthWeek = 4;
+  } else {
+    // Reset ke hari 1 jika sudah lebih dari 25 hari
+    growthDay = 1;
+    growthWeek = 1;
+  }
+  
+  // Update parameter berdasarkan minggu baru
+  updateWeeklyParameters();
+}
+
+// Fungsi untuk decrement hari dan minggu
+void decrementDay() {
+  growthDay--;
+  
+  // Cek apakah perlu update minggu
+  if (growthDay < 1) {
+    // Kembali ke hari 25 jika sudah kurang dari 1
+    growthDay = 25;
+    growthWeek = 4;
+  } else if (growthDay <= 7) {
+    growthWeek = 1;
+  } else if (growthDay <= 14) {
+    growthWeek = 2;
+  } else if (growthDay <= 21) {
+    growthWeek = 3;
+  } else {
+    growthWeek = 4;
+  }
+  
+  // Update parameter berdasarkan minggu baru
+  updateWeeklyParameters();
+}
+
+// Fungsi untuk set hari dan minggu
+void setDay(int day) {
+  growthDay = day;
+  
+  // Validasi hari
+  if (growthDay < 1) growthDay = 1;
+  if (growthDay > 25) growthDay = 25;
+  
+  // Update minggu berdasarkan hari
+  if (growthDay <= 7) {
+    growthWeek = 1;
+  } else if (growthDay <= 14) {
+    growthWeek = 2;
+  } else if (growthDay <= 21) {
+    growthWeek = 3;
+  } else {
+    growthWeek = 4;
+  }
+  
+  // Update parameter berdasarkan minggu baru
+  updateWeeklyParameters();
+}
+`;
+            } else if (mode === 'daily' || (mode === 'current' && document.querySelector('.tab[data-tab="daily"].active'))) {
+                code += `
+// Update parameter berdasarkan hari pertumbuhan
+void updateDailyParameters() {
+  // Sesuaikan indeks array (0-based)
+  int dayIndex = growthDay - 1;
+  
+  // Pastikan indeks valid
+  if (dayIndex < 0) dayIndex = 0;
+  if (dayIndex > 24) dayIndex = 24;
+  
+  // Update parameter target
+  PPM_TARGET = dayParams[dayIndex].ppm;
+  PH_TARGET = dayParams[dayIndex].ph;
+  TEMP_TARGET = dayParams[dayIndex].temp;
+  
+  // Simpan parameter ke EEPROM
+  saveParametersToEEPROM();
+  
+  Serial.println("Parameter diupdate untuk Hari " + String(growthDay));
+  Serial.println("PPM Target: " + String(PPM_TARGET));
+  Serial.println("pH Target: " + String(PH_TARGET));
+  Serial.println("Suhu Target: " + String(TEMP_TARGET) + "°C");
+}
+
+// Fungsi untuk increment hari
+void incrementDay() {
+  growthDay++;
+  
+  // Reset ke hari 1 jika sudah lebih dari 25 hari
+  if (growthDay > 25) {
+    growthDay = 1;
+  }
+  
+  // Update parameter berdasarkan hari baru
+  updateDailyParameters();
+}
+
+// Fungsi untuk decrement hari
+void decrementDay() {
+  growthDay--;
+  
+  // Kembali ke hari 25 jika sudah kurang dari 1
+  if (growthDay < 1) {
+    growthDay = 25;
+  }
+  
+  // Update parameter berdasarkan hari baru
+  updateDailyParameters();
+}
+
+// Fungsi untuk set hari
+void setDay(int day) {
+  growthDay = day;
+  
+  // Validasi hari
+  if (growthDay < 1) growthDay = 1;
+  if (growthDay > 25) growthDay = 25;
+  
+  // Update parameter berdasarkan hari baru
+  updateDailyParameters();
+}
+`;
+            }
+
+            // Add Blynk virtual pin handlers
+            code += `
+// Blynk virtual pin handlers
+#if defined(BLYNK_TEMPLATE_ID)
+BLYNK_WRITE(V20) {
+  // Tombol untuk increment hari
+  if (param.asInt() == 1) {
+    incrementDay();
+  }
+}
+
+BLYNK_WRITE(V21) {
+  // Tombol untuk decrement hari
+  if (param.asInt() == 1) {
+    decrementDay();
+  }
+}
+
+BLYNK_WRITE(V22) {
+  // Set hari secara manual
+  int day = param.asInt();
+  setDay(day);
+}
+
+BLYNK_WRITE(V30) {
+  // Override PPM target
+  float ppm = param.asFloat();
+  if (ppm >= 100 && ppm <= 2000) {
+    PPM_TARGET = ppm;
+    saveParametersToEEPROM();
+    Serial.println("PPM Target diubah menjadi: " + String(PPM_TARGET));
+  }
+}
+
+BLYNK_WRITE(V31) {
+  // Override pH target
+  float ph = param.asFloat();
+  if (ph >= 4 && ph <= 8) {
+    PH_TARGET = ph;
+    saveParametersToEEPROM();
+    Serial.println("pH Target diubah menjadi: " + String(PH_TARGET));
+  }
+}
+
+BLYNK_WRITE(V32) {
+  // Override suhu target
+  float temp = param.asFloat();
+  if (temp >= 15 && temp <= 35) {
+    TEMP_TARGET = temp;
+    saveParametersToEEPROM();
+    Serial.println("Suhu Target diubah menjadi: " + String(TEMP_TARGET));
+  }
+}
+
+BLYNK_WRITE(V40) {
+  // Toggle mode otomatis/manual
+  autoMode = param.asInt();
+  Serial.println("Mode: " + String(autoMode ? "Otomatis" : "Manual"));
+}
+
+BLYNK_WRITE(V41) {
+  // Kontrol manual pompa nutrisi
+  if (!autoMode) {
+    digitalWrite(RELAY_NUTRISI, param.asInt() ? LOW : HIGH);
+    Serial.println("Pompa nutrisi: " + String(param.asInt() ? "AKTIF" : "MATI") + " (Manual)");
+  }
+}
+
+BLYNK_WRITE(V42) {
+  // Kontrol manual pompa pH Up
+  if (!autoMode) {
+    digitalWrite(RELAY_PH_UP, param.asInt() ? LOW : HIGH);
+    Serial.println("Pompa pH Up: " + String(param.asInt() ? "AKTIF" : "MATI") + " (Manual)");
+  }
+}
+
+BLYNK_WRITE(V43) {
+  // Kontrol manual pompa pH Down
+  if (!autoMode) {
+    digitalWrite(RELAY_PH_DOWN, param.asInt() ? LOW : HIGH);
+    Serial.println("Pompa pH Down: " + String(param.asInt() ? "AKTIF" : "MATI") + " (Manual)");
+  }
+}
+
+BLYNK_WRITE(V44) {
+  // Kontrol manual pendingin
+  if (!autoMode) {
+    digitalWrite(RELAY_COOLER, param.asInt() ? LOW : HIGH);
+    Serial.println("Pendingin: " + String(param.asInt() ? "AKTIF" : "MATI") + " (Manual)");
+  }
+}
+#endif
+`;
+
+            return code;
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
