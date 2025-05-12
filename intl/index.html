@@ -1,0 +1,1967 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INSAF - Kalkulator Parameter Hidroponik Pakcoy</title>
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+            --primary-bg: #ecfdf5;
+            --secondary: #f5f5f5;
+            --text: #333;
+            --text-light: #666;
+            --border: #e5e7eb;
+            --border-dark: #d1d5db;
+            --white: #ffffff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --success: #10b981;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: linear-gradient(to bottom, var(--primary-bg), #f0fdfa);
+            min-height: 100vh;
+            font-size: 16px;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
+            transform: rotate(30deg);
+        }
+        
+        header h1 {
+            font-size: 2rem;
+            margin: 0;
+            position: relative;
+        }
+        
+        header p {
+            margin-top: 10px;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .logo {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 25%;
+            left: 25%;
+            width: 50%;
+            height: 50%;
+            background-color: var(--primary);
+            border-radius: 50%;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            background-color: var(--primary-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: bold;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header .icon {
+            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .week-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .week-item {
+            background-color: var(--secondary);
+            border: 2px solid transparent;
+            border-radius: var(--radius);
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .week-item:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .week-item.active {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+        
+        .week-item h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .week-item p {
+            margin: 5px 0 0;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+        
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .param-table th, .param-table td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .param-table th {
+            background-color: var(--primary-bg);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .param-table tr.highlight {
+            background-color: var(--primary-light);
+        }
+        
+        .param-table .optimal-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        button:disabled {
+            background-color: var(--border-dark);
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-info {
+            background-color: #e0f2fe;
+            border-left-color: var(--info);
+            color: #1e40af;
+        }
+        
+        .alert-success {
+            background-color: #dcfce7;
+            border-left-color: var(--success);
+            color: #166534;
+        }
+        
+        .alert-warning {
+            background-color: #fef3c7;
+            border-left-color: var(--warning);
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            border-left-color: var(--danger);
+            color: #991b1b;
+        }
+        
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .alert-title svg {
+            margin-right: 8px;
+        }
+        
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+            padding: 10px;
+            background-color: #f9fafb;
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+        }
+        
+        .result-box {
+            background-color: var(--primary-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+            border: 1px solid var(--primary-light);
+            display: none;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .result-item {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--radius);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .result-item .label {
+            color: var(--text-light);
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .result-item .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+        
+        .badge-success {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+        
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .icon-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .icon-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .icon-list .icon {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .esp-config {
+            background-color: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: var(--radius);
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .code-comment {
+            color: #94a3b8;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-header {
+                padding: 12px 15px;
+            }
+            
+            .card-body {
+                padding: 15px;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"></div>
+            <h1>INSAF Kalkulator Parameter Hidroponik Pakcoy</h1>
+            <p>Sistem Perhitungan Parameter Optimal (25 Hari)</p>
+        </header>
+
+        <div class="grid">
+            <!-- Growth Phase Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v8"></path>
+                            <path d="M4.93 10.93l1.41 1.41"></path>
+                            <path d="M2 18h2"></path>
+                            <path d="M20 18h2"></path>
+                            <path d="M19.07 10.93l-1.41 1.41"></path>
+                            <path d="M22 22H2"></path>
+                            <path d="M16 16c0-2.21-1.79-4-4-4s-4 1.79-4 4"></path>
+                            <path d="M12 12v-2"></path>
+                        </svg>
+                    </div>
+                    Fase Pertumbuhan Pakcoy
+                </div>
+                <div class="card-body">
+                    <div class="week-selector">
+                        <div class="week-item active" data-week="1">
+                            <h3>Minggu 1</h3>
+                            <p>Hari 1-7</p>
+                        </div>
+                        <div class="week-item" data-week="2">
+                            <h3>Minggu 2</h3>
+                            <p>Hari 8-14</p>
+                        </div>
+                        <div class="week-item" data-week="3">
+                            <h3>Minggu 3</h3>
+                            <p>Hari 15-21</p>
+                        </div>
+                        <div class="week-item" data-week="4">
+                            <h3>Minggu 4</h3>
+                            <p>Hari 22-25</p>
+                        </div>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Minggu</th>
+                                    <th>PPM Optimal</th>
+                                    <th>pH Optimal</th>
+                                    <th>Suhu Air (°C)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="highlight">
+                                    <td>1 (Semai)</td>
+                                    <td class="optimal-value">400-500</td>
+                                    <td class="optimal-value">5.5-6.0</td>
+                                    <td class="optimal-value">22-24</td>
+                                </tr>
+                                <tr>
+                                    <td>2 (Vegetatif)</td>
+                                    <td class="optimal-value">600-800</td>
+                                    <td class="optimal-value">5.8-6.2</td>
+                                    <td class="optimal-value">24-26</td>
+                                </tr>
+                                <tr>
+                                    <td>3 (Vegetatif)</td>
+                                    <td class="optimal-value">800-1000</td>
+                                    <td class="optimal-value">6.0-6.3</td>
+                                    <td class="optimal-value">24-26</td>
+                                </tr>
+                                <tr>
+                                    <td>4 (Generatif)</td>
+                                    <td class="optimal-value">1000-1200</td>
+                                    <td class="optimal-value">6.0-6.5</td>
+                                    <td class="optimal-value">22-24</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculator Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                            <path d="M13.6 2H10a2 2 0 0 0-2 2v2"></path>
+                            <path d="M13.6 22H10a2 2 0 0 1-2-2v-2"></path>
+                        </svg>
+                    </div>
+                    Kalkulator Parameter
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="manual">Input Manual</div>
+                        <div class="tab" data-tab="csv">Import CSV</div>
+                    </div>
+
+                    <div class="tab-content active" id="manual-tab">
+                        <div class="form-group">
+                            <label for="current-week">Minggu ke:</label>
+                            <select id="current-week">
+                                <option value="1">Minggu 1 (Hari 1-7)</option>
+                                <option value="2">Minggu 2 (Hari 8-14)</option>
+                                <option value="3">Minggu 3 (Hari 15-21)</option>
+                                <option value="4">Minggu 4 (Hari 22-25)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ppm-values">Data PPM (pisahkan dengan koma):</label>
+                            <input type="text" id="ppm-values" placeholder="Contoh: 450.5, 480.2, 420.8, 490.3">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ph-values">Data pH (pisahkan dengan koma):</label>
+                            <input type="text" id="ph-values" placeholder="Contoh: 5.72, 5.83, 5.91, 5.65">
+                        </div>
+
+                        <button id="calculate-btn">Hitung Parameter Optimal</button>
+                    </div>
+
+                    <div class="tab-content" id="csv-tab">
+                        <div class="form-group">
+                            <label for="csv-file">Pilih File CSV:</label>
+                            <input type="file" id="csv-file" accept=".csv">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="csv-week">Pilih Minggu untuk Dianalisis:</label>
+                            <select id="csv-week">
+                                <option value="1">Minggu 1 (Hari 1-7)</option>
+                                <option value="2">Minggu 2 (Hari 8-14)</option>
+                                <option value="3">Minggu 3 (Hari 15-21)</option>
+                                <option value="4">Minggu 4 (Hari 22-25)</option>
+                            </select>
+                        </div>
+
+                        <div class="data-preview" id="csv-preview">
+                            Data akan muncul di sini setelah file dipilih
+                        </div>
+
+                        <button id="analyze-btn" disabled>Analisis Data CSV</button>
+                    </div>
+
+                    <div class="result-box" id="result-box">
+                        <h3>Hasil Perhitungan</h3>
+                        <p><strong>Parameter optimal untuk minggu ini:</strong></p>
+                        
+                        <div class="result-grid">
+                            <div class="result-item">
+                                <div class="label">PPM</div>
+                                <div class="value" id="result-ppm">-</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">pH</div>
+                                <div class="value" id="result-ph">-</div>
+                            </div>
+                            <div class="result-item">
+                                <div class="label">Suhu Air</div>
+                                <div class="value" id="result-temp">-</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" id="decision-info" style="margin-top: 15px;">
+                            <div class="alert-title">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                Keputusan algoritma
+                            </div>
+                            <p id="decision-text">-</p>
+                        </div>
+
+                        <h4 style="margin-top: 20px;">Rekomendasi untuk Blynk/Arduino:</h4>
+                        <div class="esp-config">
+                            <p>Gunakan nilai-nilai berikut sebagai setpoint:</p>
+                            <div class="result-grid">
+                                <div class="result-item">
+                                    <div class="label">PPM</div>
+                                    <div class="value" id="blynk-ppm">-</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="label">pH</div>
+                                    <div class="value" id="blynk-ph">-</div>
+                                </div>
+                                <div class="result-item">
+                                    <div class="label">Suhu</div>
+                                    <div class="value" id="blynk-temp">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <canvas id="parameterChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ESP Upload Panel -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                        <path d="M12 12h.01"></path>
+                        <path d="M17 12h.01"></path>
+                        <path d="M7 12h.01"></path>
+                    </svg>
+                </div>
+                Konfigurasi ESP8266/ESP32
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="alert-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        Informasi
+                    </div>
+                    <p>Bagian ini memungkinkan Anda untuk mengupload konfigurasi ke ESP8266/ESP32 untuk sistem hidroponik otomatis.</p>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="config">Konfigurasi</div>
+                    <div class="tab" data-tab="upload">Upload</div>
+                    <div class="tab" data-tab="monitor">Monitor</div>
+                </div>
+
+                <div class="tab-content active" id="config-tab">
+                    <div class="form-group">
+                        <label for="wifi-ssid">WiFi SSID:</label>
+                        <input type="text" id="wifi-ssid" placeholder="Nama jaringan WiFi">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wifi-password">WiFi Password:</label>
+                        <input type="password" id="wifi-password" placeholder="Password WiFi">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="blynk-token">Blynk Auth Token:</label>
+                        <input type="text" id="blynk-token" placeholder="Token autentikasi Blynk">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Parameter Setpoint:</label>
+                        <div class="esp-config">
+                            <div class="form-group">
+                                <label for="esp-ppm">PPM Target:</label>
+                                <input type="number" id="esp-ppm" placeholder="Nilai PPM target">
+                            </div>
+                            <div class="form-group">
+                                <label for="esp-ph">pH Target:</label>
+                                <input type="number" id="esp-ph" step="0.1" placeholder="Nilai pH target">
+                            </div>
+                            <div class="form-group">
+                                <label for="esp-temp">Suhu Target (°C):</label>
+                                <input type="number" id="esp-temp" placeholder="Nilai suhu target">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="update-interval">Interval Update (detik):</label>
+                        <input type="number" id="update-interval" value="300" min="10">
+                    </div>
+
+                    <button id="generate-config-btn">Generate Konfigurasi</button>
+
+                    <div class="code-block" id="config-code" style="display: none;">
+                        <span class="code-comment">// Konfigurasi akan muncul di sini</span>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="upload-tab">
+                    <div class="alert alert-warning">
+                        <div class="alert-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            Perhatian
+                        </div>
+                        <p>Pastikan ESP Anda terhubung ke komputer melalui USB dan driver sudah terinstal dengan benar.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="com-port">Port Serial:</label>
+                        <select id="com-port">
+                            <option value="">Pilih port COM</option>
+                            <option value="COM3">COM3</option>
+                            <option value="COM4">COM4</option>
+                            <option value="COM5">COM5</option>
+                            <option value="/dev/ttyUSB0">/dev/ttyUSB0 (Linux)</option>
+                            <option value="/dev/cu.SLAB_USBtoUART">/dev/cu.SLAB_USBtoUART (Mac)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="board-type">Tipe Board:</label>
+                        <select id="board-type">
+                            <option value="esp8266">ESP8266 (NodeMCU, Wemos D1 Mini)</option>
+                            <option value="esp32">ESP32</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firmware-file">File Firmware (opsional):</label>
+                        <input type="file" id="firmware-file" accept=".bin">
+                    </div>
+
+                    <button id="connect-btn">Hubungkan</button>
+                    <button id="upload-btn" disabled style="margin-left: 10px; background-color: var(--info);">Upload ke ESP</button>
+
+                    <div class="data-preview" id="upload-log" style="margin-top: 15px;">
+                        Log upload akan muncul di sini...
+                    </div>
+                </div>
+
+                <div class="tab-content" id="monitor-tab">
+                    <div class="alert alert-info">
+                        <div class="alert-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Monitor Realtime
+                        </div>
+                        <p>Pantau data sensor dari ESP Anda secara realtime.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="monitor-interval">Interval Refresh (detik):</label>
+                        <input type="number" id="monitor-interval" value="5" min="1" max="60">
+                    </div>
+
+                    <button id="start-monitor-btn">Mulai Monitor</button>
+                    <button id="stop-monitor-btn" disabled style="margin-left: 10px; background-color: var(--danger);">Berhenti</button>
+
+                    <div class="result-grid" style="margin-top: 20px;">
+                        <div class="result-item">
+                            <div class="label">PPM Saat Ini</div>
+                            <div class="value" id="monitor-ppm">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">pH Saat Ini</div>
+                            <div class="value" id="monitor-ph">-</div>
+                        </div>
+                        <div class="result-item">
+                            <div class="label">Suhu Saat Ini</div>
+                            <div class="value" id="monitor-temp">-</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="monitorChart"></canvas>
+                    </div>
+
+                    <div class="data-preview" id="monitor-log" style="margin-top: 15px;">
+                        Log monitor akan muncul di sini...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guide Panel -->
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-header">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    </svg>
+                </div>
+                Panduan Penggunaan
+            </div>
+            <div class="card-body">
+                <div class="grid grid-3">
+                    <div>
+                        <h3 style="color: var(--primary); margin-bottom: 10px;">Cara Menggunakan</h3>
+                        <ol style="padding-left: 20px;">
+                            <li style="margin-bottom: 10px;">
+                                <strong>Input Manual:</strong>
+                                <ul style="padding-left: 20px; margin-top: 5px;">
+                                    <li>Catat data PPM dan pH dari Blynk</li>
+                                    <li>Masukkan data (pisahkan dengan koma)</li>
+                                    <li>Klik "Hitung Parameter Optimal"</li>
+                                </ul>
+                            </li>
+                            <li style="margin-bottom: 10px;">
+                                <strong>Import CSV:</strong>
+                                <ul style="padding-left: 20px; margin-top: 5px;">
+                                    <li>Export data dari Blynk format CSV</li>
+                                    <li>Pastikan ada kolom: ppm, ph</li>
+                                    <li>Upload file dan pilih minggu</li>
+                                    <li>Klik "Analisis Data CSV"</li>
+                                </ul>
+                            </li>
+                            <li style="margin-bottom: 10px;">
+                                <strong>Konfigurasi ESP:</strong>
+                                <ul style="padding-left: 20px; margin-top: 5px;">
+                                    <li>Isi konfigurasi WiFi dan Blynk</li>
+                                    <li>Masukkan parameter target</li>
+                                    <li>Generate dan upload konfigurasi</li>
+                                </ul>
+                            </li>
+                            <li>Gunakan hasil sebagai setpoint di Blynk/Arduino</li>
+                            <li>Ulangi setiap minggu</li>
+                        </ol>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--primary); margin-bottom: 10px;">Algoritma Decision Tree</h3>
+                        <p>Sistem menggunakan algoritma pohon keputusan untuk:</p>
+                        <ul class="icon-list">
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Menganalisis stabilitas parameter</div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Mendeteksi anomali dalam data</div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Memberikan rekomendasi penyesuaian</div>
+                            </li>
+                        </ul>
+
+                        <div style="background-color: var(--primary-bg); padding: 15px; border-radius: var(--radius); margin-top: 15px;">
+                            <h4 style="color: var(--primary-dark); margin-bottom: 10px;">Proses Keputusan:</h4>
+                            <ol style="padding-left: 20px;">
+                                <li>Deteksi nilai ekstrim (outlier)</li>
+                                <li>Evaluasi stabilitas parameter</li>
+                                <li>Bandingkan dengan range optimal</li>
+                                <li>Hitung penyesuaian yang diperlukan</li>
+                                <li>Berikan rekomendasi final</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 style="color: var(--primary); margin-bottom: 10px;">Tips Penting</h3>
+                        <ul class="icon-list">
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Minggu 1: PPM rendah untuk perkembangan akar</div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Minggu 2-3: Tingkatkan PPM untuk pertumbuhan daun</div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Minggu 4: Kurangi PPM jika daun menguning</div>
+                            </li>
+                            <li>
+                                <div class="icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                        <path d="m9 12 2 2 4-4"></path>
+                                    </svg>
+                                </div>
+                                <div>Jaga suhu air stabil</div>
+                            </li>
+                        </ul>
+
+                        <div style="background-color: #f0f9ff; padding: 15px; border-radius: var(--radius); margin-top: 15px; border-left: 4px solid var(--info);">
+                            <h4 style="color: #0369a1; margin-bottom: 10px;">Koneksi ESP dengan Blynk:</h4>
+                            <ol style="padding-left: 20px;">
+                                <li>Buat akun di Blynk.io</li>
+                                <li>Buat project baru dan dapatkan Auth Token</li>
+                                <li>Gunakan token di konfigurasi ESP</li>
+                                <li>Tambahkan widget di aplikasi Blynk:
+                                    <ul style="padding-left: 20px; margin-top: 5px;">
+                                        <li>Gauge untuk PPM, pH, dan suhu</li>
+                                        <li>SuperChart untuk visualisasi data</li>
+                                        <li>Notification untuk peringatan</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 INSAF Kalkulator Parameter Hidroponik Pakcoy. Dibuat dengan ❤️ untuk petani hidroponik.</p>
+        </div>
+    </div>
+
+    <script>
+        // Optimal parameters for Pakcoy (25 days growth)
+        const weekParameters = {
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0, temp: 23 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2, temp: 25 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3, temp: 25 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5, temp: 23 }
+        };
+
+        // DOM elements
+        const weekItems = document.querySelectorAll('.week-item');
+        const currentWeekSelect = document.getElementById('current-week');
+        const ppmValuesInput = document.getElementById('ppm-values');
+        const phValuesInput = document.getElementById('ph-values');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultBox = document.getElementById('result-box');
+        const resultPpm = document.getElementById('result-ppm');
+        const resultPh = document.getElementById('result-ph');
+        const resultTemp = document.getElementById('result-temp');
+        const blynkPpm = document.getElementById('blynk-ppm');
+        const blynkPh = document.getElementById('blynk-ph');
+        const blynkTemp = document.getElementById('blynk-temp');
+        const csvFileInput = document.getElementById('csv-file');
+        const csvWeekSelect = document.getElementById('csv-week');
+        const csvPreview = document.getElementById('csv-preview');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const decisionText = document.getElementById('decision-text');
+        const tableRows = document.querySelectorAll('.param-table tbody tr');
+        
+        // ESP Configuration elements
+        const wifiSsid = document.getElementById('wifi-ssid');
+        const wifiPassword = document.getElementById('wifi-password');
+        const blynkToken = document.getElementById('blynk-token');
+        const espPpm = document.getElementById('esp-ppm');
+        const espPh = document.getElementById('esp-ph');
+        const espTemp = document.getElementById('esp-temp');
+        const updateInterval = document.getElementById('update-interval');
+        const generateConfigBtn = document.getElementById('generate-config-btn');
+        const configCode = document.getElementById('config-code');
+        const comPort = document.getElementById('com-port');
+        const boardType = document.getElementById('board-type');
+        const connectBtn = document.getElementById('connect-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const uploadLog = document.getElementById('upload-log');
+        const monitorInterval = document.getElementById('monitor-interval');
+        const startMonitorBtn = document.getElementById('start-monitor-btn');
+        const stopMonitorBtn = document.getElementById('stop-monitor-btn');
+        const monitorPpm = document.getElementById('monitor-ppm');
+        const monitorPh = document.getElementById('monitor-ph');
+        const monitorTemp = document.getElementById('monitor-temp');
+        const monitorLog = document.getElementById('monitor-log');
+
+        // Charts
+        let growthChart;
+        let parameterChart;
+        let monitorChart;
+        let monitorTimer;
+
+        // Initialize
+        function init() {
+            setupEventListeners();
+            initializeCharts();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Week selection
+            weekItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const week = this.dataset.week;
+                    updateActiveWeek(week);
+                });
+            });
+            
+            // Current week select change
+            currentWeekSelect.addEventListener('change', function() {
+                updateActiveWeek(this.value);
+            });
+            
+            // CSV week select change
+            csvWeekSelect.addEventListener('change', function() {
+                updateActiveWeek(this.value);
+            });
+            
+            // Calculate button
+            calculateBtn.addEventListener('click', calculateOptimalParameters);
+            
+            // Analyze button
+            analyzeBtn.addEventListener('click', analyzeCSVData);
+            
+            // CSV file input
+            csvFileInput.addEventListener('change', handleCSVUpload);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Find the parent tab container
+                    const tabContainer = this.parentElement;
+                    
+                    // Update tabs in this container only
+                    const siblingTabs = tabContainer.querySelectorAll('.tab');
+                    siblingTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Find the related tab contents
+                    const relatedContents = document.querySelectorAll(`#${tabId}-tab`);
+                    
+                    // Find all tab contents that are siblings of the related contents
+                    relatedContents.forEach(content => {
+                        const siblingContents = Array.from(content.parentElement.children).filter(el => el.classList.contains('tab-content'));
+                        siblingContents.forEach(c => c.classList.remove('active'));
+                        content.classList.add('active');
+                    });
+                });
+            });
+            
+            // ESP Configuration
+            generateConfigBtn.addEventListener('click', generateESPConfig);
+            connectBtn.addEventListener('click', connectToESP);
+            uploadBtn.addEventListener('click', uploadToESP);
+            startMonitorBtn.addEventListener('click', startMonitoring);
+            stopMonitorBtn.addEventListener('click', stopMonitoring);
+            
+            // Auto-fill ESP parameters from calculation results
+            document.addEventListener('DOMContentLoaded', function() {
+                if (resultBox.style.display !== 'none') {
+                    espPpm.value = blynkPpm.textContent;
+                    espPh.value = blynkPh.textContent;
+                    espTemp.value = blynkTemp.textContent.replace('°C', '');
+                }
+            });
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Growth phase chart
+            const growthCtx = document.getElementById('growthChart').getContext('2d');
+            growthChart = new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Hari 1', 'Hari 7', 'Hari 14', 'Hari 21', 'Hari 25'],
+                    datasets: [
+                        {
+                            label: 'PPM Optimal',
+                            data: [450, 450, 700, 900, 1100],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'pH Optimal',
+                            data: [5.75, 5.75, 6.0, 6.15, 6.25],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Perkembangan Parameter Optimal Selama Siklus Tanam',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'PPM'
+                            },
+                            min: 0,
+                            max: 1300
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'pH'
+                            },
+                            min: 5,
+                            max: 7,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Parameter chart (will be populated when results are shown)
+            const paramCtx = document.getElementById('parameterChart').getContext('2d');
+            parameterChart = new Chart(paramCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['PPM', 'pH'],
+                    datasets: [
+                        {
+                            label: 'Nilai Saat Ini',
+                            data: [0, 0],
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Nilai Optimal',
+                            data: [0, 0],
+                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Perbandingan Nilai Saat Ini dengan Nilai Optimal',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Monitor chart
+            const monitorCtx = document.getElementById('monitorChart').getContext('2d');
+            monitorChart = new Chart(monitorCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'PPM',
+                            data: [],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'pH',
+                            data: [],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: 'Suhu (°C)',
+                            data: [],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y2'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monitoring Parameter Realtime',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'PPM'
+                            },
+                            min: 0
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'pH'
+                            },
+                            min: 5,
+                            max: 7,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Suhu (°C)'
+                            },
+                            min: 20,
+                            max: 30,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update active week
+        function updateActiveWeek(week) {
+            // Update week items
+            weekItems.forEach(item => {
+                if (item.dataset.week === week) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update selects
+            currentWeekSelect.value = week;
+            csvWeekSelect.value = week;
+            
+            // Update table highlighting
+            tableRows.forEach((row, index) => {
+                if (index === parseInt(week) - 1) {
+                    row.classList.add('highlight');
+                } else {
+                    row.classList.remove('highlight');
+                }
+            });
+        }
+
+        // Handle CSV file upload
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            analyzeBtn.disabled = true;
+            csvPreview.textContent = "Memproses file CSV...";
+            
+            Papa.parse(file, {
+                header: true,
+                complete: function(results) {
+                    if (results.data.length === 0) {
+                        csvPreview.textContent = "File CSV tidak mengandung data";
+                        return;
+                    }
+                    
+                    // Validate required columns
+                    const firstRow = results.data[0];
+                    if (!firstRow.hasOwnProperty('ppm') || !firstRow.hasOwnProperty('ph')) {
+                        csvPreview.textContent = "File CSV harus memiliki kolom 'ppm' dan 'ph'";
+                        return;
+                    }
+                    
+                    // Display sample data
+                    let previewText = `Data CSV (${results.data.length} baris):\n`;
+                    previewText += `Kolom: ${Object.keys(firstRow).join(", ")}\n\n`;
+                    
+                    // Show first 3 rows
+                    for (let i = 0; i < Math.min(3, results.data.length); i++) {
+                        previewText += `Baris ${i + 1}: ${Object.values(results.data[i]).join(", ")}\n`;
+                    }
+                    
+                    if (results.data.length > 3) {
+                        previewText += `... dan ${results.data.length - 3} baris lainnya`;
+                    }
+                    
+                    csvPreview.textContent = previewText;
+                    
+                    // Store the parsed data for later use
+                    csvPreview.dataset.parsedData = JSON.stringify(results.data);
+                    analyzeBtn.disabled = false;
+                },
+                error: function(error) {
+                    csvPreview.textContent = `Error membaca file CSV: ${error.message}`;
+                }
+            });
+        }
+
+        // Decision Tree Algorithm
+        function analyzeWithDecisionTree(week, values, parameter) {
+            const params = weekParameters[week];
+            const min = parameter === 'ppm' ? params.ppmMin : params.phMin;
+            const max = parameter === 'ppm' ? params.ppmMax : params.phMax;
+            
+            // Calculate statistics
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const range = Math.max(...values) - Math.min(...values);
+            const stability = range / (max - min);
+            
+            // Decision tree rules
+            if (values.some(v => v < min * 0.8 || v > max * 1.2)) {
+                return {
+                    decision: "Terdapat nilai ekstrim yang perlu diperiksa",
+                    adjustment: 0,
+                    confidence: "rendah"
+                };
+            } else if (stability > 0.5) {
+                return {
+                    decision: "Parameter tidak stabil, perlu penyesuaian",
+                    adjustment: (avg - (min + max)/2) * 0.5,
+                    confidence: "sedang"
+                };
+            } else if (avg < min) {
+                return {
+                    decision: "Parameter terlalu rendah, perlu dinaikkan",
+                    adjustment: (min - avg) * 0.7,
+                    confidence: "tinggi"
+                };
+            } else if (avg > max) {
+                return {
+                    decision: "Parameter terlalu tinggi, perlu diturunkan",
+                    adjustment: (max - avg) * 0.7,
+                    confidence: "tinggi"
+                };
+            } else {
+                return {
+                    decision: "Parameter dalam range optimal",
+                    adjustment: 0,
+                    confidence: "tinggi"
+                };
+            }
+        }
+
+        // Analyze CSV data
+        function analyzeCSVData() {
+            const week = parseInt(csvWeekSelect.value);
+            const params = weekParameters[week];
+            
+            if (!csvPreview.dataset.parsedData) {
+                alert("Tidak ada data CSV yang valid untuk dianalisis");
+                return;
+            }
+            
+            const csvData = JSON.parse(csvPreview.dataset.parsedData);
+            
+            // Extract ppm and ph values
+            const ppmValues = csvData.map(row => parseFloat(row.ppm)).filter(val => !isNaN(val));
+            const phValues = csvData.map(row => parseFloat(row.ph)).filter(val => !isNaN(val));
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Data CSV tidak mengandung nilai PPM atau pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values (more robust than average)
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis, ppmValues, phValues);
+        }
+
+        // Calculate optimal parameters
+        function calculateOptimalParameters() {
+            const week = parseInt(currentWeekSelect.value);
+            const params = weekParameters[week];
+            
+            // Parse input values
+            const ppmValues = parseInputValues(ppmValuesInput.value);
+            const phValues = parseInputValues(phValuesInput.value);
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Masukkan data PPM dan pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis, ppmValues, phValues);
+        }
+
+        // Show calculation results
+        function showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis, ppmValues, phValues) {
+            // Format numbers to show 1 decimal place for PPM and 2 for pH
+            resultPpm.textContent = `${optimalPpm.toFixed(1)} (range optimal: ${params.ppmMin}-${params.ppmMax})`;
+            resultPh.textContent = `${optimalPh.toFixed(2)} (range optimal: ${params.phMin}-${params.phMax})`;
+            resultTemp.textContent = `${params.temp}°C`;
+            
+            // Display decision tree analysis
+            const decisions = [];
+            if (ppmAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`PPM: ${ppmAnalysis.decision}`);
+            }
+            if (phAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`pH: ${phAnalysis.decision}`);
+            }
+            
+            if (decisions.length > 0) {
+                decisionText.textContent = decisions.join(" | ");
+                document.getElementById('decision-info').style.display = 'block';
+            } else {
+                decisionText.textContent = "Semua parameter dalam range optimal";
+                document.getElementById('decision-info').style.display = 'block';
+            }
+            
+            // Blynk/Arduino recommended values
+            blynkPpm.textContent = optimalPpm.toFixed(1);
+            blynkPh.textContent = optimalPh.toFixed(2);
+            blynkTemp.textContent = `${params.temp}°C`;
+            
+            // Auto-fill ESP configuration fields
+            espPpm.value = optimalPpm.toFixed(1);
+            espPh.value = optimalPh.toFixed(2);
+            espTemp.value = params.temp;
+            
+            // Update parameter chart
+            updateParameterChart(ppmValues, phValues, optimalPpm, optimalPh);
+            
+            // Show results
+            resultBox.style.display = 'block';
+            
+            // Scroll to results
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update parameter chart
+        function updateParameterChart(ppmValues, phValues, optimalPpm, optimalPh) {
+            const avgPpm = ppmValues.reduce((a, b) => a + b, 0) / ppmValues.length;
+            const avgPh = phValues.reduce((a, b) => a + b, 0) / phValues.length;
+            
+            parameterChart.data.datasets[0].data = [avgPpm, avgPh];
+            parameterChart.data.datasets[1].data = [optimalPpm, optimalPh];
+            parameterChart.update();
+        }
+
+        // Parse comma-separated input values
+        function parseInputValues(input) {
+            return input.split(',')
+                .map(val => parseFloat(val.trim()))
+                .filter(val => !isNaN(val));
+        }
+
+        // Calculate median of an array
+        function calculateMedian(values) {
+            if (values.length === 0) return 0;
+            
+            const sorted = [...values].sort((a, b) => a - b);
+            const half = Math.floor(sorted.length / 2);
+            
+            if (sorted.length % 2) {
+                return sorted[half];
+            }
+            return (sorted[half - 1] + sorted[half]) / 2;
+        }
+
+        // Generate ESP configuration
+        function generateESPConfig() {
+            if (!wifiSsid.value || !wifiPassword.value || !blynkToken.value) {
+                alert("Harap isi SSID WiFi, Password WiFi, dan Blynk Auth Token!");
+                return;
+            }
+            
+            const config = `
+// INSAF Hidroponik Pakcoy - Konfigurasi ESP
+// Dibuat otomatis oleh INSAF Kalkulator Parameter
+
+#include <ESP8266WiFi.h>  // Ganti dengan #include <WiFi.h> untuk ESP32
+#include <BlynkSimpleEsp8266.h>  // Ganti dengan BlynkSimpleESP32.h untuk ESP32
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// Konfigurasi WiFi
+char ssid[] = "${wifiSsid.value}";
+char pass[] = "${wifiPassword.value}";
+
+// Konfigurasi Blynk
+char auth[] = "${blynkToken.value}";
+
+// Parameter target
+#define PPM_TARGET ${espPpm.value || 0}
+#define PH_TARGET ${espPh.value || 0}
+#define TEMP_TARGET ${espTemp.value || 0}
+
+// Interval update (dalam milidetik)
+#define UPDATE_INTERVAL ${updateInterval.value * 1000 || 300000}
+
+// Pin konfigurasi
+#define ONE_WIRE_BUS 2  // Pin DS18B20 (sensor suhu)
+#define PPM_PIN A0      // Pin sensor PPM/TDS/EC
+#define PH_PIN A1       // Pin sensor pH
+#define RELAY_NUTRISI 5 // Pin relay untuk pompa nutrisi
+#define RELAY_PH_UP 6   // Pin relay untuk pompa pH up
+#define RELAY_PH_DOWN 7 // Pin relay untuk pompa pH down
+
+// Inisialisasi sensor suhu
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+// Variabel untuk menyimpan nilai sensor
+float currentPpm = 0;
+float currentPh = 0;
+float currentTemp = 0;
+
+// Timer Blynk
+BlynkTimer timer;
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Inisialisasi pin relay
+  pinMode(RELAY_NUTRISI, OUTPUT);
+  pinMode(RELAY_PH_UP, OUTPUT);
+  pinMode(RELAY_PH_DOWN, OUTPUT);
+  
+  // Matikan semua relay pada awalnya
+  digitalWrite(RELAY_NUTRISI, HIGH);
+  digitalWrite(RELAY_PH_UP, HIGH);
+  digitalWrite(RELAY_PH_DOWN, HIGH);
+  
+  // Inisialisasi sensor suhu
+  sensors.begin();
+  
+  // Hubungkan ke Blynk
+  Blynk.begin(auth, ssid, pass);
+  
+  // Atur timer untuk membaca sensor dan mengirim data
+  timer.setInterval(UPDATE_INTERVAL, sendSensorData);
+  
+  Serial.println("INSAF Hidroponik Pakcoy - Sistem Siap");
+  Serial.println("Target PPM: " + String(PPM_TARGET));
+  Serial.println("Target pH: " + String(PH_TARGET));
+  Serial.println("Target Suhu: " + String(TEMP_TARGET) + "°C");
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
+
+// Baca sensor dan kirim data ke Blynk
+void sendSensorData() {
+  // Baca sensor suhu
+  sensors.requestTemperatures();
+  currentTemp = sensors.getTempCByIndex(0);
+  
+  // Baca sensor PPM (implementasi sesuaikan dengan sensor yang digunakan)
+  currentPpm = readPPM();
+  
+  // Baca sensor pH (implementasi sesuaikan dengan sensor yang digunakan)
+  currentPh = readPH();
+  
+  // Kirim data ke Blynk
+  Blynk.virtualWrite(V1, currentPpm);
+  Blynk.virtualWrite(V2, currentPh);
+  Blynk.virtualWrite(V3, currentTemp);
+  
+  // Kontrol aktuator berdasarkan nilai sensor
+  controlActuators();
+  
+  // Tampilkan data di Serial Monitor
+  Serial.println("PPM: " + String(currentPpm));
+  Serial.println("pH: " + String(currentPh));
+  Serial.println("Suhu: " + String(currentTemp) + "°C");
+}
+
+// Fungsi untuk membaca sensor PPM/TDS/EC
+float readPPM() {
+  // Implementasi pembacaan sensor PPM
+  // Contoh sederhana (sesuaikan dengan sensor yang digunakan):
+  int rawValue = analogRead(PPM_PIN);
+  float voltage = rawValue * 5.0 / 1024.0;
+  // Konversi voltage ke PPM (rumus contoh, sesuaikan dengan sensor)
+  float ppm = voltage * 500;
+  return ppm;
+}
+
+// Fungsi untuk membaca sensor pH
+float readPH() {
+  // Implementasi pembacaan sensor pH
+  // Contoh sederhana (sesuaikan dengan sensor yang digunakan):
+  int rawValue = analogRead(PH_PIN);
+  float voltage = rawValue * 5.0 / 1024.0;
+  // Konversi voltage ke pH (rumus contoh, sesuaikan dengan sensor)
+  float ph = 3.5 * voltage;
+  return ph;
+}
+
+// Kontrol aktuator berdasarkan nilai sensor
+void controlActuators() {
+  // Kontrol pompa nutrisi berdasarkan PPM
+  if (currentPpm < PPM_TARGET - 50) {
+    digitalWrite(RELAY_NUTRISI, LOW); // Aktifkan pompa nutrisi
+    Blynk.virtualWrite(V4, 1); // Update status di Blynk
+  } else {
+    digitalWrite(RELAY_NUTRISI, HIGH); // Matikan pompa nutrisi
+    Blynk.virtualWrite(V4, 0); // Update status di Blynk
+  }
+  
+  // Kontrol pH Up/Down berdasarkan pH
+  if (currentPh < PH_TARGET - 0.2) {
+    digitalWrite(RELAY_PH_UP, LOW); // Aktifkan pompa pH Up
+    digitalWrite(RELAY_PH_DOWN, HIGH); // Pastikan pH Down mati
+    Blynk.virtualWrite(V5, 1); // Update status di Blynk
+    Blynk.virtualWrite(V6, 0);
+  } else if (currentPh > PH_TARGET + 0.2) {
+    digitalWrite(RELAY_PH_UP, HIGH); // Pastikan pH Up mati
+    digitalWrite(RELAY_PH_DOWN, LOW); // Aktifkan pompa pH Down
+    Blynk.virtualWrite(V5, 0); // Update status di Blynk
+    Blynk.virtualWrite(V6, 1);
+  } else {
+    digitalWrite(RELAY_PH_UP, HIGH); // Matikan kedua pompa pH
+    digitalWrite(RELAY_PH_DOWN, HIGH);
+    Blynk.virtualWrite(V5, 0); // Update status di Blynk
+    Blynk.virtualWrite(V6, 0);
+  }
+  
+  // Kirim peringatan jika parameter di luar batas
+  if (currentPpm < PPM_TARGET * 0.8 || currentPpm > PPM_TARGET * 1.2) {
+    Blynk.notify("Peringatan: PPM di luar batas normal!");
+  }
+  
+  if (currentPh < PH_TARGET - 0.5 || currentPh > PH_TARGET + 0.5) {
+    Blynk.notify("Peringatan: pH di luar batas normal!");
+  }
+  
+  if (currentTemp < TEMP_TARGET - 3 || currentTemp > TEMP_TARGET + 3) {
+    Blynk.notify("Peringatan: Suhu air di luar batas normal!");
+  }
+}
+`;
+            
+            configCode.innerHTML = config;
+            configCode.style.display = 'block';
+        }
+
+        // Connect to ESP
+        function connectToESP() {
+            if (!comPort.value) {
+                alert("Pilih port COM terlebih dahulu!");
+                return;
+            }
+            
+            uploadLog.textContent = `Menghubungkan ke ESP pada port ${comPort.value}...`;
+            
+            // Simulasi koneksi (dalam implementasi nyata, gunakan Web Serial API)
+            setTimeout(() => {
+                uploadLog.textContent += "\nTerhubung ke ESP berhasil!";
+                uploadLog.textContent += `\nTipe board: ${boardType.value}`;
+                uploadLog.textContent += "\nSiap untuk upload konfigurasi.";
+                uploadBtn.disabled = false;
+            }, 1500);
+        }
+
+        // Upload to ESP
+        function uploadToESP() {
+            if (!configCode.textContent || configCode.style.display === 'none') {
+                alert("Generate konfigurasi terlebih dahulu!");
+                return;
+            }
+            
+            uploadLog.textContent = "Memulai upload konfigurasi ke ESP...";
+            
+            // Simulasi upload (dalam implementasi nyata, gunakan Web Serial API)
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                uploadLog.textContent = `Upload konfigurasi: ${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    uploadLog.textContent += "\nUpload selesai!";
+                    uploadLog.textContent += "\nMemulai ulang ESP...";
+                    
+                    setTimeout(() => {
+                        uploadLog.textContent += "\nESP berhasil dimulai ulang dengan konfigurasi baru.";
+                        uploadLog.textContent += "\nSistem hidroponik siap digunakan!";
+                    }, 1500);
+                }
+            }, 300);
+        }
+
+        // Start monitoring
+        function startMonitoring() {
+            const interval = parseInt(monitorInterval.value) * 1000 || 5000;
+            
+            monitorLog.textContent = "Memulai monitoring...";
+            startMonitorBtn.disabled = true;
+            stopMonitorBtn.disabled = false;
+            
+            // Reset chart data
+            monitorChart.data.labels = [];
+            monitorChart.data.datasets.forEach(dataset => {
+                dataset.data = [];
+            });
+            
+            // Simulasi data monitoring
+            let timeCounter = 0;
+            monitorTimer = setInterval(() => {
+                const now = new Date();
+                const timeLabel = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+                
+                // Simulasi nilai sensor dengan sedikit variasi acak
+                const week = parseInt(currentWeekSelect.value);
+                const params = weekParameters[week];
+                
+                const ppmValue = params.ppmMin + Math.random() * (params.ppmMax - params.ppmMin);
+                const phValue = params.phMin + Math.random() * (params.phMax - params.phMin);
+                const tempValue = params.temp - 1 + Math.random() * 2;
+                
+                // Update display
+                monitorPpm.textContent = ppmValue.toFixed(1);
+                monitorPh.textContent = phValue.toFixed(2);
+                monitorTemp.textContent = tempValue.toFixed(1) + '°C';
+                
+                // Add to chart
+                if (monitorChart.data.labels.length > 10) {
+                    monitorChart.data.labels.shift();
+                    monitorChart.data.datasets.forEach(dataset => {
+                        dataset.data.shift();
+                    });
+                }
+                
+                monitorChart.data.labels.push(timeLabel);
+                monitorChart.data.datasets[0].data.push(ppmValue);
+                monitorChart.data.datasets[1].data.push(phValue);
+                monitorChart.data.datasets[2].data.push(tempValue);
+                monitorChart.update();
+                
+                // Update log
+                monitorLog.textContent = `[${timeLabel}] PPM: ${ppmValue.toFixed(1)}, pH: ${phValue.toFixed(2)}, Suhu: ${tempValue.toFixed(1)}°C\n` + monitorLog.textContent;
+                
+                timeCounter++;
+            }, interval);
+        }
+
+        // Stop monitoring
+        function stopMonitoring() {
+            clearInterval(monitorTimer);
+            monitorLog.textContent = "Monitoring dihentikan.\n" + monitorLog.textContent;
+            startMonitorBtn.disabled = false;
+            stopMonitorBtn.disabled = true;
+        }
+
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
