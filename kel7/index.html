@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentasi Lengkap Rangkaian RLC Seri</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary: #4361ee;
+      --secondary: #3a0ca3;
+      --accent: #f72585;
+      --dark: #212529;
+      --light: #f8f9fa;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+    
+    .presentation-container {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+    }
+    
+    .slide {
+      width: 90%;
+      max-width: 1200px;
+      min-height: 80vh;
+      margin: 40px auto;
+      padding: 50px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+      position: relative;
+      display: none;
+      overflow: hidden;
+    }
+    
+    .slide.active {
+      display: block;
+      animation: slideIn 0.6s ease-out;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .slide.editable {
+      cursor: text;
+      outline: 2px dashed rgba(67, 97, 238, 0.3);
+    }
+    
+    .slide-header {
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    
+    .slide-header::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 150px;
+      height: 3px;
+      background: var(--accent);
+    }
+    
+    h1 {
+      font-size: 2.8rem;
+      margin: 0;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+    
+    h2 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-top: 0;
+    }
+    
+    h3 {
+      font-size: 1.5rem;
+      color: var(--secondary);
+    }
+    
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    
+    .text-content {
+      line-height: 1.8;
+      font-size: 1.1rem;
+    }
+    
+    .image-content {
+      text-align: center;
+      position: relative;
+    }
+    
+    .circuit-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .circuit-img:hover {
+      transform: scale(1.02);
+    }
+    
+    ul.feature-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    
+    ul.feature-list li {
+      padding-left: 30px;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    
+    ul.feature-list li::before {
+      content: '⚡';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    
+    .formula-box {
+      background: var(--light);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid var(--primary);
+      font-family: 'Courier New', monospace;
+      margin: 25px 0;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+    
+    .controls {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: white;
+      padding: 15px 25px;
+      border-radius: 50px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+    
+    .controls button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .controls button i {
+      font-size: 1.2rem;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    
+    .controls button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+    }
+    
+    .slide-number {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      color: #666;
+      font-weight: 600;
+    }
+    
+    /* Editing Tools */
+    .edit-tools {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .edit-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 6px;
+      background: #f0f2f5;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .edit-btn:hover {
+      background: #e0e3e7;
+    }
+    
+    .edit-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .slide {
+        padding: 30px;
+      }
+      
+      h1 {
+        font-size: 2.2rem;
+      }
+      
+      h2 {
+        font-size: 1.8rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .slide {
+        padding: 25px 20px;
+        width: 95%;
+      }
+      
+      .controls {
+        bottom: 15px;
+        padding: 10px 15px;
+      }
+      
+      .controls button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+      }
+    }
+    
+    /* Custom Cursor for Editing */
+    body.edit-mode {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234361ee' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20L14 14L17 11L19 13L22 10L14 2L12 4L15 7L4 18L6 20L20 20Z'/%3E%3C/svg%3E"), auto;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="edit-tools">
+    <button class="edit-btn" id="toggleEdit">
+      <i class="fas fa-edit"></i> Edit Mode
+    </button>
+    <button class="edit-btn" id="addImageBtn">
+      <i class="fas fa-image"></i> Tambah Gambar
+    </button>
+    <button class="edit-btn" id="changeColorBtn">
+      <i class="fas fa-palette"></i> Ubah Warna
+    </button>
+  </div>
+
+  <div class="presentation-container">
+    <!-- Slide 1: Bab Awal - Pendahuluan -->
+    <div class="slide active editable">
+      <div class="slide-header">
+        <h1>Rangkaian RLC Seri: Analisis dan Aplikasi</h1>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Pendahuluan</h3>
+          <p>Rangkaian RLC seri merupakan salah satu konsep fundamental dalam elektronika dan fisika yang menggabungkan tiga komponen pasif: Resistor (R), Induktor (L), dan Kapasitor (C) dalam konfigurasi seri. Rangkaian ini menunjukkan perilaku dinamis yang menarik ketika diberi masukan arus bolak-balik (AC).</p>
+          
+          <h3>Latar Belakang</h3>
+          <p>Dalam sistem elektronika daya, telekomunikasi, dan instrumentasi, pemahaman tentang rangkaian RLC seri sangat penting untuk:</p>
+          <ul class="feature-list">
+            <li>Desain filter frekuensi</li>
+            <li>Analisis respons rangkaian terhadap sinyal AC</li>
+            <li>Pemahaman konsep resonansi</li>
+            <li>Aplikasi dalam sistem tuning radio</li>
+          </ul>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.electronics-tutorials.ws/accircuits/acp52.gif" alt="Ilustrasi Rangkaian RLC Seri" class="circuit-img">
+          <p class="img-caption"><em>Gambar 1: Diagram dasar rangkaian RLC seri dengan sumber AC</em></p>
+          
+          <div class="formula-box" style="margin-top: 20px;">
+            <strong>Persamaan Dasar:</strong><br>
+            Impedansi Total: Z = √(R² + (X<sub>L</sub> - X<sub>C</sub>)²)<br>
+            Reaktansi Induktif: X<sub>L</sub> = 2πfL<br>
+            Reaktansi Kapasitif: X<sub>C</sub> = 1/(2πfC)
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide-number">1/6</div>
+    </div>
+
+    <!-- Slide 2: Sifat Tegangan dan Arus -->
+    <div class="slide editable">
+      <div class="slide-header">
+        <h2>Sifat Tegangan dan Arus pada RLC Seri</h2>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Karakteristik Unik</h3>
+          <p>Rangkaian RLC seri menunjukkan beberapa sifat penting ketika dialiri arus bolak-balik:</p>
+          
+          <ul class="feature-list">
+            <li><strong>Arus Sama</strong> di semua komponen karena hubungan seri (I<sub>R</sub> = I<sub>L</sub> = I<sub>C</sub> = I<sub>total</sub>)</li>
+            <li><strong>Tegangan Berbeda</strong> pada masing-masing komponen:
+              <ul>
+                <li>Resistor: V<sub>R</sub> = I × R (sefase dengan arus)</li>
+                <li>Induktor: V<sub>L</sub> = I × X<sub>L</sub> (mendahului arus 90°)</li>
+                <li>Kapasitor: V<sub>C</sub> = I × X<sub>C</sub> (tertinggal 90° dari arus)</li>
+              </ul>
+            </li>
+            <li><strong>Tegangan Total</strong> merupakan jumlah vektor dari ketiga tegangan komponen</li>
+          </ul>
+          
+          <div class="formula-box">
+            V<sub>total</sub> = √(V<sub>R</sub>² + (V<sub>L</sub> - V<sub>C</sub>)²)
+          </div>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.allaboutcircuits.com/uploads/articles/series-RLC-voltage-current-phase-relationships.jpg" alt="Sifat Tegangan dan Arus" class="circuit-img">
+          <p class="img-caption"><em>Gambar 2: Perbedaan fase tegangan pada komponen RLC</em></p>
+        </div>
+      </div>
+      
+      <div class="slide-number">2/6</div>
+    </div>
+
+    <!-- Slide 3: Resonansi -->
+    <div class="slide editable">
+      <div class="slide-header">
+        <h2>Fenomena Resonansi pada RLC Seri</h2>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Konsep Resonansi</h3>
+          <p>Resonansi terjadi ketika reaktansi induktif dan kapasitif saling meniadakan (X<sub>L</sub> = X<sub>C</sub>), menyebabkan beberapa efek penting:</p>
+          
+          <ul class="feature-list">
+            <li><strong>Impedansi Minimum</strong>: Z = R (hanya resistansi saja)</li>
+            <li><strong>Arus Maksimum</strong>: I = V<sub>sumber</sub>/R</li>
+            <li><strong>Fase Nol</strong>: Tegangan dan arus sefase</li>
+            <li><strong>Frekuensi Resonansi</strong> bergantung pada nilai L dan C</li>
+          </ul>
+          
+          <div class="formula-box">
+            <strong>Frekuensi Resonansi:</strong><br>
+            f<sub>r</sub> = 1/(2π√(LC))
+          </div>
+          
+          <h3>Aplikasi Praktis</h3>
+          <ul>
+            <li>Penyetelan frekuensi radio dan TV</li>
+            <li>Filter selektif frekuensi</li>
+            <li>Pemanasan induksi</li>
+          </ul>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.electronics-tutorials.ws/accircuits/series-resonance.gif" alt="Kurva Resonansi" class="circuit-img">
+          <p class="img-caption"><em>Gambar 3: Kurva respons frekuensi pada resonansi</em></p>
+          
+          <img src="https://www.researchgate.net/publication/334632878/figure/fig1/AS:783989736136704@1563993791722/Series-RLC-circuit-for-electrical-resonance.png" alt="Aplikasi Resonansi" class="circuit-img" style="margin-top: 20px;">
+        </div>
+      </div>
+      
+      <div class="slide-number">3/6</div>
+    </div>
+
+    <!-- Slide 4: Diagram Fasor -->
+    <div class="slide editable">
+      <div class="slide-header">
+        <h2>Analisis Diagram Fasor RLC Seri</h2>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Representasi Fasor</h3>
+          <p>Diagram fasor membantu memvisualisasikan hubungan fase antara tegangan dan arus:</p>
+          
+          <ul class="feature-list">
+            <li><strong>Arus (I)</strong> sebagai referensi (sumbu horizontal)</li>
+            <li><strong>V<sub>R</sub></strong> sefase dengan arus</li>
+            <li><strong>V<sub>L</sub></strong> 90° mendahului arus (sumbu vertikal positif)</li>
+            <li><strong>V<sub>C</sub></strong> 90° tertinggal dari arus (sumbu vertikal negatif)</li>
+            <li><strong>V<sub>total</sub></strong> merupakan resultan vektor dari ketiga tegangan</li>
+          </ul>
+          
+          <div class="formula-box">
+            <strong>Sudut Fase (φ):</strong><br>
+            φ = tan<sup>-1</sup>((X<sub>L</sub> - X<sub>C</sub>)/R)
+          </div>
+          
+          <h3>Kasus Khusus</h3>
+          <ul>
+            <li>Dominasi induktif (X<sub>L</sub> > X<sub>C</sub>): φ positif</li>
+            <li>Dominasi kapasitif (X<sub>C</sub> > X<sub>L</sub>): φ negatif</li>
+            <li>Resonansi (X<sub>L</sub> = X<sub>C</sub>): φ = 0</li>
+          </ul>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.electronics-tutorials.ws/accircuits/acp53.gif" alt="Diagram Fasor" class="circuit-img">
+          <p class="img-caption"><em>Gambar 4: Diagram fasor untuk berbagai kondisi</em></p>
+        </div>
+      </div>
+      
+      <div class="slide-number">4/6</div>
+    </div>
+
+    <!-- Slide 5: Contoh Soal -->
+    <div class="slide editable">
+      <div class="slide-header">
+        <h2>Studi Kasus dan Contoh Soal</h2>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Contoh Soal</h3>
+          <p>Sebuah rangkaian RLC seri dengan R = 12Ω, L = 0.15H, C = 100μF dihubungkan dengan sumber AC 100V, 50Hz. Hitung:</p>
+          
+          <ol>
+            <li>Reaktansi induktif dan kapasitif</li>
+            <li>Impedansi total rangkaian</li>
+            <li>Arus efektif yang mengalir</li>
+            <li>Tegangan pada masing-masing komponen</li>
+            <li>Sudut fase antara tegangan dan arus</li>
+          </ol>
+          
+          <div class="formula-box">
+            <strong>Penyelesaian:</strong><br>
+            1. X<sub>L</sub> = 2πfL = 2π×50×0.15 ≈ 47.12Ω<br>
+            X<sub>C</sub> = 1/(2πfC) ≈ 31.83Ω<br><br>
+            2. Z = √(R² + (X<sub>L</sub> - X<sub>C</sub>)²) ≈ 15.62Ω<br><br>
+            3. I = V/Z ≈ 6.4A<br><br>
+            4. V<sub>R</sub> = I×R ≈ 76.8V, V<sub>L</sub> ≈ 301.6V, V<sub>C</sub> ≈ 203.7V<br><br>
+            5. φ ≈ tan<sup>-1</sup>(1.28) ≈ 51.5° (induktif)
+          </div>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.circuitstoday.com/wp-content/uploads/2010/04/Series-RLC-Circuit.jpg" alt="Contoh Soal" class="circuit-img">
+          <p class="img-caption"><em>Gambar 5: Rangkaian contoh soal</em></p>
+          
+          <div class="formula-box" style="margin-top: 20px;">
+            <strong>Catatan:</strong> Tegangan pada L dan C bisa melebihi tegangan sumber saat resonansi!
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide-number">5/6</div>
+    </div>
+
+    <!-- Slide 6: Simulasi dan Aplikasi -->
+    <div class="slide editable">
+      <div class="slide-header">
+        <h2>Simulasi dan Aplikasi Praktis</h2>
+      </div>
+      
+      <div class="content-grid">
+        <div class="text-content">
+          <h3>Simulasi Digital</h3>
+          <p>Beberapa tools untuk mensimulasikan rangkaian RLC seri:</p>
+          
+          <ul class="feature-list">
+            <li><strong>Proteus ISIS:</strong> Simulasi lengkap dengan visualisasi gelombang</li>
+            <li><strong>LTspice:</strong> Freeware dari Analog Devices untuk analisis rangkaian</li>
+            <li><strong>Falstad Circuit Simulator:</strong> Simulator online interaktif</li>
+            <li><strong>EveryCircuit:</strong> Aplikasi mobile dengan visualisasi real-time</li>
+          </ul>
+          
+          <h3>Aplikasi Industri</h3>
+          <ul>
+            <li>Filter frekuensi dalam sistem audio</li>
+            <li>Rangkaian tuning pada penerima radio</li>
+            <li>Kompensasi daya reaktif dalam sistem tenaga listrik</li>
+            <li>Sensor non-kontak berdasarkan perubahan induktansi/kapasitansi</li>
+          </ul>
+        </div>
+        
+        <div class="image-content">
+          <img src="https://www.electronics-notes.com/images/electronics-theory-lc-resonant-tuned-circuit-series-04.jpg" alt="Aplikasi RLC" class="circuit-img">
+          <p class="img-caption"><em>Gambar 6: Aplikasi RLC dalam radio tuning</em></p>
+          
+          <div class="formula-box" style="margin-top: 20px;">
+            <strong>Tip Simulasi:</strong> Amati perubahan fase dan amplitudo saat memvariasi frekuensi sumber!
+          </div>
+        </div>
+      </div>
+      
+      <div class="slide-number">6/6</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-outline" onclick="prevSlide()"><i class="fas fa-arrow-left"></i> Sebelumnya</button>
+    <button class="btn-primary" onclick="nextSlide()">Berikutnya <i class="fas fa-arrow-right"></i></button>
+  </div>
+
+  <script>
+    // Slide Management
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    
+    function showSlide(index) {
+      if (index >= totalSlides) index = 0;
+      if (index < 0) index = totalSlides - 1;
+      
+      slides.forEach(slide => slide.classList.remove('active'));
+      slides[index].classList.add('active');
+      currentSlide = index;
+      
+      // Update slide numbers
+      document.querySelectorAll('.slide-number').forEach((el, i) => {
+        el.textContent = `${i+1}/${totalSlides}`;
+      });
+    }
+    
+    function nextSlide() {
+      showSlide(currentSlide + 1);
+    }
+    
+    function prevSlide() {
+      showSlide(currentSlide - 1);
+    }
+    
+    // Keyboard Navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+    
+    // Editing Features
+    const toggleEditBtn = document.getElementById('toggleEdit');
+    const addImageBtn = document.getElementById('addImageBtn');
+    const changeColorBtn = document.getElementById('changeColorBtn');
+    let editMode = false;
+    
+    toggleEditBtn.addEventListener('click', function() {
+      editMode = !editMode;
+      document.body.classList.toggle('edit-mode', editMode);
+      toggleEditBtn.classList.toggle('active', editMode);
+      
+      slides.forEach(slide => {
+        if (editMode) {
+          slide.classList.add('editable');
+          slide.setAttribute('contenteditable', 'true');
+        } else {
+          slide.classList.remove('editable');
+          slide.removeAttribute('contenteditable');
+        }
+      });
+    });
+    
+    addImageBtn.addEventListener('click', function() {
+      if (!editMode) return;
+      
+      const imgUrl = prompt('Masukkan URL gambar:');
+      if (imgUrl) {
+        const currentSlide = document.querySelector('.slide.active');
+        const imageContent = currentSlide.querySelector('.image-content') || currentSlide.querySelector('.text-content');
+        
+        const newImg = document.createElement('img');
+        newImg.src = imgUrl;
+        newImg.className = 'circuit-img';
+        newImg.style.marginTop = '20px';
+        
+        const caption = document.createElement('p');
+        caption.className = 'img-caption';
+        caption.innerHTML = '<em>Gambar tambahan</em>';
+        
+        const container = document.createElement('div');
+        container.appendChild(newImg);
+        container.appendChild(caption);
+        
+        imageContent.appendChild(container);
+      }
+    });
+    
+    changeColorBtn.addEventListener('click', function() {
+      if (!editMode) return;
+      
+      const newColor = prompt('Masukkan kode warna utama (contoh: #3a86ff):', '#4361ee');
+      if (newColor) {
+        document.documentElement.style.setProperty('--primary', newColor);
+        document.documentElement.style.setProperty('--secondary', darkenColor(newColor, 20));
+      }
+    });
+    
+    function darkenColor(color, percent) {
+      // Simple function to darken a color
+      const num = parseInt(color.replace('#', ''), 16);
+      const amt = Math.round(2.55 * percent);
+      
+      const R = (num >> 16) - amt;
+      const G = (num >> 8 & 0x00FF) - amt;
+      const B = (num & 0x0000FF) - amt;
+      
+      return '#' + (
+        0x1000000 +
+        (R < 0 ? 0 : R) * 0x10000 +
+        (G < 0 ? 0 : G) * 0x100 +
+        (B < 0 ? 0 : B)
+      ).toString(16).slice(1);
+    }
+    
+    // Initialize
+    showSlide(0);
+  </script>
+</body>
+</html>
