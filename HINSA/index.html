@@ -1,348 +1,705 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Monitoring Hidroponik</title>
+    <title>HINSA - Sistem Monitoring Hidroponik</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #2c8a56;
+            --primary: #2e7d32;
+            --primary-light: #60ad5e;
+            --primary-dark: #005005;
             --secondary: #f5f5f5;
-            --text: #333;
+            --accent: #ff8f00;
+            --text: #212121;
+            --text-light: #757575;
             --warning: #ff9800;
             --danger: #f44336;
             --success: #4caf50;
+            --white: #ffffff;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
         }
+        
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: var(--text);
-            margin: 0;
-            padding: 15px;
-            background-color: var(--secondary);
+            background-color: #f9f9f9;
             font-size: 16px;
         }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
         header {
             background-color: var(--primary);
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .panel {
-            background-color: white;
-            border-radius: 5px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 15px;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        h1 {
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .logo h1 {
             font-size: 1.5rem;
+            font-weight: 700;
             margin: 0;
         }
-        h2 {
-            color: var(--primary);
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
-            font-size: 1.3rem;
-            margin-top: 0;
+        
+        .main-content {
+            padding: 2rem 0;
         }
-        h3 {
-            font-size: 1.1rem;
-            margin-top: 0;
+        
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
         }
-        button {
+        
+        .card-header {
             background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-            width: 100%;
-        }
-        button:hover {
-            background-color: #1f6a42;
-        }
-        button.secondary {
-            background-color: #607d8b;
-        }
-        button.warning {
-            background-color: var(--warning);
-        }
-        button.danger {
-            background-color: var(--danger);
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 10px 0;
-            font-size: 0.9rem;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .optimal-value {
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .param-card {
-            border-left: 4px solid var(--primary);
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #f9f9f9;
-        }
-        .week-selector {
+            color: var(--white);
+            padding: 1rem;
+            font-weight: 600;
             display: flex;
-            flex-wrap: wrap;
             justify-content: space-between;
-            margin: 15px 0;
-            gap: 5px;
+            align-items: center;
         }
-        .week {
-            text-align: center;
-            padding: 8px 5px;
-            border-radius: 5px;
-            flex: 1;
-            min-width: 80px;
-            cursor: pointer;
-            background-color: #eee;
-            font-size: 0.9rem;
-        }
-        .week.active {
-            background-color: var(--primary);
-            color: white;
-        }
-        .result-box {
-            background-color: #e8f5e9;
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 15px;
-            font-size: 0.95rem;
-        }
-        .input-section {
-            margin-bottom: 12px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-        .file-input {
-            margin: 12px 0;
-        }
-        .data-preview {
-            max-height: 200px;
-            overflow-y: auto;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            padding: 8px;
-            background-color: white;
-            font-size: 0.85rem;
-        }
-        .decision-info {
-            background-color: #e3f2fd;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
-        .tab-container {
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
             display: flex;
-            margin-bottom: 10px;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 1.5rem;
             overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
         }
+        
         .tab {
-            padding: 8px 12px;
+            padding: 0.75rem 1.25rem;
             cursor: pointer;
-            background-color: #eee;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
-            font-size: 0.95rem;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: var(--transition);
         }
+        
+        .tab:hover {
+            color: var(--primary);
+        }
+        
         .tab.active {
-            background-color: var(--primary);
-            color: white;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
         }
+        
         .tab-content {
             display: none;
         }
+        
         .tab-content.active {
             display: block;
         }
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin: 20px 0;
+        
+        .form-group {
+            margin-bottom: 1.25rem;
         }
-        .status-badge {
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+        }
+        
+        .btn {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-left: 8px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            transition: var(--transition);
         }
-        .status-good {
-            background-color: var(--success);
-            color: white;
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
         }
-        .status-warning {
+        
+        .btn-secondary {
+            background-color: #757575;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #616161;
+        }
+        
+        .btn-warning {
             background-color: var(--warning);
-            color: black;
         }
-        .status-danger {
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        .btn-danger {
             background-color: var(--danger);
-            color: white;
         }
-        .device-control {
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .device-control button {
-            flex: 1;
-            width: auto;
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
         }
-        .ota-status {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
+        
+        .alert-warning {
+            background-color: #fff8e1;
+            color: var(--warning);
+            border-left: 4px solid var(--warning);
         }
-        .ota-success {
+        
+        .alert-danger {
+            background-color: #ffebee;
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 992px) {
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        .sensor-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+        
+        .sensor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .sensor-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .sensor-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .sensor-label {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+        
+        .sensor-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .status-optimal {
             background-color: #e8f5e9;
             color: var(--success);
         }
-        .ota-error {
+        
+        .status-warning {
+            background-color: #fff8e1;
+            color: var(--warning);
+        }
+        
+        .status-danger {
             background-color: #ffebee;
             color: var(--danger);
         }
-        .harvest-notification {
-            background-color: #fff3e0;
-            border-left: 4px solid var(--warning);
-            padding: 10px;
-            margin: 10px 0;
-            display: none;
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1.5rem 0;
         }
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .button-group button {
-            flex: 1;
-            width: auto;
-        }
-        pre {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 0.85rem;
+        
+        .table-container {
             overflow-x: auto;
         }
-        .sensor-readings {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
         }
-        .sensor-card {
-            flex: 1;
-            min-width: 150px;
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
             background-color: #f5f5f5;
-            border-radius: 5px;
-            padding: 10px;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background-color: #fff8e1;
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        
+        .progress-container {
+            background-color: #e0e0e0;
+            border-radius: 50px;
+            height: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 50px;
+            transition: width 0.5s ease;
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .flex-between {
+            justify-content: space-between;
+        }
+        
+        .flex-center {
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .flex-column {
+            flex-direction: column;
+        }
+        
+        .gap-1 {
+            gap: 0.5rem;
+        }
+        
+        .gap-2 {
+            gap: 1rem;
+        }
+        
+        .mt-1 {
+            margin-top: 0.5rem;
+        }
+        
+        .mt-2 {
+            margin-top: 1rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1.5rem;
+        }
+        
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .text-center {
             text-align: center;
         }
-        .sensor-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 10px 0;
+        
+        .text-right {
+            text-align: right;
         }
-        .sensor-ppm .sensor-value {
-            color: #2196F3;
+        
+        .text-primary {
+            color: var(--primary);
         }
-        .sensor-ph .sensor-value {
-            color: #9C27B0;
+        
+        .text-warning {
+            color: var(--warning);
         }
-        .sensor-day .sensor-value {
-            color: #FF9800;
+        
+        .text-danger {
+            color: var(--danger);
         }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-muted {
+            color: var(--text-light);
+        }
+        
+        .fw-bold {
+            font-weight: 700;
+        }
+        
+        .fw-medium {
+            font-weight: 500;
+        }
+        
+        .board-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .board-option {
+            flex: 1;
+            min-width: 150px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .board-option:hover {
+            border-color: #bdbdbd;
+        }
+        
+        .board-option.selected {
+            border-color: var(--primary);
+            background-color: rgba(46, 125, 50, 0.05);
+        }
+        
+        .board-option img {
+            height: 60px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pin-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .pin-group {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .pin-group h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+        }
+        
+        .file-upload i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .data-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .week-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .week-option {
+            flex: 1;
+            min-width: 100px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .week-option:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .week-option.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        .week-option h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .week-option p {
+            margin: 0.25rem 0 0;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .parameter-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .parameter-table th, .parameter-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .parameter-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+        
+        .parameter-table .optimal-value {
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .harvest-notification {
+            background-color: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .harvest-notification i {
+            font-size: 2rem;
+            color: var(--warning);
+        }
+        
         .control-panel {
-            margin-top: 15px;
-            padding: 10px;
             background-color: #f9f9f9;
-            border-radius: 5px;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
         }
+        
         .control-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e0e0e0;
         }
+        
         .control-item:last-child {
             border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
         }
+        
+        .control-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
         .control-status {
             display: inline-block;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            margin-right: 5px;
         }
+        
         .status-on {
             background-color: var(--success);
         }
+        
         .status-off {
-            background-color: #ccc;
+            background-color: #bdbdbd;
         }
+        
         .toggle-switch {
             position: relative;
             display: inline-block;
             width: 50px;
             height: 24px;
         }
+        
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+        
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -354,6 +711,7 @@
             transition: .4s;
             border-radius: 24px;
         }
+        
         .toggle-slider:before {
             position: absolute;
             content: "";
@@ -365,308 +723,1781 @@
             transition: .4s;
             border-radius: 50%;
         }
+        
         input:checked + .toggle-slider {
             background-color: var(--primary);
         }
+        
         input:checked + .toggle-slider:before {
             transform: translateX(26px);
         }
-
-        /* Responsive adjustments */
-        @media (min-width: 600px) {
-            body {
-                padding: 20px;
-                font-size: 17px;
+        
+        .firmware-code {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-group .btn {
+            flex: 1;
+        }
+        
+        footer {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 2rem 0;
+            margin-top: 2rem;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
             }
-            .panel {
-                padding: 20px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--white);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .toast {
+            background-color: var(--white);
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s, fadeOut 0.5s 2.5s forwards;
+            position: relative;
+        }
+        
+        .toast-success {
+            border-left-color: var(--success);
+        }
+        
+        .toast-warning {
+            border-left-color: var(--warning);
+        }
+        
+        .toast-error {
+            border-left-color: var(--danger);
+        }
+        
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+        
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .toast-progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 100%;
+            animation: progress 3s linear forwards;
+        }
+        
+        .toast-success .toast-progress-bar {
+            background-color: var(--success);
+        }
+        
+        .toast-warning .toast-progress-bar {
+            background-color: var(--warning);
+        }
+        
+        .toast-error .toast-progress-bar {
+            background-color: var(--danger);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
-            h1 {
-                font-size: 1.8rem;
+            to {
+                transform: translateX(0);
+                opacity: 1;
             }
-            h2 {
-                font-size: 1.5rem;
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
             }
-            h3 {
-                font-size: 1.3rem;
+            to {
+                opacity: 0;
             }
-            button {
-                width: auto;
+        }
+        
+        @keyframes progress {
+            from {
+                width: 100%;
             }
-            .week {
-                padding: 10px;
-                font-size: 1rem;
+            to {
+                width: 0%;
             }
-            table {
-                font-size: 1rem;
-            }
+        }
+        
+        /* Loader */
+        .loader-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Sistem Monitoring Hidroponik</h1>
-            <p>Monitoring dan Kontrol PPM dan pH dengan ESP32-S3</p>
-        </header>
-
-        <div class="panel">
-            <h2>Fase Pertumbuhan Pakcoy</h2>
-            
-            <div class="week-selector">
-                <div class="week active" id="week1" data-week="1">
-                    <h3>Minggu 1</h3>
-                    <p>Hari 1-7</p>
+    <!-- Loader -->
+    <div class="loader-container" id="loader">
+        <div class="loader"></div>
+        <p>Memproses...</p>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>HINSA</h1>
                 </div>
-                <div class="week" id="week2" data-week="2">
-                    <h3>Minggu 2</h3>
-                    <p>Hari 8-14</p>
-                </div>
-                <div class="week" id="week3" data-week="3">
-                    <h3>Minggu 3</h3>
-                    <p>Hari 15-21</p>
-                </div>
-                <div class="week" id="week4" data-week="4">
-                    <h3>Minggu 4</h3>
-                    <p>Hari 22-25</p>
-                </div>
-            </div>
-            
-            <div class="param-card">
-                <h3>Parameter Optimal 25 Hari</h3>
-                <table>
-                    <tr>
-                        <th>Minggu</th>
-                        <th>Hari</th>
-                        <th>PPM Optimal</th>
-                        <th>pH Optimal</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>1-7</td>
-                        <td class="optimal-value">400-500</td>
-                        <td class="optimal-value">5.5-6.0</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>8-14</td>
-                        <td class="optimal-value">600-800</td>
-                        <td class="optimal-value">5.8-6.2</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>15-21</td>
-                        <td class="optimal-value">800-1000</td>
-                        <td class="optimal-value">6.0-6.3</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>22-25</td>
-                        <td class="optimal-value">1000-1200</td>
-                        <td class="optimal-value">6.0-6.5</td>
-                    </tr>
-                </table>
-                
-                <div class="harvest-notification" id="harvest-notification">
-                    <h3>🚀 Siap Panen!</h3>
-                    <p>Tanaman Pakcoy Anda telah mencapai hari ke-25 dan siap dipanen. Selamat!</p>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="growthChart"></canvas>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h2>Monitoring Realtime</h2>
-            
-            <div class="sensor-readings">
-                <div class="sensor-card sensor-ppm">
-                    <h3>PPM</h3>
-                    <div class="sensor-value" id="current-ppm">--</div>
-                    <div class="sensor-status" id="ppm-reading-status">Menunggu data...</div>
-                </div>
-                
-                <div class="sensor-card sensor-ph">
-                    <h3>pH</h3>
-                    <div class="sensor-value" id="current-ph">--</div>
-                    <div class="sensor-status" id="ph-reading-status">Menunggu data...</div>
-                </div>
-                
-                <div class="sensor-card sensor-day">
-                    <h3>Hari Ke</h3>
-                    <div class="sensor-value" id="current-day-display">1</div>
-                    <div class="sensor-status">dari 25 hari</div>
-                </div>
-            </div>
-            
-            <div class="control-panel">
-                <h3>Kontrol Perangkat</h3>
-                
-                <div class="control-item">
-                    <div>
-                        <span class="control-status" id="nutrient-status"></span>
-                        Pompa Nutrisi
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="nutrient-toggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="control-item">
-                    <div>
-                        <span class="control-status" id="ph-up-status"></span>
-                        Pompa pH Up
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="ph-up-toggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="control-item">
-                    <div>
-                        <span class="control-status" id="ph-down-status"></span>
-                        Pompa pH Down
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="ph-down-toggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
-                
-                <div class="control-item">
-                    <div>
-                        <span class="control-status" id="auto-status"></span>
-                        Mode Otomatis
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="auto-toggle" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+                <div>
+                    <span style="opacity: 0.8;">Sistem Monitoring Hidroponik Cerdas</span>
                 </div>
             </div>
         </div>
-
-        <div class="panel">
-            <h2>Kalkulator Parameter</h2>
-            
-            <div class="tab-container">
-                <div class="tab active" data-tab="manual">Input Manual</div>
-                <div class="tab" data-tab="csv">Import CSV</div>
-                <div class="tab" data-tab="device">Kontrol Perangkat</div>
-                <div class="tab" data-tab="firmware">Firmware</div>
-            </div>
-            
-            <div class="tab-content active" id="manual-tab">
-                <div class="param-card">
-                    <h3>Masukkan Data Monitoring</h3>
-                    
-                    <div class="input-section">
-                        <label for="current-week">Minggu ke:</label>
-                        <select id="current-week">
-                            <option value="1">Minggu 1 (Hari 1-7)</option>
-                            <option value="2">Minggu 2 (Hari 8-14)</option>
-                            <option value="3">Minggu 3 (Hari 15-21)</option>
-                            <option value="4">Minggu 4 (Hari 22-25)</option>
-                        </select>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <!-- Dashboard -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Monitoring</h2>
+                    <div>
+                        <span id="current-date-time"></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="grid grid-4">
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="sensor-label">PPM (Nutrisi)</div>
+                            <div class="sensor-value" id="current-ppm">--</div>
+                            <div class="sensor-status" id="ppm-status">Menunggu data...</div>
+                        </div>
+                        
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-vial"></i>
+                            </div>
+                            <div class="sensor-label">pH</div>
+                            <div class="sensor-value" id="current-ph">--</div>
+                            <div class="sensor-status" id="ph-status">Menunggu data...</div>
+                        </div>
+                        
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <div class="sensor-label">Hari Pertumbuhan</div>
+                            <div class="sensor-value" id="current-day">1</div>
+                            <div class="sensor-status status-optimal">dari 25 hari</div>
+                        </div>
+                        
+                        <div class="sensor-card">
+                            <div class="sensor-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="sensor-label">Suhu Air</div>
+                            <div class="sensor-value" id="current-temp">--</div>
+                            <div class="sensor-status" id="temp-status">Menunggu data...</div>
+                        </div>
                     </div>
                     
-                    <div class="input-section">
-                        <label for="ppm-values">Data PPM (pisahkan dengan koma):</label>
-                        <input type="text" id="ppm-values" placeholder="Contoh: 450.5, 480.2, 420.8, 490.3">
+                    <div class="progress-container mt-3">
+                        <div class="progress-bar" id="growth-progress" style="width: 4%;"></div>
+                    </div>
+                    <div class="flex flex-between">
+                        <span class="text-muted">Hari 1</span>
+                        <span class="text-muted">Hari 25 (Panen)</span>
                     </div>
                     
-                    <div class="input-section">
-                        <label for="ph-values">Data pH (pisahkan dengan koma):</label>
-                        <input type="text" id="ph-values" placeholder="Contoh: 5.72, 5.83, 5.91, 5.65">
+                    <div id="harvest-notification" class="harvest-notification" style="display: none;">
+                        <i class="fas fa-seedling"></i>
+                        <div>
+                            <h3>Siap Panen!</h3>
+                            <p>Tanaman Pakcoy Anda telah mencapai hari ke-25 dan siap dipanen. Selamat!</p>
+                        </div>
                     </div>
                     
-                    <button id="calculate-btn">Hitung Parameter Optimal</button>
+                    <div class="chart-container mt-3">
+                        <canvas id="growthChart"></canvas>
+                    </div>
                 </div>
             </div>
             
-            <div class="tab-content" id="csv-tab">
-                <div class="param-card">
-                    <h3>Import Data dari CSV</h3>
-                    
-                    <div class="file-input">
-                        <label for="csv-file">Pilih File CSV:</label>
-                        <input type="file" id="csv-file" accept=".csv">
+            <!-- Control Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-sliders-h"></i> Panel Kontrol</h2>
+                </div>
+                <div class="card-body">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="setup">Setup Perangkat</div>
+                        <div class="tab" data-tab="analysis">Analisis Data</div>
+                        <div class="tab" data-tab="control">Kontrol Perangkat</div>
+                        <div class="tab" data-tab="firmware">Firmware & OTA</div>
+                        <div class="tab" data-tab="export">Ekspor Data</div>
                     </div>
                     
-                    <div class="input-section">
-                        <label for="csv-week">Pilih Minggu untuk Dianalisis:</label>
-                        <select id="csv-week">
-                            <option value="1">Minggu 1 (Hari 1-7)</option>
-                            <option value="2">Minggu 2 (Hari 8-14)</option>
-                            <option value="3">Minggu 3 (Hari 15-21)</option>
-                            <option value="4">Minggu 4 (Hari 22-25)</option>
-                        </select>
+                    <!-- Setup Tab -->
+                    <div class="tab-content active" id="setup-tab">
+                        <h3 class="mb-2">Pilih Jenis Board</h3>
+                        <div class="board-selector">
+                            <div class="board-option selected" data-board="esp32s3">
+                                <img src="https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/docs/_static/esp32s3.jpg" alt="ESP32-S3">
+                                <h4>ESP32-S3</h4>
+                                <p class="text-muted">Direkomendasikan</p>
+                            </div>
+                            <div class="board-option" data-board="esp32">
+                                <img src="https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/docs/_static/esp32.jpg" alt="ESP32">
+                                <h4>ESP32</h4>
+                            </div>
+                            <div class="board-option" data-board="esp8266">
+                                <img src="https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/docs/_static/esp8266.jpg" alt="ESP8266">
+                                <h4>ESP8266 / NodeMCU</h4>
+                            </div>
+                        </div>
+                        
+                        <h3 class="mb-2 mt-3">Konfigurasi Pin</h3>
+                        <div class="grid">
+                            <div class="pin-group">
+                                <h4>Sensor PPM/TDS</h4>
+                                <div class="form-group">
+                                    <label for="ppm-pin">Pin Analog</label>
+                                    <select id="ppm-pin">
+                                        <option value="34">GPIO34 (ADC1_6)</option>
+                                        <option value="35">GPIO35 (ADC1_7)</option>
+                                        <option value="36">GPIO36 (ADC1_0)</option>
+                                        <option value="39">GPIO39 (ADC1_3)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="pin-group">
+                                <h4>Sensor pH</h4>
+                                <div class="form-group">
+                                    <label for="ph-pin">Pin Analog</label>
+                                    <select id="ph-pin">
+                                        <option value="35">GPIO35 (ADC1_7)</option>
+                                        <option value="34">GPIO34 (ADC1_6)</option>
+                                        <option value="36">GPIO36 (ADC1_0)</option>
+                                        <option value="39">GPIO39 (ADC1_3)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="pin-group">
+                                <h4>Pompa Nutrisi</h4>
+                                <div class="form-group">
+                                    <label for="nutrient-pin">Pin Digital</label>
+                                    <select id="nutrient-pin">
+                                        <option value="25">GPIO25</option>
+                                        <option value="26">GPIO26</option>
+                                        <option value="27">GPIO27</option>
+                                        <option value="32">GPIO32</option>
+                                        <option value="33">GPIO33</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="pin-group">
+                                <h4>Pompa pH Up</h4>
+                                <div class="form-group">
+                                    <label for="ph-up-pin">Pin Digital</label>
+                                    <select id="ph-up-pin">
+                                        <option value="26">GPIO26</option>
+                                        <option value="25">GPIO25</option>
+                                        <option value="27">GPIO27</option>
+                                        <option value="32">GPIO32</option>
+                                        <option value="33">GPIO33</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="pin-group">
+                                <h4>Pompa pH Down</h4>
+                                <div class="form-group">
+                                    <label for="ph-down-pin">Pin Digital</label>
+                                    <select id="ph-down-pin">
+                                        <option value="27">GPIO27</option>
+                                        <option value="25">GPIO25</option>
+                                        <option value="26">GPIO26</option>
+                                        <option value="32">GPIO32</option>
+                                        <option value="33">GPIO33</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="pin-group">
+                                <h4>Sensor Suhu</h4>
+                                <div class="form-group">
+                                    <label for="temp-pin">Pin Digital</label>
+                                    <select id="temp-pin">
+                                        <option value="32">GPIO32</option>
+                                        <option value="33">GPIO33</option>
+                                        <option value="25">GPIO25</option>
+                                        <option value="26">GPIO26</option>
+                                        <option value="27">GPIO27</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="wifi-ssid">WiFi SSID</label>
+                            <input type="text" id="wifi-ssid" placeholder="Masukkan nama WiFi">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="wifi-password">WiFi Password</label>
+                            <input type="password" id="wifi-password" placeholder="Masukkan password WiFi">
+                        </div>
+                        
+                        <button id="save-config-btn" class="btn btn-icon">
+                            <i class="fas fa-save"></i> Simpan Konfigurasi
+                        </button>
                     </div>
                     
-                    <div class="data-preview" id="csv-preview">
-                        <p>Data akan muncul di sini setelah file dipilih</p>
+                    <!-- Analysis Tab -->
+                    <div class="tab-content" id="analysis-tab">
+                        <h3 class="mb-2">Analisis Data 25 Hari</h3>
+                        
+                        <div class="week-selector">
+                            <div class="week-option active" data-week="1">
+                                <h4>Minggu 1</h4>
+                                <p>Hari 1-7</p>
+                            </div>
+                            <div class="week-option" data-week="2">
+                                <h4>Minggu 2</h4>
+                                <p>Hari 8-14</p>
+                            </div>
+                            <div class="week-option" data-week="3">
+                                <h4>Minggu 3</h4>
+                                <p>Hari 15-21</p>
+                            </div>
+                            <div class="week-option" data-week="4">
+                                <h4>Minggu 4</h4>
+                                <p>Hari 22-25</p>
+                            </div>
+                        </div>
+                        
+                        <div class="parameter-table-container">
+                            <table class="parameter-table">
+                                <thead>
+                                    <tr>
+                                        <th>Minggu</th>
+                                        <th>Hari</th>
+                                        <th>PPM Optimal</th>
+                                        <th>pH Optimal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>1-7</td>
+                                        <td class="optimal-value">400-500</td>
+                                        <td class="optimal-value">5.5-6.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>8-14</td>
+                                        <td class="optimal-value">600-800</td>
+                                        <td class="optimal-value">5.8-6.2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>15-21</td>
+                                        <td class="optimal-value">800-1000</td>
+                                        <td class="optimal-value">6.0-6.3</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>22-25</td>
+                                        <td class="optimal-value">1000-1200</td>
+                                        <td class="optimal-value">6.0-6.5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="grid mt-3">
+                            <div>
+                                <h3 class="mb-2">Input Manual</h3>
+                                <div class="form-group">
+                                    <label for="manual-ppm">Data PPM (pisahkan dengan koma)</label>
+                                    <input type="text" id="manual-ppm" placeholder="Contoh: 450.5, 480.2, 420.8, 490.3">
+                                </div>
+                                <div class="form-group">
+                                    <label for="manual-ph">Data pH (pisahkan dengan koma)</label>
+                                    <input type="text" id="manual-ph" placeholder="Contoh: 5.72, 5.83, 5.91, 5.65">
+                                </div>
+                                <button id="analyze-manual-btn" class="btn btn-icon">
+                                    <i class="fas fa-calculator"></i> Analisis Data
+                                </button>
+                            </div>
+                            
+                            <div>
+                                <h3 class="mb-2">Import CSV</h3>
+                                <div class="file-upload" id="csv-upload-container">
+                                    <i class="fas fa-file-csv"></i>
+                                    <p>Klik atau seret file CSV di sini</p>
+                                    <span class="text-muted">Format: tanggal, ppm, ph, suhu</span>
+                                    <input type="file" id="csv-file" accept=".csv">
+                                </div>
+                                <div class="data-preview" id="csv-preview" style="display: none;">
+                                    <p>Data akan muncul di sini setelah file dipilih</p>
+                                </div>
+                                <button id="analyze-csv-btn" class="btn btn-icon mt-2" disabled>
+                                    <i class="fas fa-chart-line"></i> Analisis CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="analysis-result" class="mt-3" style="display: none;">
+                            <h3 class="mb-2">Hasil Analisis</h3>
+                            <div class="grid">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2>Parameter Optimal</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="grid">
+                                            <div>
+                                                <h4>PPM (Nutrisi)</h4>
+                                                <div class="sensor-value" id="result-ppm">450.5</div>
+                                                <div class="sensor-status status-optimal" id="result-ppm-status">Optimal</div>
+                                            </div>
+                                            <div>
+                                                <h4>pH</h4>
+                                                <div class="sensor-value" id="result-ph">5.85</div>
+                                                <div class="sensor-status status-optimal" id="result-ph-status">Optimal</div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-success mt-2">
+                                            <i class="fas fa-info-circle"></i>
+                                            <div id="analysis-decision">Semua parameter dalam range optimal</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h2>Rekomendasi 25 Hari</h2>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>Berdasarkan analisis, berikut rekomendasi parameter untuk 25 hari:</p>
+                                        <div class="table-container mt-2">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Hari</th>
+                                                        <th>PPM</th>
+                                                        <th>pH</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="recommendation-table">
+                                                    <!-- Filled by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button id="upload-recommendation-btn" class="btn btn-icon mt-2">
+                                            <i class="fas fa-upload"></i> Upload ke Perangkat
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
-                    <button id="analyze-btn" disabled>Analisis Data CSV</button>
+                    <!-- Control Tab -->
+                    <div class="tab-content" id="control-tab">
+                        <div class="grid">
+                            <div>
+                                <h3 class="mb-2">Koneksi Perangkat</h3>
+                                <div class="form-group">
+                                    <label for="device-ip">Alamat IP Perangkat</label>
+                                    <input type="text" id="device-ip" placeholder="Contoh: 192.168.1.100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="device-port">Port</label>
+                                    <input type="number" id="device-port" value="80">
+                                </div>
+                                <div class="btn-group">
+                                    <button id="connect-btn" class="btn btn-icon">
+                                        <i class="fas fa-wifi"></i> Hubungkan
+                                    </button>
+                                    <button id="disconnect-btn" class="btn btn-secondary btn-icon" disabled>
+                                        <i class="fas fa-power-off"></i> Putuskan
+                                    </button>
+                                </div>
+                                <div id="connection-status" class="alert alert-warning mt-2" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <div>Tidak terhubung ke perangkat</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="mb-2">Pengaturan Hari</h3>
+                                <div class="form-group">
+                                    <label for="day-input">Hari Ke-</label>
+                                    <input type="number" id="day-input" min="1" max="25" value="1">
+                                </div>
+                                <p class="text-muted mb-2">Atur hari pertumbuhan tanaman (1-25)</p>
+                                <button id="set-day-btn" class="btn btn-icon" disabled>
+                                    <i class="fas fa-calendar-check"></i> Atur Hari
+                                </button>
+                                <button id="reset-day-btn" class="btn btn-warning btn-icon mt-2" disabled>
+                                    <i class="fas fa-redo"></i> Reset ke Hari 1
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-panel mt-3">
+                            <h3 class="mb-2">Kontrol Manual Perangkat</h3>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span class="control-status" id="auto-status"></span>
+                                    Mode Otomatis
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="auto-toggle" checked disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span class="control-status" id="nutrient-status"></span>
+                                    Pompa Nutrisi
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="nutrient-toggle" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span class="control-status" id="ph-up-status"></span>
+                                    Pompa pH Up
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="ph-up-toggle" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span class="control-status" id="ph-down-status"></span>
+                                    Pompa pH Down
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="ph-down-toggle" disabled>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h3 class="mb-2">Parameter Saat Ini</h3>
+                            <div class="grid">
+                                <div class="form-group">
+                                    <label for="current-ppm-min">PPM Minimum</label>
+                                    <input type="number" id="current-ppm-min" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="current-ppm-max">PPM Maksimum</label>
+                                    <input type="number" id="current-ppm-max" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="current-ph-min">pH Minimum</label>
+                                    <input type="number" id="current-ph-min" step="0.1" disabled>
+                                </div>
+                                <div class="form-group">
+                                    <label for="current-ph-max">pH Maksimum</label>
+                                    <input type="number" id="current-ph-max" step="0.1" disabled>
+                                </div>
+                            </div>
+                            <button id="send-params-btn" class="btn btn-icon mt-2" disabled>
+                                <i class="fas fa-paper-plane"></i> Kirim Parameter ke Perangkat
+                            </button>
+                        </div>
+                    </div>
                     
-                    <div class="button-group">
-                        <button id="export-json-btn" class="secondary" disabled>Ekspor ke JSON</button>
-                        <button id="export-csv-btn" class="secondary" disabled>Ekspor ke CSV</button>
+                    <!-- Firmware Tab -->
+                    <div class="tab-content" id="firmware-tab">
+                        <div class="grid">
+                            <div>
+                                <h3 class="mb-2">OTA Update</h3>
+                                <div class="form-group">
+                                    <label for="ota-file">File Firmware (.bin)</label>
+                                    <input type="file" id="ota-file" accept=".bin">
+                                </div>
+                                <p class="text-muted mb-2">Pilih file firmware (.bin) untuk diupload ke perangkat</p>
+                                <button id="ota-btn" class="btn btn-warning btn-icon" disabled>
+                                    <i class="fas fa-upload"></i> Update OTA
+                                </button>
+                                <div id="ota-status" class="alert alert-success mt-2" style="display: none;">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>Update berhasil! Perangkat akan restart.</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="mb-2">Konversi CSV ke Firmware</h3>
+                                <div class="file-upload" id="csv-to-bin-container">
+                                    <i class="fas fa-file-csv"></i>
+                                    <p>Klik atau seret file CSV di sini</p>
+                                    <span class="text-muted">File CSV hasil analisis</span>
+                                    <input type="file" id="csv-to-bin-file" accept=".csv">
+                                </div>
+                                <button id="convert-to-bin-btn" class="btn btn-icon mt-2" disabled>
+                                    <i class="fas fa-cogs"></i> Konversi ke .bin
+                                </button>
+                                <button id="download-bin-btn" class="btn btn-secondary btn-icon mt-2" disabled>
+                                    <i class="fas fa-download"></i> Download .bin
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <h3 class="mb-2 mt-3">Firmware ESP32-S3</h3>
+                        <p class="mb-2">Kode firmware untuk ESP32-S3 dengan konfigurasi saat ini:</p>
+                        <div class="firmware-code" id="firmware-code">
+// Kode firmware akan muncul di sini setelah konfigurasi disimpan
+                        </div>
+                        <div class="btn-group mt-2">
+                            <button id="copy-firmware-btn" class="btn btn-secondary btn-icon">
+                                <i class="fas fa-copy"></i> Salin Kode
+                            </button>
+                            <button id="download-firmware-btn" class="btn btn-secondary btn-icon">
+                                <i class="fas fa-download"></i> Download sebagai File
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Export Tab -->
+                    <div class="tab-content" id="export-tab">
+                        <h3 class="mb-2">Ekspor Data Monitoring</h3>
+                        <p>Ekspor data monitoring untuk analisis lebih lanjut atau dokumentasi:</p>
+                        
+                        <div class="grid mt-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>Data Harian</h2>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label for="export-date-range">Rentang Tanggal</label>
+                                        <select id="export-date-range">
+                                            <option value="today">Hari Ini</option>
+                                            <option value="week">7 Hari Terakhir</option>
+                                            <option value="month">30 Hari Terakhir</option>
+                                            <option value="all">Semua Data</option>
+                                        </select>
+                                    </div>
+                                    <div class="btn-group mt-2">
+                                        <button id="export-csv-btn" class="btn btn-secondary btn-icon">
+                                            <i class="fas fa-file-csv"></i> Ekspor CSV
+                                        </button>
+                                        <button id="export-json-btn" class="btn btn-secondary btn-icon">
+                                            <i class="fas fa-file-code"></i> Ekspor JSON
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>Laporan Panen</h2>
+                                </div>
+                                <div class="card-body">
+                                    <p>Buat laporan lengkap setelah panen:</p>
+                                    <div class="form-group mt-2">
+                                        <label for="harvest-notes">Catatan Panen</label>
+                                        <textarea id="harvest-notes" rows="3" placeholder="Masukkan catatan tentang hasil panen..."></textarea>
+                                    </div>
+                                    <button id="generate-report-btn" class="btn btn-icon mt-2">
+                                        <i class="fas fa-file-alt"></i> Buat Laporan Panen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h2>Pratinjau Data</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Tanggal</th>
+                                                <th>Waktu</th>
+                                                <th>Hari Ke</th>
+                                                <th>PPM</th>
+                                                <th>pH</th>
+                                                <th>Suhu</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-preview-table">
+                                            <tr>
+                                                <td colspan="7" class="text-center">Tidak ada data untuk ditampilkan</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="tab-content" id="device-tab">
-                <div class="param-card">
-                    <h3>Kontrol Perangkat ESP32-S3</h3>
-                    
-                    <div class="input-section">
-                        <label for="device-ip">Alamat IP ESP32-S3:</label>
-                        <input type="text" id="device-ip" placeholder="192.168.1.100">
-                    </div>
-                    
-                    <div class="input-section">
-                        <label for="device-port">Port:</label>
-                        <input type="number" id="device-port" value="80">
-                    </div>
-                    
-                    <div class="device-control">
-                        <button id="connect-btn">Hubungkan</button>
-                        <button id="disconnect-btn" class="secondary" disabled>Putuskan</button>
-                    </div>
-                    
-                    <div class="input-section">
-                        <label for="ota-file">File Firmware (bin):</label>
-                        <input type="file" id="ota-file" accept=".bin">
-                    </div>
-                    
-                    <button id="ota-btn" class="warning" disabled>Update OTA</button>
-                    
-                    <div id="ota-status" class="ota-status"></div>
-                    
-                    <div class="input-section" style="margin-top: 20px;">
-                        <label for="day-input">Hari Ke:</label>
-                        <input type="number" id="day-input" min="1" max="25" value="1">
-                    </div>
-                    
-                    <button id="send-params-btn" disabled>Kirim Parameter ke Perangkat</button>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>HINSA</h3>
+                    <p>Sistem Monitoring Hidroponik Cerdas untuk petani modern.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Tautan</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Beranda</a></li>
+                        <li><a href="#">Dokumentasi</a></li>
+                        <li><a href="#">Panduan Pengguna</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Kontak</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-envelope"></i> info@hinsa.id</a></li>
+                        <li><a href="#"><i class="fas fa-phone"></i> +62 812 3456 7890</a></li>
+                    </ul>
                 </div>
             </div>
             
-            <div class="tab-content" id="firmware-tab">
-                <div class="param-card">
-                    <h3>Firmware ESP32-S3</h3>
-                    <p>Salin kode berikut ke Arduino IDE untuk mengupload ke ESP32-S3:</p>
+            <div class="copyright">
+                &copy; 2025 HINSA - Sistem Monitoring Hidroponik Cerdas. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script>
+        // Global variables
+        const weekParameters = {
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5 }
+        };
+        
+        let currentWeek = 1;
+        let currentDay = 1;
+        let deviceConnected = false;
+        let csvData = null;
+        let growthChart = null;
+        let recommendationData = [];
+        let selectedBoard = 'esp32s3';
+        
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const weekOptions = document.querySelectorAll('.week-option');
+        const boardOptions = document.querySelectorAll('.board-option');
+        const currentDateTimeEl = document.getElementById('current-date-time');
+        const growthProgressEl = document.getElementById('growth-progress');
+        const harvestNotificationEl = document.getElementById('harvest-notification');
+        const currentPpmEl = document.getElementById('current-ppm');
+        const currentPhEl = document.getElementById('current-ph');
+        const currentDayEl = document.getElementById('current-day');
+        const currentTempEl = document.getElementById('current-temp');
+        const ppmStatusEl = document.getElementById('ppm-status');
+        const phStatusEl = document.getElementById('ph-status');
+        const tempStatusEl = document.getElementById('temp-status');
+        const csvFileInput = document.getElementById('csv-file');
+        const csvPreviewEl = document.getElementById('csv-preview');
+        const analyzeCsvBtn = document.getElementById('analyze-csv-btn');
+        const analyzeManualBtn = document.getElementById('analyze-manual-btn');
+        const manualPpmInput = document.getElementById('manual-ppm');
+        const manualPhInput = document.getElementById('manual-ph');
+        const analysisResultEl = document.getElementById('analysis-result');
+        const resultPpmEl = document.getElementById('result-ppm');
+        const resultPhEl = document.getElementById('result-ph');
+        const resultPpmStatusEl = document.getElementById('result-ppm-status');
+        const resultPhStatusEl = document.getElementById('result-ph-status');
+        const analysisDecisionEl = document.getElementById('analysis-decision');
+        const recommendationTableEl = document.getElementById('recommendation-table');
+        const uploadRecommendationBtn = document.getElementById('upload-recommendation-btn');
+        const deviceIpInput = document.getElementById('device-ip');
+        const devicePortInput = document.getElementById('device-port');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const connectionStatusEl = document.getElementById('connection-status');
+        const dayInput = document.getElementById('day-input');
+        const setDayBtn = document.getElementById('set-day-btn');
+        const resetDayBtn = document.getElementById('reset-day-btn');
+        const autoToggle = document.getElementById('auto-toggle');
+        const nutrientToggle = document.getElementById('nutrient-toggle');
+        const phUpToggle = document.getElementById('ph-up-toggle');
+        const phDownToggle = document.getElementById('ph-down-toggle');
+        const autoStatusEl = document.getElementById('auto-status');
+        const nutrientStatusEl = document.getElementById('nutrient-status');
+        const phUpStatusEl = document.getElementById('ph-up-status');
+        const phDownStatusEl = document.getElementById('ph-down-status');
+        const currentPpmMinInput = document.getElementById('current-ppm-min');
+        const currentPpmMaxInput = document.getElementById('current-ppm-max');
+        const currentPhMinInput = document.getElementById('current-ph-min');
+        const currentPhMaxInput = document.getElementById('current-ph-max');
+        const sendParamsBtn = document.getElementById('send-params-btn');
+        const otaFileInput = document.getElementById('ota-file');
+        const otaBtn = document.getElementById('ota-btn');
+        const otaStatusEl = document.getElementById('ota-status');
+        const csvToBinFileInput = document.getElementById('csv-to-bin-file');
+        const convertToBinBtn = document.getElementById('convert-to-bin-btn');
+        const downloadBinBtn = document.getElementById('download-bin-btn');
+        const firmwareCodeEl = document.getElementById('firmware-code');
+        const copyFirmwareBtn = document.getElementById('copy-firmware-btn');
+        const downloadFirmwareBtn = document.getElementById('download-firmware-btn');
+        const exportDateRangeSelect = document.getElementById('export-date-range');
+        const exportCsvBtn = document.getElementById('export-csv-btn');
+        const exportJsonBtn = document.getElementById('export-json-btn');
+        const harvestNotesTextarea = document.getElementById('harvest-notes');
+        const generateReportBtn = document.getElementById('generate-report-btn');
+        const dataPreviewTableEl = document.getElementById('data-preview-table');
+        const saveConfigBtn = document.getElementById('save-config-btn');
+        const loaderEl = document.getElementById('loader');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+        
+        function init() {
+            setupEventListeners();
+            updateDateTime();
+            renderGrowthChart();
+            simulateSensorData();
+            setInterval(updateDateTime, 1000);
+            setInterval(simulateSensorData, 5000);
+            
+            // Show welcome toast
+            setTimeout(() => {
+                showToast('Selamat datang di HINSA - Sistem Monitoring Hidroponik Cerdas', 'success');
+            }, 1000);
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
                     
-                    <div class="data-preview">
-                        <pre id="firmware-code">
-/*
- * Sistem Monitoring dan Kontrol Hidroponik
- * ESP32-S3 Firmware
+                    // Update tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Week selection
+            weekOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    weekOptions.forEach(w => w.classList.remove('active'));
+                    this.classList.add('active');
+                    currentWeek = parseInt(this.dataset.week);
+                    updateDayRange();
+                });
+            });
+            
+            // Board selection
+            boardOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    boardOptions.forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedBoard = this.dataset.board;
+                    updatePinOptions();
+                });
+            });
+            
+            // CSV file upload
+            csvFileInput.addEventListener('change', handleCSVUpload);
+            document.getElementById('csv-upload-container').addEventListener('click', function() {
+                csvFileInput.click();
+            });
+            
+            // CSV to BIN file upload
+            csvToBinFileInput.addEventListener('change', handleCSVToBinUpload);
+            document.getElementById('csv-to-bin-container').addEventListener('click', function() {
+                csvToBinFileInput.click();
+            });
+            
+            // Analysis buttons
+            analyzeManualBtn.addEventListener('click', analyzeManualData);
+            analyzeCsvBtn.addEventListener('click', analyzeCSVData);
+            uploadRecommendationBtn.addEventListener('click', uploadRecommendation);
+            
+            // Device connection
+            connectBtn.addEventListener('click', connectToDevice);
+            disconnectBtn.addEventListener('click', disconnectFromDevice);
+            
+            // Device control
+            setDayBtn.addEventListener('click', setDay);
+            resetDayBtn.addEventListener('click', resetDay);
+            sendParamsBtn.addEventListener('click', sendParameters);
+            
+            // Device toggles
+            autoToggle.addEventListener('change', toggleAuto);
+            nutrientToggle.addEventListener('change', toggleNutrient);
+            phUpToggle.addEventListener('change', togglePhUp);
+            phDownToggle.addEventListener('change', togglePhDown);
+            
+            // OTA update
+            otaBtn.addEventListener('click', performOtaUpdate);
+            convertToBinBtn.addEventListener('click', convertToBin);
+            downloadBinBtn.addEventListener('click', downloadBin);
+            
+            // Firmware actions
+            copyFirmwareBtn.addEventListener('click', copyFirmwareCode);
+            downloadFirmwareBtn.addEventListener('click', downloadFirmware);
+            saveConfigBtn.addEventListener('click', saveConfiguration);
+            
+            // Export actions
+            exportCsvBtn.addEventListener('click', exportToCsv);
+            exportJsonBtn.addEventListener('click', exportToJson);
+            generateReportBtn.addEventListener('click', generateReport);
+        }
+        
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            currentDateTimeEl.textContent = now.toLocaleDateString('id-ID', options);
+        }
+        
+        // Update day range based on selected week
+        function updateDayRange() {
+            let minDay = 1, maxDay = 7;
+            
+            if (currentWeek === 2) {
+                minDay = 8;
+                maxDay = 14;
+            } else if (currentWeek === 3) {
+                minDay = 15;
+                maxDay = 21;
+            } else if (currentWeek === 4) {
+                minDay = 22;
+                maxDay = 25;
+            }
+            
+            dayInput.min = minDay;
+            dayInput.max = maxDay;
+            
+            // Update parameters display
+            const params = weekParameters[currentWeek];
+            currentPpmMinInput.value = params.ppmMin;
+            currentPpmMaxInput.value = params.ppmMax;
+            currentPhMinInput.value = params.phMin;
+            currentPhMaxInput.value = params.phMax;
+        }
+        
+        // Update pin options based on selected board
+        function updatePinOptions() {
+            // This would be implemented to change available pins based on board selection
+            console.log(`Board changed to: ${selectedBoard}`);
+            
+            // For demonstration, we'll just show a message
+            showToast(`Board changed to ${selectedBoard.toUpperCase()}`, 'success');
+        }
+        
+        // Handle CSV file upload
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            csvPreviewEl.style.display = 'block';
+            csvPreviewEl.innerHTML = "<p>Memproses file CSV...</p>";
+            analyzeCsvBtn.disabled = true;
+            
+            // Simulate CSV parsing
+            setTimeout(() => {
+                csvData = [
+                    { date: '2025-05-10', ppm: '450.5', ph: '5.72', temp: '25.3' },
+                    { date: '2025-05-11', ppm: '480.2', ph: '5.83', temp: '25.1' },
+                    { date: '2025-05-12', ppm: '420.8', ph: '5.91', temp: '24.8' }
+                ];
+                
+                // Display sample data
+                let previewHTML = `<p>Data CSV (${csvData.length} baris):</p>`;
+                previewHTML += `<div class="table-container"><table>
+                    <tr><th>Tanggal</th><th>PPM</th><th>pH</th><th>Suhu</th></tr>`;
+                
+                // Show rows
+                for (const row of csvData) {
+                    previewHTML += `<tr>
+                        <td>${row.date}</td>
+                        <td>${row.ppm}</td>
+                        <td>${row.ph}</td>
+                        <td>${row.temp}</td>
+                    </tr>`;
+                }
+                
+                previewHTML += "</table></div>";
+                csvPreviewEl.innerHTML = previewHTML;
+                
+                analyzeCsvBtn.disabled = false;
+                showToast('File CSV berhasil diproses', 'success');
+            }, 1000);
+        }
+        
+        // Handle CSV to BIN file upload
+        function handleCSVToBinUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            convertToBinBtn.disabled = false;
+            showToast('File CSV berhasil diunggah', 'success');
+        }
+        
+        // Analyze manual data
+        function analyzeManualData() {
+            const ppmValues = parseInputValues(manualPpmInput.value);
+            const phValues = parseInputValues(manualPhInput.value);
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                showToast('Masukkan data PPM dan pH yang valid!', 'warning');
+                return;
+            }
+            
+            performAnalysis(ppmValues, phValues);
+        }
+        
+        // Analyze CSV data
+        function analyzeCSVData() {
+            if (!csvData) {
+                showToast('Tidak ada data CSV yang valid untuk dianalisis', 'warning');
+                return;
+            }
+            
+            // Extract ppm and ph values
+            const ppmValues = csvData.map(row => parseFloat(row.ppm));
+            const phValues = csvData.map(row => parseFloat(row.ph));
+            
+            performAnalysis(ppmValues, phValues);
+        }
+        
+        // Perform analysis on data
+        function performAnalysis(ppmValues, phValues) {
+            showLoader();
+            
+            setTimeout(() => {
+                const params = weekParameters[currentWeek];
+                
+                // Calculate median values (more robust than average)
+                const medianPpm = calculateMedian(ppmValues);
+                const medianPh = calculateMedian(phValues);
+                
+                // Apply decision tree analysis
+                const ppmAnalysis = analyzeWithDecisionTree(currentWeek, ppmValues, 'ppm');
+                const phAnalysis = analyzeWithDecisionTree(currentWeek, phValues, 'ph');
+                
+                // Adjust to optimal range with decision tree recommendations
+                const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+                const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+                
+                // Generate 25-day recommendation
+                generateRecommendation(optimalPpm, optimalPh);
+                
+                // Display results
+                showResults(optimalPpm, optimalPh, ppmAnalysis, phAnalysis);
+                
+                hideLoader();
+                showToast('Analisis data selesai', 'success');
+            }, 1000);
+        }
+        
+        // Generate 25-day recommendation
+        function generateRecommendation(basePpm, basePh) {
+            recommendationData = [];
+            
+            // Calculate gradual increase for each day
+            for (let day = 1; day <= 25; day++) {
+                let week = 1;
+                if (day > 7 && day <= 14) week = 2;
+                else if (day > 14 && day <= 21) week = 3;
+                else if (day > 21) week = 4;
+                
+                const params = weekParameters[week];
+                
+                // Calculate target values for this day
+                // We'll use a linear interpolation within each week
+                let targetPpm, targetPh;
+                
+                if (week === 1) {
+                    // Week 1: Start with base values and gradually increase
+                    const progress = (day - 1) / 6; // 0 to 1 over 7 days
+                    targetPpm = basePpm + progress * (weekParameters[2].ppmMin - basePpm);
+                    targetPh = basePh + progress * (weekParameters[2].phMin - basePh);
+                } else {
+                    // Other weeks: Interpolate between min and max of the week
+                    const daysInWeek = week === 4 ? 4 : 7;
+                    const startDay = (week - 1) * 7 + 1;
+                    const progress = (day - startDay) / (daysInWeek - 1);
+                    targetPpm = params.ppmMin + progress * (params.ppmMax - params.ppmMin);
+                    targetPh = params.phMin + progress * (params.phMax - params.phMin);
+                }
+                
+                recommendationData.push({
+                    day,
+                    ppm: Math.round(targetPpm),
+                    ph: parseFloat(targetPh.toFixed(2))
+                });
+            }
+            
+            // Update recommendation table
+            let tableHTML = '';
+            for (const data of recommendationData) {
+                tableHTML += `
+                <tr>
+                    <td>${data.day}</td>
+                    <td>${data.ppm}</td>
+                    <td>${data.ph}</td>
+                </tr>`;
+            }
+            recommendationTableEl.innerHTML = tableHTML;
+        }
+        
+        // Show analysis results
+        function showResults(optimalPpm, optimalPh, ppmAnalysis, phAnalysis) {
+            // Format numbers to show 1 decimal place for PPM and 2 for pH
+            resultPpmEl.textContent = optimalPpm.toFixed(1);
+            resultPhEl.textContent = optimalPh.toFixed(2);
+            
+            // Display status badges
+            resultPpmStatusEl.textContent = ppmAnalysis.status === "optimal" ? "Optimal" : 
+                                         ppmAnalysis.status === "warning" ? "Perhatian" : "Kritis";
+            resultPpmStatusEl.className = `sensor-status status-${ppmAnalysis.status}`;
+            
+            resultPhStatusEl.textContent = phAnalysis.status === "optimal" ? "Optimal" : 
+                                        phAnalysis.status === "warning" ? "Perhatian" : "Kritis";
+            resultPhStatusEl.className = `sensor-status status-${phAnalysis.status}`;
+            
+            // Display decision tree analysis
+            const decisions = [];
+            if (ppmAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`PPM: ${ppmAnalysis.decision}`);
+            }
+            if (phAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`pH: ${phAnalysis.decision}`);
+            }
+            
+            if (decisions.length > 0) {
+                analysisDecisionEl.textContent = decisions.join(" | ");
+            } else {
+                analysisDecisionEl.textContent = "Semua parameter dalam range optimal";
+            }
+            
+            // Show results section
+            analysisResultEl.style.display = 'block';
+            
+            // Scroll to results
+            analysisResultEl.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Decision Tree Algorithm
+        function analyzeWithDecisionTree(week, values, parameter) {
+            const params = weekParameters[week];
+            const min = parameter === 'ppm' ? params.ppmMin : params.phMin;
+            const max = parameter === 'ppm' ? params.ppmMax : params.phMax;
+            
+            // Calculate statistics
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const range = Math.max(...values) - Math.min(...values);
+            const stability = range / (max - min);
+            
+            // Decision tree rules
+            if (values.some(v => v < min * 0.8 || v > max * 1.2)) {
+                return {
+                    decision: "Terdapat nilai ekstrim yang perlu diperiksa",
+                    adjustment: 0,
+                    confidence: "rendah",
+                    status: "danger"
+                };
+            } else if (stability > 0.5) {
+                return {
+                    decision: "Parameter tidak stabil, perlu penyesuaian",
+                    adjustment: (avg - (min + max)/2) * 0.5,
+                    confidence: "sedang",
+                    status: "warning"
+                };
+            } else if (avg < min) {
+                return {
+                    decision: "Parameter terlalu rendah, perlu dinaikkan",
+                    adjustment: (min - avg) * 0.7,
+                    confidence: "tinggi",
+                    status: "warning"
+                };
+            } else if (avg > max) {
+                return {
+                    decision: "Parameter terlalu tinggi, perlu diturunkan",
+                    adjustment: (max - avg) * 0.7,
+                    confidence: "tinggi",
+                    status: "warning"
+                };
+            } else {
+                return {
+                    decision: "Parameter dalam range optimal",
+                    adjustment: 0,
+                    confidence: "tinggi",
+                    status: "optimal"
+                };
+            }
+        }
+        
+        // Upload recommendation to device
+        function uploadRecommendation() {
+            if (!deviceConnected) {
+                showToast('Hubungkan ke perangkat terlebih dahulu', 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            setTimeout(() => {
+                hideLoader();
+                showToast('Rekomendasi berhasil diunggah ke perangkat', 'success');
+            }, 1500);
+        }
+        
+        // Connect to device
+        function connectToDevice() {
+            const ip = deviceIpInput.value.trim();
+            const port = devicePortInput.value.trim();
+            
+            if (!ip) {
+                showToast('Masukkan alamat IP perangkat!', 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            setTimeout(() => {
+                deviceConnected = true;
+                connectBtn.disabled = true;
+                disconnectBtn.disabled = false;
+                setDayBtn.disabled = false;
+                resetDayBtn.disabled = false;
+                autoToggle.disabled = false;
+                nutrientToggle.disabled = false;
+                phUpToggle.disabled = false;
+                phDownToggle.disabled = false;
+                sendParamsBtn.disabled = false;
+                otaBtn.disabled = false;
+                
+                // Update connection status
+                connectionStatusEl.style.display = 'block';
+                connectionStatusEl.className = 'alert alert-success';
+                connectionStatusEl.innerHTML = '<i class="fas fa-check-circle"></i><div>Terhubung ke perangkat</div>';
+                
+                // Update control status indicators
+                autoStatusEl.className = 'control-status status-on';
+                nutrientStatusEl.className = 'control-status status-off';
+                phUpStatusEl.className = 'control-status status-off';
+                phDownStatusEl.className = 'control-status status-off';
+                
+                hideLoader();
+                showToast(`Terhubung ke perangkat di ${ip}:${port}`, 'success');
+            }, 1500);
+        }
+        
+        // Disconnect from device
+        function disconnectFromDevice() {
+            showLoader();
+            
+            setTimeout(() => {
+                deviceConnected = false;
+                connectBtn.disabled = false;
+                disconnectBtn.disabled = true;
+                setDayBtn.disabled = true;
+                resetDayBtn.disabled = true;
+                autoToggle.disabled = true;
+                nutrientToggle.disabled = true;
+                phUpToggle.disabled = true;
+                phDownToggle.disabled = true;
+                sendParamsBtn.disabled = true;
+                otaBtn.disabled = true;
+                
+                // Update connection status
+                connectionStatusEl.style.display = 'block';
+                connectionStatusEl.className = 'alert alert-warning';
+                connectionStatusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i><div>Tidak terhubung ke perangkat</div>';
+                
+                hideLoader();
+                showToast('Koneksi ke perangkat diputus', 'warning');
+            }, 1000);
+        }
+        
+        // Set day
+        function setDay() {
+            const day = parseInt(dayInput.value);
+            
+            if (day < 1 || day > 25) {
+                showToast('Masukkan nilai hari yang valid (1-25)', 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            setTimeout(() => {
+                currentDay = day;
+                currentDayEl.textContent = day;
+                
+                // Update growth progress
+                const progress = (day / 25) * 100;
+                growthProgressEl.style.width = `${progress}%`;
+                
+                // Show/hide harvest notification
+                harvestNotificationEl.style.display = day >= 25 ? 'flex' : 'none';
+                
+                hideLoader();
+                showToast(`Hari pertumbuhan diatur ke hari ${day}`, 'success');
+            }, 1000);
+        }
+        
+        // Reset day to 1
+        function resetDay() {
+            showLoader();
+            
+            setTimeout(() => {
+                currentDay = 1;
+                currentDayEl.textContent = 1;
+                dayInput.value = 1;
+                
+                // Update growth progress
+                growthProgressEl.style.width = '4%';
+                
+                // Hide harvest notification
+                harvestNotificationEl.style.display = 'none';
+                
+                hideLoader();
+                showToast('Hari pertumbuhan direset ke hari 1', 'success');
+            }, 1000);
+        }
+        
+        // Send parameters to device
+        function sendParameters() {
+            showLoader();
+            
+            setTimeout(() => {
+                hideLoader();
+                showToast('Parameter berhasil dikirim ke perangkat', 'success');
+            }, 1000);
+        }
+        
+        // Toggle auto mode
+        function toggleAuto() {
+            autoStatusEl.className = autoToggle.checked ? 'control-status status-on' : 'control-status status-off';
+            
+            // Enable/disable manual controls based on auto mode
+            const manualControlsDisabled = autoToggle.checked || !deviceConnected;
+            nutrientToggle.disabled = manualControlsDisabled;
+            phUpToggle.disabled = manualControlsDisabled;
+            phDownToggle.disabled = manualControlsDisabled;
+            
+            showToast(`Mode ${autoToggle.checked ? 'Otomatis' : 'Manual'} diaktifkan`, 'success');
+        }
+        
+        // Toggle nutrient pump
+        function toggleNutrient() {
+            nutrientStatusEl.className = nutrientToggle.checked ? 'control-status status-on' : 'control-status status-off';
+            showToast(`Pompa Nutrisi ${nutrientToggle.checked ? 'Aktif' : 'Nonaktif'}`, 'success');
+        }
+        
+        // Toggle pH up pump
+        function togglePhUp() {
+            phUpStatusEl.className = phUpToggle.checked ? 'control-status status-on' : 'control-status status-off';
+            
+            if (phUpToggle.checked && phDownToggle.checked) {
+                phDownToggle.checked = false;
+                phDownStatusEl.className = 'control-status status-off';
+            }
+            
+            showToast(`Pompa pH Up ${phUpToggle.checked ? 'Aktif' : 'Nonaktif'}`, 'success');
+        }
+        
+        // Toggle pH down pump
+        function togglePhDown() {
+            phDownStatusEl.className = phDownToggle.checked ? 'control-status status-on' : 'control-status status-off';
+            
+            if (phDownToggle.checked && phUpToggle.checked) {
+                phUpToggle.checked = false;
+                phUpStatusEl.className = 'control-status status-off';
+            }
+            
+            showToast(`Pompa pH Down ${phDownToggle.checked ? 'Aktif' : 'Nonaktif'}`, 'success');
+        }
+        
+        // Perform OTA update
+        function performOtaUpdate() {
+            const file = otaFileInput.files[0];
+            
+            if (!file) {
+                showToast('Pilih file firmware terlebih dahulu', 'warning');
+                return;
+            }
+            
+            showLoader();
+            
+            setTimeout(() => {
+                otaStatusEl.style.display = 'block';
+                otaStatusEl.innerHTML = '<i class="fas fa-check-circle"></i><div>Update berhasil! Perangkat akan restart.</div>';
+                
+                hideLoader();
+                showToast('Firmware berhasil diupdate', 'success');
+                
+                // Simulate disconnect after update
+                setTimeout(() => {
+                    disconnectFromDevice();
+                }, 3000);
+            }, 2000);
+        }
+        
+        // Convert CSV to BIN
+        function convertToBin() {
+            showLoader();
+            
+            setTimeout(() => {
+                downloadBinBtn.disabled = false;
+                
+                hideLoader();
+                showToast('File CSV berhasil dikonversi ke .bin', 'success');
+            }, 1500);
+        }
+        
+        // Download BIN file
+        function downloadBin() {
+            // Create a dummy bin file for download
+            const blob = new Blob([new Uint8Array(1024)], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hinsa_firmware.bin';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('File .bin berhasil diunduh', 'success');
+        }
+        
+        // Copy firmware code
+        function copyFirmwareCode() {
+            const code = firmwareCodeEl.textContent;
+            
+            // Use clipboard API to copy text
+            navigator.clipboard.writeText(code).then(() => {
+                showToast('Kode firmware berhasil disalin ke clipboard', 'success');
+            }, () => {
+                showToast('Gagal menyalin kode. Silakan coba lagi.', 'error');
+            });
+        }
+        
+        // Download firmware
+        function downloadFirmware() {
+            const code = firmwareCodeEl.textContent;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hinsa_firmware.ino';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('File firmware berhasil diunduh', 'success');
+        }
+        
+        // Save configuration
+        function saveConfiguration() {
+            showLoader();
+            
+            setTimeout(() => {
+                // Generate and display firmware code
+                firmwareCodeEl.textContent = generateFirmwareCode();
+                
+                hideLoader();
+                showToast('Konfigurasi berhasil disimpan', 'success');
+            }, 1500);
+        }
+        
+        // Export to CSV
+        function exportToCsv() {
+            // Generate dummy data for export
+            const data = generateDummyData();
+            
+            // Convert to CSV
+            const headers = Object.keys(data[0]);
+            const csvRows = [
+                headers.join(','),
+                ...data.map(row => headers.map(header => row[header]).join(','))
+            ];
+            
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hinsa_data.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Data berhasil diekspor ke CSV', 'success');
+        }
+        
+        // Export to JSON
+        function exportToJson() {
+            // Generate dummy data for export
+            const data = generateDummyData();
+            
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hinsa_data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('Data berhasil diekspor ke JSON', 'success');
+        }
+        
+        // Generate report
+        function generateReport() {
+            showLoader();
+            
+            setTimeout(() => {
+                // Generate PDF report (simulated)
+                const blob = new Blob(['Dummy PDF content'], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'hinsa_harvest_report.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                hideLoader();
+                showToast('Laporan panen berhasil dibuat', 'success');
+            }, 2000);
+        }
+        
+        // Generate dummy data for export
+        function generateDummyData() {
+            const data = [];
+            const today = new Date();
+            
+            for (let i = 0; i < 30; i++) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                
+                const day = 30 - i;
+                const week = day <= 7 ? 1 : day <= 14 ? 2 : day <= 21 ? 3 : 4;
+                const params = weekParameters[week];
+                
+                const ppm = params.ppmMin + Math.random() * (params.ppmMax - params.ppmMin);
+                const ph = params.phMin + Math.random() * (params.phMax - params.phMin);
+                const temp = 25 + Math.random() * 3;
+                
+                data.push({
+                    date: date.toISOString().split('T')[0],
+                    time: date.toTimeString().split(' ')[0],
+                    day: Math.min(day, 25),
+                    ppm: ppm.toFixed(1),
+                    ph: ph.toFixed(2),
+                    temperature: temp.toFixed(1),
+                    status: 'Normal'
+                });
+            }
+            
+            return data;
+        }
+        
+        // Generate firmware code
+        function generateFirmwareCode() {
+            const ppmPin = document.getElementById('ppm-pin').value;
+            const phPin = document.getElementById('ph-pin').value;
+            const nutrientPin = document.getElementById('nutrient-pin').value;
+            const phUpPin = document.getElementById('ph-up-pin').value;
+            const phDownPin = document.getElementById('ph-down-pin').value;
+            const tempPin = document.getElementById('temp-pin').value;
+            const wifiSsid = document.getElementById('wifi-ssid').value || 'YourWiFiSSID';
+            const wifiPassword = document.getElementById('wifi-password').value || 'YourWiFiPassword';
+            
+            return `/*
+ * HINSA - Sistem Monitoring Hidroponik Cerdas
+ * Firmware untuk ${selectedBoard.toUpperCase()}
  * 
  * Fitur:
  * - Monitoring PPM dan pH
@@ -683,18 +2514,18 @@
 #include <EEPROM.h>
 
 // Konfigurasi WiFi
-const char* ssid = "YourWiFiSSID";
-const char* password = "YourWiFiPassword";
+const char* ssid = "${wifiSsid}";
+const char* password = "${wifiPassword}";
 
 // Pin Sensor
-const int PPM_SENSOR_PIN = 34;    // Pin analog untuk sensor PPM/TDS
-const int PH_SENSOR_PIN = 35;     // Pin analog untuk sensor pH
-const int TEMP_SENSOR_PIN = 32;   // Pin untuk sensor suhu DS18B20
+const int PPM_SENSOR_PIN = ${ppmPin};    // Pin analog untuk sensor PPM/TDS
+const int PH_SENSOR_PIN = ${phPin};     // Pin analog untuk sensor pH
+const int TEMP_SENSOR_PIN = ${tempPin};   // Pin untuk sensor suhu DS18B20
 
 // Pin Relay
-const int NUTRIENT_PUMP_PIN = 25; // Pin untuk relay pompa nutrisi
-const int PH_UP_PUMP_PIN = 26;    // Pin untuk relay pompa pH up
-const int PH_DOWN_PUMP_PIN = 27;  // Pin untuk relay pompa pH down
+const int NUTRIENT_PUMP_PIN = ${nutrientPin}; // Pin untuk relay pompa nutrisi
+const int PH_UP_PUMP_PIN = ${phUpPin};    // Pin untuk relay pompa pH up
+const int PH_DOWN_PUMP_PIN = ${phDownPin};  // Pin untuk relay pompa pH down
 
 // Alamat EEPROM
 const int EEPROM_DAY_ADDR = 0;    // Alamat untuk menyimpan hari ke-
@@ -824,248 +2655,6 @@ void controlPumps() {
   }
 }
 
-// Fungsi untuk membaca semua sensor
-void readSensors() {
-  currentPPM = readPPM();
-  currentPH = readPH();
-  
-  // Simulasi pembacaan suhu (ganti dengan kode pembacaan sensor suhu yang sebenarnya)
-  currentTemp = 25.0 + (random(0, 20) - 10) / 10.0;
-  
-  // Log data
-  logData();
-  
-  if (autoMode) {
-    controlPumps();
-  }
-}
-
-// Fungsi untuk mencatat data
-void logData() {
-  static unsigned long lastLogTime = 0;
-  unsigned long currentTime = millis();
-  
-  // Log data setiap 5 menit
-  if (currentTime - lastLogTime >= 300000 || lastLogTime == 0) {
-    dataLog[logIndex].timestamp = currentTime;
-    dataLog[logIndex].ppm = currentPPM;
-    dataLog[logIndex].ph = currentPH;
-    dataLog[logIndex].temp = currentTemp;
-    
-    logIndex = (logIndex + 1) % MAX_LOG_ENTRIES;
-    lastLogTime = currentTime;
-  }
-}
-
-// Fungsi untuk menyimpan parameter ke EEPROM
-void saveParameters() {
-  EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
-  EEPROM.writeFloat(EEPROM_PPM_MIN_ADDR, ppmMin);
-  EEPROM.writeFloat(EEPROM_PPM_MAX_ADDR, ppmMax);
-  EEPROM.writeFloat(EEPROM_PH_MIN_ADDR, phMin);
-  EEPROM.writeFloat(EEPROM_PH_MAX_ADDR, phMax);
-  EEPROM.writeBool(EEPROM_AUTO_MODE_ADDR, autoMode);
-  EEPROM.commit();
-}
-
-// Fungsi untuk memuat parameter dari EEPROM
-void loadParameters() {
-  currentDay = EEPROM.readInt(EEPROM_DAY_ADDR);
-  ppmMin = EEPROM.readFloat(EEPROM_PPM_MIN_ADDR);
-  ppmMax = EEPROM.readFloat(EEPROM_PPM_MAX_ADDR);
-  phMin = EEPROM.readFloat(EEPROM_PH_MIN_ADDR);
-  phMax = EEPROM.readFloat(EEPROM_PH_MAX_ADDR);
-  autoMode = EEPROM.readBool(EEPROM_AUTO_MODE_ADDR);
-  
-  // Validasi nilai yang dibaca
-  if (currentDay < 1 || currentDay > 25) currentDay = 1;
-  if (isnan(ppmMin) || ppmMin < 100 || ppmMin > 2000) ppmMin = 400.0;
-  if (isnan(ppmMax) || ppmMax < 100 || ppmMax > 2000) ppmMax = 500.0;
-  if (isnan(phMin) || phMin < 3 || phMin > 10) phMin = 5.5;
-  if (isnan(phMax) || phMax < 3 || phMax > 10) phMax = 6.0;
-}
-
-// Setup web server routes
-void setupServer() {
-  // Route untuk halaman utama
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    String html = "<!DOCTYPE html><html><head>";
-    html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
-    html += "<title>ESP32-S3 Hidroponik</title>";
-    html += "<style>body{font-family:Arial;margin:0;padding:20px;text-align:center;}";
-    html += ".card{background:#f0f0f0;border-radius:10px;padding:15px;margin:10px 0;}";
-    html += ".value{font-size:24px;font-weight:bold;margin:10px 0;}";
-    html += ".btn{background:#2c8a56;color:white;border:none;padding:10px;border-radius:5px;cursor:pointer;margin:5px;}";
-    html += ".btn-warning{background:#ff9800;}</style></head><body>";
-    html += "<h1>Sistem Hidroponik</h1>";
-    html += "<div class='card'><h2>Pembacaan Sensor</h2>";
-    html += "<p>PPM: <span class='value'>" + String(currentPPM, 1) + "</span></p>";
-    html += "<p>pH: <span class='value'>" + String(currentPH, 2) + "</span></p>";
-    html += "<p>Suhu: <span class='value'>" + String(currentTemp, 1) + " &deg;C</span></p>";
-    html += "<p>Hari ke: <span class='value'>" + String(currentDay) + "/25</span></p>";
-    html += "</div>";
-    
-    html += "<div class='card'><h2>Kontrol</h2>";
-    html += "<p>Mode: <span class='value'>" + String(autoMode ? "Otomatis" : "Manual") + "</span></p>";
-    html += "<button class='btn' onclick='toggleMode()'>Ubah Mode</button><br>";
-    html += "<button class='btn' onclick='togglePump(\"nutrient\")'>Pompa Nutrisi: " + String(nutrientPumpOn ? "ON" : "OFF") + "</button><br>";
-    html += "<button class='btn' onclick='togglePump(\"phup\")'>Pompa pH Up: " + String(phUpPumpOn ? "ON" : "OFF") + "</button><br>";
-    html += "<button class='btn' onclick='togglePump(\"phdown\")'>Pompa pH Down: " + String(phDownPumpOn ? "ON" : "OFF") + "</button><br>";
-    html += "</div>";
-    
-    if (currentDay >= 25) {
-      html += "<div class='card' style='background:#fff3e0;'><h2>🚀 Siap Panen!</h2>";
-      html += "<p>Tanaman Pakcoy Anda telah mencapai hari ke-25 dan siap dipanen.</p>";
-      html += "</div>";
-    }
-    
-    html += "<div class='card'><h2>Pengaturan</h2>";
-    html += "<p>Parameter Optimal:</p>";
-    html += "<p>PPM: " + String(ppmMin, 0) + "-" + String(ppmMax, 0) + "</p>";
-    html += "<p>pH: " + String(phMin, 1) + "-" + String(phMax, 1) + "</p>";
-    html += "<button class='btn btn-warning' onclick='resetDay()'>Reset Hari</button>";
-    html += "</div>";
-    
-    html += "<script>";
-    html += "function toggleMode() { fetch('/toggle-mode'); setTimeout(function(){ location.reload(); }, 500); }";
-    html += "function togglePump(pump) { fetch('/toggle-pump?pump=' + pump); setTimeout(function(){ location.reload(); }, 500); }";
-    html += "function resetDay() { if(confirm('Reset hari ke-1?')) { fetch('/reset-day'); setTimeout(function(){ location.reload(); }, 500); } }";
-    html += "setInterval(function() { location.reload(); }, 30000);"; // Auto refresh every 30 seconds
-    html += "</script></body></html>";
-    
-    request->send(200, "text/html", html);
-  });
-  
-  // API untuk mendapatkan data sensor dalam format JSON
-  server.on("/api/data", HTTP_GET, [](AsyncWebServerRequest *request) {
-    DynamicJsonDocument doc(256);
-    doc["ppm"] = currentPPM;
-    doc["ph"] = currentPH;
-    doc["temperature"] = currentTemp;
-    doc["day"] = currentDay;
-    doc["auto_mode"] = autoMode;
-    doc["nutrient_pump"] = nutrientPumpOn;
-    doc["ph_up_pump"] = phUpPumpOn;
-    doc["ph_down_pump"] = phDownPumpOn;
-    doc["ppm_min"] = ppmMin;
-    doc["ppm_max"] = ppmMax;
-    doc["ph_min"] = phMin;
-    doc["ph_max"] = phMax;
-    
-    String jsonString;
-    serializeJson(doc, jsonString);
-    request->send(200, "application/json", jsonString);
-  });
-  
-  // API untuk mendapatkan data log dalam format JSON
-  server.on("/api/log", HTTP_GET, [](AsyncWebServerRequest *request) {
-    DynamicJsonDocument doc(16384);
-    JsonArray array = doc.to<JsonArray>();
-    
-    for (int i = 0; i < MAX_LOG_ENTRIES; i++) {
-      if (dataLog[i].timestamp > 0) {
-        JsonObject entry = array.createNestedObject();
-        entry["timestamp"] = dataLog[i].timestamp;
-        entry["ppm"] = dataLog[i].ppm;
-        entry["ph"] = dataLog[i].ph;
-        entry["temperature"] = dataLog[i].temp;
-      }
-    }
-    
-    String jsonString;
-    serializeJson(doc, jsonString);
-    request->send(200, "application/json", jsonString);
-  });
-  
-  // API untuk mengubah mode (otomatis/manual)
-  server.on("/toggle-mode", HTTP_GET, [](AsyncWebServerRequest *request) {
-    autoMode = !autoMode;
-    EEPROM.writeBool(EEPROM_AUTO_MODE_ADDR, autoMode);
-    EEPROM.commit();
-    request->send(200, "text/plain", "Mode changed");
-  });
-  
-  // API untuk mengontrol pompa
-  server.on("/toggle-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if (request->hasParam("pump")) {
-      String pump = request->getParam("pump")->value();
-      
-      if (pump == "nutrient") {
-        nutrientPumpOn = !nutrientPumpOn;
-        digitalWrite(NUTRIENT_PUMP_PIN, nutrientPumpOn ? HIGH : LOW);
-      } else if (pump == "phup") {
-        phUpPumpOn = !phUpPumpOn;
-        digitalWrite(PH_UP_PUMP_PIN, phUpPumpOn ? HIGH : LOW);
-        if (phUpPumpOn) {
-          phDownPumpOn = false;
-          digitalWrite(PH_DOWN_PUMP_PIN, LOW);
-        }
-      } else if (pump == "phdown") {
-        phDownPumpOn = !phDownPumpOn;
-        digitalWrite(PH_DOWN_PUMP_PIN, phDownPumpOn ? HIGH : LOW);
-        if (phDownPumpOn) {
-          phUpPumpOn = false;
-          digitalWrite(PH_UP_PUMP_PIN, LOW);
-        }
-      }
-      
-      request->send(200, "text/plain", "Pump toggled");
-    } else {
-      request->send(400, "text/plain", "Missing pump parameter");
-    }
-  });
-  
-  // API untuk mengatur hari
-  server.on("/set-day", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if (request->hasParam("day")) {
-      int newDay = request->getParam("day")->value().toInt();
-      if (newDay >= 1 && newDay <= 25) {
-        currentDay = newDay;
-        EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
-        EEPROM.commit();
-        updateParameters();
-        request->send(200, "text/plain", "Day updated");
-      } else {
-        request->send(400, "text/plain", "Invalid day value");
-      }
-    } else {
-      request->send(400, "text/plain", "Missing day parameter");
-    }
-  });
-  
-  // API untuk reset hari ke-1
-  server.on("/reset-day", HTTP_GET, [](AsyncWebServerRequest *request) {
-    currentDay = 1;
-    EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
-    EEPROM.commit();
-    updateParameters();
-    request->send(200, "text/plain", "Day reset to 1");
-  });
-  
-  // API untuk mengatur parameter
-  server.on("/set-parameters", HTTP_POST, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Parameters updated");
-  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, data, len);
-    
-    if (!error) {
-      if (doc.containsKey("ppm_min")) ppmMin = doc["ppm_min"];
-      if (doc.containsKey("ppm_max")) ppmMax = doc["ppm_max"];
-      if (doc.containsKey("ph_min")) phMin = doc["ph_min"];
-      if (doc.containsKey("ph_max")) phMax = doc["ph_max"];
-      
-      saveParameters();
-    }
-  });
-  
-  // Setup OTA
-  AsyncElegantOTA.begin(&server);
-  
-  // Start server
-  server.begin();
-}
-
 void setup() {
   Serial.begin(115200);
   
@@ -1124,677 +2713,13 @@ void loop() {
     }
     lastDayIncrement = millis();
   }
-}
-</pre>
-                    </div>
-                    
-                    <button id="copy-firmware-btn">Salin Kode</button>
-                    <button id="download-firmware-btn" class="secondary">Download sebagai File</button>
-                </div>
-            </div>
-            
-            <div class="result-box" id="result-box" style="display: none;">
-                <h3>Hasil Perhitungan</h3>
-                <p><strong>Parameter optimal untuk minggu ini:</strong></p>
-                <p>PPM: <span id="result-ppm"></span> <span id="ppm-status" class="status-badge"></span></p>
-                <p>pH: <span id="result-ph"></span> <span id="ph-status" class="status-badge"></span></p>
-                
-                <div class="decision-info" id="decision-info">
-                    <p>Keputusan algoritma: <span id="decision-text"></span></p>
-                </div>
-                
-                <h4>Rekomendasi untuk Perangkat:</h4>
-                <div class="param-card">
-                    <p>Gunakan nilai-nilai berikut sebagai setpoint:</p>
-                    <p><strong>PPM:</strong> <span id="device-ppm"></span></p>
-                    <p><strong>pH:</strong> <span id="device-ph"></span></p>
-                    <p><strong>Hari ke:</strong> <span id="device-day"></span>/25</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Optimal parameters for Pakcoy (25 days growth)
-        const weekParameters = {
-            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0 },
-            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2 },
-            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3 },
-            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5 }
-        };
-
-        // DOM elements
-        const weekElements = document.querySelectorAll('.week');
-        const currentWeekSelect = document.getElementById('current-week');
-        const ppmValuesInput = document.getElementById('ppm-values');
-        const phValuesInput = document.getElementById('ph-values');
-        const calculateBtn = document.getElementById('calculate-btn');
-        const resultBox = document.getElementById('result-box');
-        const resultPpm = document.getElementById('result-ppm');
-        const resultPh = document.getElementById('result-ph');
-        const devicePpm = document.getElementById('device-ppm');
-        const devicePh = document.getElementById('device-ph');
-        const deviceDay = document.getElementById('device-day');
-        const csvFileInput = document.getElementById('csv-file');
-        const csvWeekSelect = document.getElementById('csv-week');
-        const csvPreview = document.getElementById('csv-preview');
-        const analyzeBtn = document.getElementById('analyze-btn');
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const decisionText = document.getElementById('decision-text');
-        const ppmStatus = document.getElementById('ppm-status');
-        const phStatus = document.getElementById('ph-status');
-        const harvestNotification = document.getElementById('harvest-notification');
-        const dayInput = document.getElementById('day-input');
-        const deviceIpInput = document.getElementById('device-ip');
-        const devicePortInput = document.getElementById('device-port');
-        const connectBtn = document.getElementById('connect-btn');
-        const disconnectBtn = document.getElementById('disconnect-btn');
-        const sendParamsBtn = document.getElementById('send-params-btn');
-        const otaFileInput = document.getElementById('ota-file');
-        const otaBtn = document.getElementById('ota-btn');
-        const otaStatus = document.getElementById('ota-status');
-        const exportJsonBtn = document.getElementById('export-json-btn');
-        const exportCsvBtn = document.getElementById('export-csv-btn');
-        const copyFirmwareBtn = document.getElementById('copy-firmware-btn');
-        const downloadFirmwareBtn = document.getElementById('download-firmware-btn');
-        const growthChartCtx = document.getElementById('growthChart').getContext('2d');
-        const currentPpmDisplay = document.getElementById('current-ppm');
-        const currentPhDisplay = document.getElementById('current-ph');
-        const currentDayDisplay = document.getElementById('current-day-display');
-        const ppmReadingStatus = document.getElementById('ppm-reading-status');
-        const phReadingStatus = document.getElementById('ph-reading-status');
-        const nutrientStatus = document.getElementById('nutrient-status');
-        const phUpStatus = document.getElementById('ph-up-status');
-        const phDownStatus = document.getElementById('ph-down-status');
-        const autoStatus = document.getElementById('auto-status');
-        const nutrientToggle = document.getElementById('nutrient-toggle');
-        const phUpToggle = document.getElementById('ph-up-toggle');
-        const phDownToggle = document.getElementById('ph-down-toggle');
-        const autoToggle = document.getElementById('auto-toggle');
-
-        // Global variables
-        let currentData = null;
-        let growthChart = null;
-        let deviceConnected = false;
-        let currentDay = 1;
-        let deviceIP = '';
-        let devicePort = 80;
-        let updateInterval = null;
-
-        // Initialize
-        function init() {
-            setupEventListeners();
-            updateHarvestNotification();
-            renderGrowthChart();
-            simulateSensorData();
-        }
-
-        // Set up event listeners
-        function setupEventListeners() {
-            // Week selection
-            weekElements.forEach(el => {
-                el.addEventListener('click', function() {
-                    weekElements.forEach(w => w.classList.remove('active'));
-                    this.classList.add('active');
-                    currentWeekSelect.value = this.dataset.week;
-                    csvWeekSelect.value = this.dataset.week;
-                    updateDayRange();
-                });
-            });
-            
-            // Current week select change
-            currentWeekSelect.addEventListener('change', function() {
-                weekElements.forEach(w => w.classList.remove('active'));
-                document.getElementById(`week${this.value}`).classList.add('active');
-                csvWeekSelect.value = this.value;
-                updateDayRange();
-            });
-            
-            // CSV week select change
-            csvWeekSelect.addEventListener('change', function() {
-                weekElements.forEach(w => w.classList.remove('active'));
-                document.getElementById(`week${this.value}`).classList.add('active');
-                currentWeekSelect.value = this.value;
-                updateDayRange();
-            });
-            
-            // Calculate button
-            calculateBtn.addEventListener('click', calculateOptimalParameters);
-            
-            // Analyze button
-            analyzeBtn.addEventListener('click', analyzeCSVData);
-            
-            // CSV file input
-            csvFileInput.addEventListener('change', handleCSVUpload);
-            
-            // Tab switching
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.dataset.tab;
-                    
-                    // Update tabs
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Update content
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
-                });
-            });
-            
-            // Day input
-            dayInput.addEventListener('change', function() {
-                currentDay = parseInt(this.value);
-                currentDayDisplay.textContent = currentDay;
-                updateHarvestNotification();
-            });
-            
-            // Device connection
-            connectBtn.addEventListener('click', connectToDevice);
-            disconnectBtn.addEventListener('click', disconnectFromDevice);
-            sendParamsBtn.addEventListener('click', sendParametersToDevice);
-            
-            // OTA update
-            otaFileInput.addEventListener('change', function() {
-                otaBtn.disabled = !this.files[0];
-            });
-            otaBtn.addEventListener('click', performOtaUpdate);
-            
-            // Data export
-            exportJsonBtn.addEventListener('click', exportToJson);
-            exportCsvBtn.addEventListener('click', exportToCsv);
-            
-            // Firmware actions
-            copyFirmwareBtn.addEventListener('click', copyFirmwareCode);
-            downloadFirmwareBtn.addEventListener('click', downloadFirmware);
-            
-            // Device control toggles
-            nutrientToggle.addEventListener('change', function() {
-                nutrientStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
-                if (deviceConnected) {
-                    sendDeviceCommand('toggle-pump', { pump: 'nutrient' });
-                }
-            });
-            
-            phUpToggle.addEventListener('change', function() {
-                phUpStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
-                if (this.checked && phDownToggle.checked) {
-                    phDownToggle.checked = false;
-                    phDownStatus.className = 'control-status status-off';
-                }
-                if (deviceConnected) {
-                    sendDeviceCommand('toggle-pump', { pump: 'phup' });
-                }
-            });
-            
-            phDownToggle.addEventListener('change', function() {
-                phDownStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
-                if (this.checked && phUpToggle.checked) {
-                    phUpToggle.checked = false;
-                    phUpStatus.className = 'control-status status-off';
-                }
-                if (deviceConnected) {
-                    sendDeviceCommand('toggle-pump', { pump: 'phdown' });
-                }
-            });
-            
-            autoToggle.addEventListener('change', function() {
-                autoStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
-                if (deviceConnected) {
-                    sendDeviceCommand('toggle-mode');
-                }
-            });
-        }
-        
-        // Update day range based on selected week
-        function updateDayRange() {
-            const week = parseInt(currentWeekSelect.value);
-            let minDay = 1, maxDay = 7;
-            
-            if (week === 2) {
-                minDay = 8;
-                maxDay = 14;
-            } else if (week === 3) {
-                minDay = 15;
-                maxDay = 21;
-            } else if (week === 4) {
-                minDay = 22;
-                maxDay = 25;
-            }
-            
-            dayInput.min = minDay;
-            dayInput.max = maxDay;
-            dayInput.value = minDay;
-            currentDay = minDay;
-            currentDayDisplay.textContent = currentDay;
-            updateHarvestNotification();
-        }
-        
-        // Update harvest notification visibility
-        function updateHarvestNotification() {
-            if (currentDay >= 25) {
-                harvestNotification.style.display = 'block';
-            } else {
-                harvestNotification.style.display = 'none';
-            }
-        }
-
-        // Handle CSV file upload
-        function handleCSVUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            analyzeBtn.disabled = true;
-            exportJsonBtn.disabled = true;
-            exportCsvBtn.disabled = true;
-            csvPreview.innerHTML = "<p>Memproses file CSV...</p>";
-            
-            Papa.parse(file, {
-                header: true,
-                complete: function(results) {
-                    if (results.data.length === 0) {
-                        csvPreview.innerHTML = "<p>File CSV tidak mengandung data</p>";
-                        return;
-                    }
-                    
-                    // Validate required columns
-                    const firstRow = results.data[0];
-                    if (!firstRow.hasOwnProperty('ppm') || !firstRow.hasOwnProperty('ph')) {
-                        csvPreview.innerHTML = "<p>File CSV harus memiliki kolom 'ppm' dan 'ph'</p>";
-                        return;
-                    }
-                    
-                    // Store the parsed data
-                    currentData = results.data;
-                    
-                    // Display sample data
-                    let previewHTML = `<p>Data CSV (${results.data.length} baris):</p>`;
-                    previewHTML += `<div style="overflow-x:auto;"><table><tr>${Object.keys(firstRow).map(k => `<th>${k}</th>`).join('')}</tr>`;
-                    
-                    // Show first 3 rows
-                    for (let i = 0; i < Math.min(3, results.data.length); i++) {
-                        previewHTML += `<tr>${Object.values(results.data[i]).map(v => `<td>${v}</td>`).join('')}</tr>`;
-                    }
-                    
-                    if (results.data.length > 3) {
-                        previewHTML += `<tr><td colspan="${Object.keys(firstRow).length}">... dan ${results.data.length - 3} baris lainnya</td></tr>`;
-                    }
-                    
-                    previewHTML += "</table></div>";
-                    csvPreview.innerHTML = previewHTML;
-                    
-                    analyzeBtn.disabled = false;
-                    exportJsonBtn.disabled = false;
-                    exportCsvBtn.disabled = false;
-                },
-                error: function(error) {
-                    csvPreview.innerHTML = `<p>Error membaca file CSV: ${error.message}</p>`;
-                }
-            });
-        }
-
-        // Decision Tree Algorithm
-        function analyzeWithDecisionTree(week, values, parameter) {
-            const params = weekParameters[week];
-            const min = parameter === 'ppm' ? params.ppmMin : params.phMin;
-            const max = parameter === 'ppm' ? params.ppmMax : params.phMax;
-            
-            // Calculate statistics
-            const avg = values.reduce((a, b) => a + b, 0) / values.length;
-            const range = Math.max(...values) - Math.min(...values);
-            const stability = range / (max - min);
-            
-            // Decision tree rules
-            if (values.some(v => v < min * 0.8 || v > max * 1.2)) {
-                return {
-                    decision: "Terdapat nilai ekstrim yang perlu diperiksa",
-                    adjustment: 0,
-                    confidence: "rendah",
-                    status: "danger"
-                };
-            } else if (stability > 0.5) {
-                return {
-                    decision: "Parameter tidak stabil, perlu penyesuaian",
-                    adjustment: (avg - (min + max)/2) * 0.5,
-                    confidence: "sedang",
-                    status: "warning"
-                };
-            } else if (avg < min) {
-                return {
-                    decision: "Parameter terlalu rendah, perlu dinaikkan",
-                    adjustment: (min - avg) * 0.7,
-                    confidence: "tinggi",
-                    status: "warning"
-                };
-            } else if (avg > max) {
-                return {
-                    decision: "Parameter terlalu tinggi, perlu diturunkan",
-                    adjustment: (max - avg) * 0.7,
-                    confidence: "tinggi",
-                    status: "warning"
-                };
-            } else {
-                return {
-                    decision: "Parameter dalam range optimal",
-                    adjustment: 0,
-                    confidence: "tinggi",
-                    status: "good"
-                };
-            }
-        }
-
-        // Analyze CSV data
-        function analyzeCSVData() {
-            const week = parseInt(csvWeekSelect.value);
-            const params = weekParameters[week];
-            
-            if (!currentData) {
-                alert("Tidak ada data CSV yang valid untuk dianalisis");
-                return;
-            }
-            
-            // Extract ppm and ph values
-            const ppmValues = currentData.map(row => parseFloat(row.ppm)).filter(val => !isNaN(val));
-            const phValues = currentData.map(row => parseFloat(row.ph)).filter(val => !isNaN(val));
-            
-            if (ppmValues.length === 0 || phValues.length === 0) {
-                alert("Data CSV tidak mengandung nilai PPM atau pH yang valid!");
-                return;
-            }
-            
-            // Calculate median values (more robust than average)
-            const medianPpm = calculateMedian(ppmValues);
-            const medianPh = calculateMedian(phValues);
-            
-            // Apply decision tree analysis
-            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
-            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
-            
-            // Adjust to optimal range with decision tree recommendations
-            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
-            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
-            
-            // Display results
-            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
-        }
-
-        // Calculate optimal parameters
-        function calculateOptimalParameters() {
-            const week = parseInt(currentWeekSelect.value);
-            const params = weekParameters[week];
-            
-            // Parse input values
-            const ppmValues = parseInputValues(ppmValuesInput.value);
-            const phValues = parseInputValues(phValuesInput.value);
-            
-            if (ppmValues.length === 0 || phValues.length === 0) {
-                alert("Masukkan data PPM dan pH yang valid!");
-                return;
-            }
-            
-            // Calculate median values
-            const medianPpm = calculateMedian(ppmValues);
-            const medianPh = calculateMedian(phValues);
-            
-            // Apply decision tree analysis
-            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
-            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
-            
-            // Adjust to optimal range with decision tree recommendations
-            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
-            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
-            
-            // Display results
-            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
-        }
-
-        // Show calculation results
-        function showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis) {
-            // Format numbers to show 1 decimal place for PPM and 2 for pH
-            resultPpm.textContent = `${optimalPpm.toFixed(1)} (range optimal: ${params.ppmMin}-${params.ppmMax})`;
-            resultPh.textContent = `${optimalPh.toFixed(2)} (range optimal: ${params.phMin}-${params.phMax})`;
-            
-            // Display status badges
-            ppmStatus.textContent = ppmAnalysis.status === "good" ? "Optimal" : 
-                                  ppmAnalysis.status === "warning" ? "Perhatian" : "Kritis";
-            ppmStatus.className = `status-badge status-${ppmAnalysis.status}`;
-            
-            phStatus.textContent = phAnalysis.status === "good" ? "Optimal" : 
-                                 phAnalysis.status === "warning" ? "Perhatian" : "Kritis";
-            phStatus.className = `status-badge status-${phAnalysis.status}`;
-            
-            // Display decision tree analysis
-            const decisions = [];
-            if (ppmAnalysis.decision !== "Parameter dalam range optimal") {
-                decisions.push(`PPM: ${ppmAnalysis.decision}`);
-            }
-            if (phAnalysis.decision !== "Parameter dalam range optimal") {
-                decisions.push(`pH: ${phAnalysis.decision}`);
-            }
-            
-            if (decisions.length > 0) {
-                decisionText.textContent = decisions.join(" | ");
-                document.getElementById('decision-info').style.display = 'block';
-            } else {
-                decisionText.textContent = "Semua parameter dalam range optimal";
-                document.getElementById('decision-info').style.display = 'block';
-            }
-            
-            // Device recommended values
-            devicePpm.textContent = optimalPpm.toFixed(1);
-            devicePh.textContent = optimalPh.toFixed(2);
-            deviceDay.textContent = currentDay;
-            
-            // Enable send params button if device is connected
-            if (deviceConnected) {
-                sendParamsBtn.disabled = false;
-            }
-            
-            resultBox.style.display = 'block';
-            
-            // Scroll to results
-            resultBox.scrollIntoView({ behavior: 'smooth' });
-            
-            // Update chart with new data
-            updateGrowthChart(week, optimalPpm, optimalPh);
-        }
-
-        // Parse comma-separated input values
-        function parseInputValues(input) {
-            return input.split(',')
-                .map(val => parseFloat(val.trim()))
-                .filter(val => !isNaN(val));
-        }
-
-        // Calculate median of an array
-        function calculateMedian(values) {
-            if (values.length === 0) return 0;
-            
-            const sorted = [...values].sort((a, b) => a - b);
-            const half = Math.floor(sorted.length / 2);
-            
-            if (sorted.length % 2) {
-                return sorted[half];
-            }
-            return (sorted[half - 1] + sorted[half]) / 2;
-        }
-        
-        // Connect to ESP32-S3 device
-        function connectToDevice() {
-            const ip = deviceIpInput.value.trim();
-            const port = devicePortInput.value.trim();
-            
-            if (!ip) {
-                alert("Masukkan alamat IP perangkat!");
-                return;
-            }
-            
-            deviceIP = ip;
-            devicePort = parseInt(port) || 80;
-            
-            // Simulate connection (in a real implementation, you would test the connection here)
-            deviceConnected = true;
-            connectBtn.disabled = true;
-            disconnectBtn.disabled = false;
-            sendParamsBtn.disabled = false;
-            otaBtn.disabled = !otaFileInput.files[0];
-            
-            // Start polling device data
-            if (updateInterval) clearInterval(updateInterval);
-            updateInterval = setInterval(fetchDeviceData, 5000);
-            
-            // Fetch initial data
-            fetchDeviceData();
-            
-            alert(`Terhubung ke perangkat di ${ip}:${port}`);
-        }
-        
-        // Disconnect from device
-        function disconnectFromDevice() {
-            deviceConnected = false;
-            connectBtn.disabled = false;
-            disconnectBtn.disabled = true;
-            sendParamsBtn.disabled = true;
-            otaBtn.disabled = true;
-            
-            // Stop polling
-            if (updateInterval) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            }
-            
-            alert("Koneksi ke perangkat diputus");
-        }
-        
-        // Fetch data from device
-        function fetchDeviceData() {
-            // In a real implementation, you would fetch data from the device
-            // For this example, we'll just simulate data
-            simulateSensorData();
-        }
-        
-        // Send parameters to device
-        function sendParametersToDevice() {
-            if (!deviceConnected) {
-                alert("Tidak terhubung ke perangkat!");
-                return;
-            }
-            
-            const ppm = devicePpm.textContent;
-            const ph = devicePh.textContent;
-            const day = dayInput.value;
-            
-            // In a real implementation, you would send this data to the device
-            // For this example, we'll just show a confirmation
-            alert(`Parameter dikirim ke perangkat:\nPPM: ${ppm}\npH: ${ph}\nHari: ${day}/25`);
-            
-            // Update current day
-            currentDay = parseInt(day);
-            currentDayDisplay.textContent = currentDay;
-            updateHarvestNotification();
-        }
-        
-        // Send command to device
-        function sendDeviceCommand(command, params = {}) {
-            if (!deviceConnected) return;
-            
-            // In a real implementation, you would send this command to the device
-            console.log(`Sending command: ${command}`, params);
-        }
-        
-        // Perform OTA update
-        function performOtaUpdate() {
-            if (!deviceConnected) {
-                alert("Tidak terhubung ke perangkat!");
-                return;
-            }
-            
-            const file = otaFileInput.files[0];
-            if (!file) {
-                alert("Pilih file firmware terlebih dahulu!");
-                return;
-            }
-            
-            // In a real implementation, you would upload the firmware to the device
-            // For this example, we'll just simulate the process
-            otaStatus.className = 'ota-status ota-success';
-            otaStatus.textContent = 'Memulai update firmware...';
-            otaStatus.style.display = 'block';
-            
-            setTimeout(() => {
-                otaStatus.textContent = 'Update firmware berhasil! Perangkat akan restart.';
-                setTimeout(() => {
-                    disconnectFromDevice();
-                    alert('Perangkat telah di-restart. Silakan hubungkan kembali setelah beberapa saat.');
-                }, 2000);
-            }, 3000);
-        }
-        
-        // Export data to JSON
-        function exportToJson() {
-            if (!currentData) {
-                alert("Tidak ada data untuk diekspor!");
-                return;
-            }
-            
-            const dataStr = JSON.stringify(currentData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = 'hidroponik_data.json';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-        
-        // Export data to CSV
-        function exportToCsv() {
-            if (!currentData) {
-                alert("Tidak ada data untuk diekspor!");
-                return;
-            }
-            
-            const csv = Papa.unparse(currentData);
-            const dataUri = 'data:text/csv;charset=utf-8,'+ encodeURIComponent(csv);
-            
-            const exportFileDefaultName = 'hidroponik_data.csv';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-        
-        // Copy firmware code
-        function copyFirmwareCode() {
-            const code = document.getElementById('firmware-code').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Kode firmware berhasil disalin ke clipboard!');
-            }, (err) => {
-                console.error('Gagal menyalin kode: ', err);
-                alert('Gagal menyalin kode. Silakan coba lagi.');
-            });
-        }
-        
-        // Download firmware as file
-        function downloadFirmware() {
-            const code = document.getElementById('firmware-code').textContent;
-            const dataUri = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(code);
-            
-            const exportFileDefaultName = 'hidroponik_esp32s3.ino';
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
+}`;
         }
         
         // Render growth chart
         function renderGrowthChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            
             const labels = Array.from({length: 25}, (_, i) => `Hari ${i+1}`);
             const ppmData = [];
             const phData = [];
@@ -1811,7 +2736,7 @@ void loop() {
                 phData.push((params.phMin + params.phMax) / 2);
             }
             
-            growthChart = new Chart(growthChartCtx, {
+            growthChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -1819,8 +2744,8 @@ void loop() {
                         {
                             label: 'PPM Optimal',
                             data: ppmData,
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(46, 125, 50, 1)',
+                            backgroundColor: 'rgba(46, 125, 50, 0.2)',
                             borderWidth: 2,
                             fill: false,
                             tension: 0.4
@@ -1828,8 +2753,8 @@ void loop() {
                         {
                             label: 'pH Optimal',
                             data: phData,
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(33, 150, 243, 1)',
+                            backgroundColor: 'rgba(33, 150, 243, 0.2)',
                             borderWidth: 2,
                             fill: false,
                             tension: 0.4,
@@ -1868,28 +2793,7 @@ void loop() {
             });
         }
         
-        // Update growth chart with new data
-        function updateGrowthChart(week, ppm, ph) {
-            if (!growthChart) return;
-            
-            // Add a point for the current calculation
-            const dayIndex = currentDay - 1;
-            
-            // Create a copy of the datasets
-            const ppmData = [...growthChart.data.datasets[0].data];
-            const phData = [...growthChart.data.datasets[1].data];
-            
-            // Update the data for the current day
-            ppmData[dayIndex] = ppm;
-            phData[dayIndex] = ph;
-            
-            // Update the chart
-            growthChart.data.datasets[0].data = ppmData;
-            growthChart.data.datasets[1].data = phData;
-            growthChart.update();
-        }
-        
-        // Simulate sensor data for demo purposes
+        // Simulate sensor data
         function simulateSensorData() {
             // Get optimal ranges for current day
             let week = 1;
@@ -1908,58 +2812,142 @@ void loop() {
             
             const ppm = ppmMid + (Math.random() * 2 - 1) * ppmVariation;
             const ph = phMid + (Math.random() * 2 - 1) * phVariation;
+            const temp = 25 + (Math.random() * 2 - 1) * 2;
             
             // Update display
-            currentPpmDisplay.textContent = ppm.toFixed(1);
-            currentPhDisplay.textContent = ph.toFixed(2);
+            currentPpmEl.textContent = ppm.toFixed(1);
+            currentPhEl.textContent = ph.toFixed(2);
+            currentTempEl.textContent = temp.toFixed(1) + '°C';
             
             // Update status
-            if (ppm < params.ppmMin) {
-                ppmReadingStatus.textContent = "Di bawah optimal";
-                ppmReadingStatus.style.color = "var(--warning)";
-                nutrientToggle.checked = true;
-                nutrientStatus.className = 'control-status status-on';
-            } else if (ppm > params.ppmMax) {
-                ppmReadingStatus.textContent = "Di atas optimal";
-                ppmReadingStatus.style.color = "var(--warning)";
-                nutrientToggle.checked = false;
-                nutrientStatus.className = 'control-status status-off';
-            } else {
-                ppmReadingStatus.textContent = "Optimal";
-                ppmReadingStatus.style.color = "var(--success)";
-                nutrientToggle.checked = false;
-                nutrientStatus.className = 'control-status status-off';
-            }
+            updateSensorStatus(ppm, ph, temp, params);
             
-            if (ph < params.phMin) {
-                phReadingStatus.textContent = "Di bawah optimal";
-                phReadingStatus.style.color = "var(--warning)";
-                phUpToggle.checked = true;
-                phDownToggle.checked = false;
-                phUpStatus.className = 'control-status status-on';
-                phDownStatus.className = 'control-status status-off';
-            } else if (ph > params.phMax) {
-                phReadingStatus.textContent = "Di atas optimal";
-                phReadingStatus.style.color = "var(--warning)";
-                phUpToggle.checked = false;
-                phDownToggle.checked = true;
-                phUpStatus.className = 'control-status status-off';
-                phDownStatus.className = 'control-status status-on';
-            } else {
-                phReadingStatus.textContent = "Optimal";
-                phReadingStatus.style.color = "var(--success)";
-                phUpToggle.checked = false;
-                phDownToggle.checked = false;
-                phUpStatus.className = 'control-status status-off';
-                phDownStatus.className = 'control-status status-off';
-            }
-            
-            // Set auto status
-            autoStatus.className = autoToggle.checked ? 'control-status status-on' : 'control-status status-off';
+            // Update data preview table
+            updateDataPreviewTable();
         }
         
-        // Initialize the application
-        window.addEventListener('DOMContentLoaded', init);
+        // Update sensor status
+        function updateSensorStatus(ppm, ph, temp, params) {
+            // PPM status
+            if (ppm < params.ppmMin) {
+                ppmStatusEl.textContent = "Di bawah optimal";
+                ppmStatusEl.className = "sensor-status status-warning";
+            } else if (ppm > params.ppmMax) {
+                ppmStatusEl.textContent = "Di atas optimal";
+                ppmStatusEl.className = "sensor-status status-warning";
+            } else {
+                ppmStatusEl.textContent = "Optimal";
+                ppmStatusEl.className = "sensor-status status-optimal";
+            }
+            
+            // pH status
+            if (ph < params.phMin) {
+                phStatusEl.textContent = "Di bawah optimal";
+                phStatusEl.className = "sensor-status status-warning";
+            } else if (ph > params.phMax) {
+                phStatusEl.textContent = "Di atas optimal";
+                phStatusEl.className = "sensor-status status-warning";
+            } else {
+                phStatusEl.textContent = "Optimal";
+                phStatusEl.className = "sensor-status status-optimal";
+            }
+            
+            // Temperature status
+            if (temp < 20) {
+                tempStatusEl.textContent = "Terlalu dingin";
+                tempStatusEl.className = "sensor-status status-warning";
+            } else if (temp > 30) {
+                tempStatusEl.textContent = "Terlalu panas";
+                tempStatusEl.className = "sensor-status status-warning";
+            } else {
+                tempStatusEl.textContent = "Optimal";
+                tempStatusEl.className = "sensor-status status-optimal";
+            }
+        }
+        
+        // Update data preview table
+        function updateDataPreviewTable() {
+            const data = generateDummyData().slice(0, 5);
+            
+            let tableHTML = '';
+            for (const row of data) {
+                tableHTML += `
+                <tr>
+                    <td>${row.date}</td>
+                    <td>${row.time}</td>
+                    <td>${row.day}</td>
+                    <td>${row.ppm}</td>
+                    <td>${row.ph}</td>
+                    <td>${row.temperature}</td>
+                    <td><span class="badge badge-success">${row.status}</span></td>
+                </tr>`;
+            }
+            dataPreviewTableEl.innerHTML = tableHTML;
+        }
+        
+        // Parse comma-separated input values
+        function parseInputValues(input) {
+            if (!input) return [];
+            return input.split(',')
+                .map(val => parseFloat(val.trim()))
+                .filter(val => !isNaN(val));
+        }
+        
+        // Calculate median
+        function calculateMedian(arr) {
+            const sorted = [...arr].sort((a, b) => a - b);
+            const half = Math.floor(sorted.length / 2);
+            if (sorted.length % 2) {
+                return sorted[half];
+            }
+            return (sorted[half - 1] + sorted[half]) / 2;
+        }
+        
+        // Show loader
+        function showLoader() {
+            loaderEl.style.display = 'flex';
+        }
+        
+        // Hide loader
+        function hideLoader() {
+            loaderEl.style.display = 'none';
+        }
+        
+        // Show toast message
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+            
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            // Set icon based on type
+            let icon = 'fa-check-circle';
+            if (type === 'warning') icon = 'fa-exclamation-triangle';
+            else if (type === 'error') icon = 'fa-times-circle';
+            
+            // Create toast content
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${type === 'success' ? 'Berhasil' : type === 'warning' ? 'Perhatian' : 'Error'}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-progress">
+                    <div class="toast-progress-bar"></div>
+                </div>
+            `;
+            
+            // Add to container
+            toastContainer.appendChild(toast);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
     </script>
 </body>
 </html>
