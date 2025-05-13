@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Monitoring Hidroponik</title>
+    <style>
+        :root {
+            --primary: #2c8a56;
+            --secondary: #f5f5f5;
+            --text: #333;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --success: #4caf50;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            background-color: var(--secondary);
+            font-size: 16px;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .panel {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        h2 {
+            color: var(--primary);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+            font-size: 1.3rem;
+            margin-top: 0;
+        }
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 0;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1f6a42;
+        }
+        button.secondary {
+            background-color: #607d8b;
+        }
+        button.warning {
+            background-color: var(--warning);
+        }
+        button.danger {
+            background-color: var(--danger);
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .optimal-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .param-card {
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f9f9f9;
+        }
+        .week-selector {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 15px 0;
+            gap: 5px;
+        }
+        .week {
+            text-align: center;
+            padding: 8px 5px;
+            border-radius: 5px;
+            flex: 1;
+            min-width: 80px;
+            cursor: pointer;
+            background-color: #eee;
+            font-size: 0.9rem;
+        }
+        .week.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .result-box {
+            background-color: #e8f5e9;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+        .input-section {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .file-input {
+            margin: 12px 0;
+        }
+        .data-preview {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            padding: 8px;
+            background-color: white;
+            font-size: 0.85rem;
+        }
+        .decision-info {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        .tab-container {
+            display: flex;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+        .tab {
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: #eee;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            font-size: 0.95rem;
+        }
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .status-good {
+            background-color: var(--success);
+            color: white;
+        }
+        .status-warning {
+            background-color: var(--warning);
+            color: black;
+        }
+        .status-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        .device-control {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .device-control button {
+            flex: 1;
+            width: auto;
+        }
+        .ota-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .ota-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+        .ota-error {
+            background-color: #ffebee;
+            color: var(--danger);
+        }
+        .harvest-notification {
+            background-color: #fff3e0;
+            border-left: 4px solid var(--warning);
+            padding: 10px;
+            margin: 10px 0;
+            display: none;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .button-group button {
+            flex: 1;
+            width: auto;
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+        .sensor-readings {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .sensor-card {
+            flex: 1;
+            min-width: 150px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+        .sensor-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .sensor-ppm .sensor-value {
+            color: #2196F3;
+        }
+        .sensor-ph .sensor-value {
+            color: #9C27B0;
+        }
+        .sensor-day .sensor-value {
+            color: #FF9800;
+        }
+        .control-panel {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .control-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .control-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        .status-on {
+            background-color: var(--success);
+        }
+        .status-off {
+            background-color: #ccc;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 600px) {
+            body {
+                padding: 20px;
+                font-size: 17px;
+            }
+            .panel {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            h3 {
+                font-size: 1.3rem;
+            }
+            button {
+                width: auto;
+            }
+            .week {
+                padding: 10px;
+                font-size: 1rem;
+            }
+            table {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistem Monitoring Hidroponik</h1>
+            <p>Monitoring dan Kontrol PPM dan pH dengan ESP32-S3</p>
+        </header>
+
+        <div class="panel">
+            <h2>Fase Pertumbuhan Pakcoy</h2>
+            
+            <div class="week-selector">
+                <div class="week active" id="week1" data-week="1">
+                    <h3>Minggu 1</h3>
+                    <p>Hari 1-7</p>
+                </div>
+                <div class="week" id="week2" data-week="2">
+                    <h3>Minggu 2</h3>
+                    <p>Hari 8-14</p>
+                </div>
+                <div class="week" id="week3" data-week="3">
+                    <h3>Minggu 3</h3>
+                    <p>Hari 15-21</p>
+                </div>
+                <div class="week" id="week4" data-week="4">
+                    <h3>Minggu 4</h3>
+                    <p>Hari 22-25</p>
+                </div>
+            </div>
+            
+            <div class="param-card">
+                <h3>Parameter Optimal 25 Hari</h3>
+                <table>
+                    <tr>
+                        <th>Minggu</th>
+                        <th>Hari</th>
+                        <th>PPM Optimal</th>
+                        <th>pH Optimal</th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>1-7</td>
+                        <td class="optimal-value">400-500</td>
+                        <td class="optimal-value">5.5-6.0</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>8-14</td>
+                        <td class="optimal-value">600-800</td>
+                        <td class="optimal-value">5.8-6.2</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>15-21</td>
+                        <td class="optimal-value">800-1000</td>
+                        <td class="optimal-value">6.0-6.3</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>22-25</td>
+                        <td class="optimal-value">1000-1200</td>
+                        <td class="optimal-value">6.0-6.5</td>
+                    </tr>
+                </table>
+                
+                <div class="harvest-notification" id="harvest-notification">
+                    <h3>🚀 Siap Panen!</h3>
+                    <p>Tanaman Pakcoy Anda telah mencapai hari ke-25 dan siap dipanen. Selamat!</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="growthChart"></canvas>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Monitoring Realtime</h2>
+            
+            <div class="sensor-readings">
+                <div class="sensor-card sensor-ppm">
+                    <h3>PPM</h3>
+                    <div class="sensor-value" id="current-ppm">--</div>
+                    <div class="sensor-status" id="ppm-reading-status">Menunggu data...</div>
+                </div>
+                
+                <div class="sensor-card sensor-ph">
+                    <h3>pH</h3>
+                    <div class="sensor-value" id="current-ph">--</div>
+                    <div class="sensor-status" id="ph-reading-status">Menunggu data...</div>
+                </div>
+                
+                <div class="sensor-card sensor-day">
+                    <h3>Hari Ke</h3>
+                    <div class="sensor-value" id="current-day-display">1</div>
+                    <div class="sensor-status">dari 25 hari</div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <h3>Kontrol Perangkat</h3>
+                
+                <div class="control-item">
+                    <div>
+                        <span class="control-status" id="nutrient-status"></span>
+                        Pompa Nutrisi
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="nutrient-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="control-item">
+                    <div>
+                        <span class="control-status" id="ph-up-status"></span>
+                        Pompa pH Up
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ph-up-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="control-item">
+                    <div>
+                        <span class="control-status" id="ph-down-status"></span>
+                        Pompa pH Down
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ph-down-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="control-item">
+                    <div>
+                        <span class="control-status" id="auto-status"></span>
+                        Mode Otomatis
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="auto-toggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Kalkulator Parameter</h2>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="manual">Input Manual</div>
+                <div class="tab" data-tab="csv">Import CSV</div>
+                <div class="tab" data-tab="device">Kontrol Perangkat</div>
+                <div class="tab" data-tab="firmware">Firmware</div>
+            </div>
+            
+            <div class="tab-content active" id="manual-tab">
+                <div class="param-card">
+                    <h3>Masukkan Data Monitoring</h3>
+                    
+                    <div class="input-section">
+                        <label for="current-week">Minggu ke:</label>
+                        <select id="current-week">
+                            <option value="1">Minggu 1 (Hari 1-7)</option>
+                            <option value="2">Minggu 2 (Hari 8-14)</option>
+                            <option value="3">Minggu 3 (Hari 15-21)</option>
+                            <option value="4">Minggu 4 (Hari 22-25)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="ppm-values">Data PPM (pisahkan dengan koma):</label>
+                        <input type="text" id="ppm-values" placeholder="Contoh: 450.5, 480.2, 420.8, 490.3">
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="ph-values">Data pH (pisahkan dengan koma):</label>
+                        <input type="text" id="ph-values" placeholder="Contoh: 5.72, 5.83, 5.91, 5.65">
+                    </div>
+                    
+                    <button id="calculate-btn">Hitung Parameter Optimal</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="csv-tab">
+                <div class="param-card">
+                    <h3>Import Data dari CSV</h3>
+                    
+                    <div class="file-input">
+                        <label for="csv-file">Pilih File CSV:</label>
+                        <input type="file" id="csv-file" accept=".csv">
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="csv-week">Pilih Minggu untuk Dianalisis:</label>
+                        <select id="csv-week">
+                            <option value="1">Minggu 1 (Hari 1-7)</option>
+                            <option value="2">Minggu 2 (Hari 8-14)</option>
+                            <option value="3">Minggu 3 (Hari 15-21)</option>
+                            <option value="4">Minggu 4 (Hari 22-25)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="data-preview" id="csv-preview">
+                        <p>Data akan muncul di sini setelah file dipilih</p>
+                    </div>
+                    
+                    <button id="analyze-btn" disabled>Analisis Data CSV</button>
+                    
+                    <div class="button-group">
+                        <button id="export-json-btn" class="secondary" disabled>Ekspor ke JSON</button>
+                        <button id="export-csv-btn" class="secondary" disabled>Ekspor ke CSV</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="device-tab">
+                <div class="param-card">
+                    <h3>Kontrol Perangkat ESP32-S3</h3>
+                    
+                    <div class="input-section">
+                        <label for="device-ip">Alamat IP ESP32-S3:</label>
+                        <input type="text" id="device-ip" placeholder="192.168.1.100">
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="device-port">Port:</label>
+                        <input type="number" id="device-port" value="80">
+                    </div>
+                    
+                    <div class="device-control">
+                        <button id="connect-btn">Hubungkan</button>
+                        <button id="disconnect-btn" class="secondary" disabled>Putuskan</button>
+                    </div>
+                    
+                    <div class="input-section">
+                        <label for="ota-file">File Firmware (bin):</label>
+                        <input type="file" id="ota-file" accept=".bin">
+                    </div>
+                    
+                    <button id="ota-btn" class="warning" disabled>Update OTA</button>
+                    
+                    <div id="ota-status" class="ota-status"></div>
+                    
+                    <div class="input-section" style="margin-top: 20px;">
+                        <label for="day-input">Hari Ke:</label>
+                        <input type="number" id="day-input" min="1" max="25" value="1">
+                    </div>
+                    
+                    <button id="send-params-btn" disabled>Kirim Parameter ke Perangkat</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="firmware-tab">
+                <div class="param-card">
+                    <h3>Firmware ESP32-S3</h3>
+                    <p>Salin kode berikut ke Arduino IDE untuk mengupload ke ESP32-S3:</p>
+                    
+                    <div class="data-preview">
+                        <pre id="firmware-code">
+/*
+ * Sistem Monitoring dan Kontrol Hidroponik
+ * ESP32-S3 Firmware
+ * 
+ * Fitur:
+ * - Monitoring PPM dan pH
+ * - Kontrol otomatis nutrisi dan pH
+ * - Web server untuk monitoring dan kontrol
+ * - OTA update
+ * - Notifikasi panen pada hari ke-25
+ */
+
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include <AsyncElegantOTA.h>
+#include <ArduinoJson.h>
+#include <EEPROM.h>
+
+// Konfigurasi WiFi
+const char* ssid = "YourWiFiSSID";
+const char* password = "YourWiFiPassword";
+
+// Pin Sensor
+const int PPM_SENSOR_PIN = 34;    // Pin analog untuk sensor PPM/TDS
+const int PH_SENSOR_PIN = 35;     // Pin analog untuk sensor pH
+const int TEMP_SENSOR_PIN = 32;   // Pin untuk sensor suhu DS18B20
+
+// Pin Relay
+const int NUTRIENT_PUMP_PIN = 25; // Pin untuk relay pompa nutrisi
+const int PH_UP_PUMP_PIN = 26;    // Pin untuk relay pompa pH up
+const int PH_DOWN_PUMP_PIN = 27;  // Pin untuk relay pompa pH down
+
+// Alamat EEPROM
+const int EEPROM_DAY_ADDR = 0;    // Alamat untuk menyimpan hari ke-
+const int EEPROM_PPM_MIN_ADDR = 4;
+const int EEPROM_PPM_MAX_ADDR = 8;
+const int EEPROM_PH_MIN_ADDR = 12;
+const int EEPROM_PH_MAX_ADDR = 16;
+const int EEPROM_AUTO_MODE_ADDR = 20;
+
+// Variabel global
+AsyncWebServer server(80);
+float currentPPM = 0.0;
+float currentPH = 0.0;
+float currentTemp = 0.0;
+int currentDay = 1;
+bool autoMode = true;
+
+// Parameter optimal berdasarkan hari
+float ppmMin = 400.0;
+float ppmMax = 500.0;
+float phMin = 5.5;
+float phMax = 6.0;
+
+// Status relay
+bool nutrientPumpOn = false;
+bool phUpPumpOn = false;
+bool phDownPumpOn = false;
+
+// Struktur data untuk log
+struct LogEntry {
+  unsigned long timestamp;
+  float ppm;
+  float ph;
+  float temp;
+};
+
+const int MAX_LOG_ENTRIES = 288; // 24 jam dengan interval 5 menit
+LogEntry dataLog[MAX_LOG_ENTRIES];
+int logIndex = 0;
+
+// Fungsi untuk membaca sensor PPM
+float readPPM() {
+  // Baca nilai analog dari sensor PPM/TDS
+  int rawValue = analogRead(PPM_SENSOR_PIN);
+  
+  // Konversi nilai analog ke PPM (kalibrasi sesuai sensor)
+  float voltage = rawValue * 3.3 / 4095.0;
+  float ppm = (133.42 * voltage * voltage * voltage - 255.86 * voltage * voltage + 857.39 * voltage) * 0.5;
+  
+  return ppm;
+}
+
+// Fungsi untuk membaca sensor pH
+float readPH() {
+  // Baca nilai analog dari sensor pH
+  int rawValue = analogRead(PH_SENSOR_PIN);
+  
+  // Konversi nilai analog ke pH (kalibrasi sesuai sensor)
+  float voltage = rawValue * 3.3 / 4095.0;
+  float ph = 3.5 * voltage;
+  
+  return ph;
+}
+
+// Fungsi untuk mengatur parameter berdasarkan hari
+void updateParameters() {
+  if (currentDay <= 7) {
+    // Minggu 1
+    ppmMin = 400.0;
+    ppmMax = 500.0;
+    phMin = 5.5;
+    phMax = 6.0;
+  } else if (currentDay <= 14) {
+    // Minggu 2
+    ppmMin = 600.0;
+    ppmMax = 800.0;
+    phMin = 5.8;
+    phMax = 6.2;
+  } else if (currentDay <= 21) {
+    // Minggu 3
+    ppmMin = 800.0;
+    ppmMax = 1000.0;
+    phMin = 6.0;
+    phMax = 6.3;
+  } else {
+    // Minggu 4
+    ppmMin = 1000.0;
+    ppmMax = 1200.0;
+    phMin = 6.0;
+    phMax = 6.5;
+  }
+  
+  // Simpan parameter ke EEPROM
+  EEPROM.writeFloat(EEPROM_PPM_MIN_ADDR, ppmMin);
+  EEPROM.writeFloat(EEPROM_PPM_MAX_ADDR, ppmMax);
+  EEPROM.writeFloat(EEPROM_PH_MIN_ADDR, phMin);
+  EEPROM.writeFloat(EEPROM_PH_MAX_ADDR, phMax);
+  EEPROM.commit();
+}
+
+// Fungsi untuk mengontrol pompa berdasarkan pembacaan sensor
+void controlPumps() {
+  if (!autoMode) return;
+  
+  // Kontrol pompa nutrisi berdasarkan PPM
+  if (currentPPM < ppmMin) {
+    digitalWrite(NUTRIENT_PUMP_PIN, HIGH);
+    nutrientPumpOn = true;
+    delay(1000); // Aktifkan pompa selama 1 detik
+    digitalWrite(NUTRIENT_PUMP_PIN, LOW);
+    nutrientPumpOn = false;
+  }
+  
+  // Kontrol pompa pH berdasarkan pH
+  if (currentPH < phMin) {
+    digitalWrite(PH_UP_PUMP_PIN, HIGH);
+    phUpPumpOn = true;
+    delay(500); // Aktifkan pompa selama 0.5 detik
+    digitalWrite(PH_UP_PUMP_PIN, LOW);
+    phUpPumpOn = false;
+  } else if (currentPH > phMax) {
+    digitalWrite(PH_DOWN_PUMP_PIN, HIGH);
+    phDownPumpOn = true;
+    delay(500); // Aktifkan pompa selama 0.5 detik
+    digitalWrite(PH_DOWN_PUMP_PIN, LOW);
+    phDownPumpOn = false;
+  }
+}
+
+// Fungsi untuk membaca semua sensor
+void readSensors() {
+  currentPPM = readPPM();
+  currentPH = readPH();
+  
+  // Simulasi pembacaan suhu (ganti dengan kode pembacaan sensor suhu yang sebenarnya)
+  currentTemp = 25.0 + (random(0, 20) - 10) / 10.0;
+  
+  // Log data
+  logData();
+  
+  if (autoMode) {
+    controlPumps();
+  }
+}
+
+// Fungsi untuk mencatat data
+void logData() {
+  static unsigned long lastLogTime = 0;
+  unsigned long currentTime = millis();
+  
+  // Log data setiap 5 menit
+  if (currentTime - lastLogTime >= 300000 || lastLogTime == 0) {
+    dataLog[logIndex].timestamp = currentTime;
+    dataLog[logIndex].ppm = currentPPM;
+    dataLog[logIndex].ph = currentPH;
+    dataLog[logIndex].temp = currentTemp;
+    
+    logIndex = (logIndex + 1) % MAX_LOG_ENTRIES;
+    lastLogTime = currentTime;
+  }
+}
+
+// Fungsi untuk menyimpan parameter ke EEPROM
+void saveParameters() {
+  EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
+  EEPROM.writeFloat(EEPROM_PPM_MIN_ADDR, ppmMin);
+  EEPROM.writeFloat(EEPROM_PPM_MAX_ADDR, ppmMax);
+  EEPROM.writeFloat(EEPROM_PH_MIN_ADDR, phMin);
+  EEPROM.writeFloat(EEPROM_PH_MAX_ADDR, phMax);
+  EEPROM.writeBool(EEPROM_AUTO_MODE_ADDR, autoMode);
+  EEPROM.commit();
+}
+
+// Fungsi untuk memuat parameter dari EEPROM
+void loadParameters() {
+  currentDay = EEPROM.readInt(EEPROM_DAY_ADDR);
+  ppmMin = EEPROM.readFloat(EEPROM_PPM_MIN_ADDR);
+  ppmMax = EEPROM.readFloat(EEPROM_PPM_MAX_ADDR);
+  phMin = EEPROM.readFloat(EEPROM_PH_MIN_ADDR);
+  phMax = EEPROM.readFloat(EEPROM_PH_MAX_ADDR);
+  autoMode = EEPROM.readBool(EEPROM_AUTO_MODE_ADDR);
+  
+  // Validasi nilai yang dibaca
+  if (currentDay < 1 || currentDay > 25) currentDay = 1;
+  if (isnan(ppmMin) || ppmMin < 100 || ppmMin > 2000) ppmMin = 400.0;
+  if (isnan(ppmMax) || ppmMax < 100 || ppmMax > 2000) ppmMax = 500.0;
+  if (isnan(phMin) || phMin < 3 || phMin > 10) phMin = 5.5;
+  if (isnan(phMax) || phMax < 3 || phMax > 10) phMax = 6.0;
+}
+
+// Setup web server routes
+void setupServer() {
+  // Route untuk halaman utama
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    String html = "<!DOCTYPE html><html><head>";
+    html += "<meta name='viewport' content='width=device-width, initial-scale=1'>";
+    html += "<title>ESP32-S3 Hidroponik</title>";
+    html += "<style>body{font-family:Arial;margin:0;padding:20px;text-align:center;}";
+    html += ".card{background:#f0f0f0;border-radius:10px;padding:15px;margin:10px 0;}";
+    html += ".value{font-size:24px;font-weight:bold;margin:10px 0;}";
+    html += ".btn{background:#2c8a56;color:white;border:none;padding:10px;border-radius:5px;cursor:pointer;margin:5px;}";
+    html += ".btn-warning{background:#ff9800;}</style></head><body>";
+    html += "<h1>Sistem Hidroponik</h1>";
+    html += "<div class='card'><h2>Pembacaan Sensor</h2>";
+    html += "<p>PPM: <span class='value'>" + String(currentPPM, 1) + "</span></p>";
+    html += "<p>pH: <span class='value'>" + String(currentPH, 2) + "</span></p>";
+    html += "<p>Suhu: <span class='value'>" + String(currentTemp, 1) + " &deg;C</span></p>";
+    html += "<p>Hari ke: <span class='value'>" + String(currentDay) + "/25</span></p>";
+    html += "</div>";
+    
+    html += "<div class='card'><h2>Kontrol</h2>";
+    html += "<p>Mode: <span class='value'>" + String(autoMode ? "Otomatis" : "Manual") + "</span></p>";
+    html += "<button class='btn' onclick='toggleMode()'>Ubah Mode</button><br>";
+    html += "<button class='btn' onclick='togglePump(\"nutrient\")'>Pompa Nutrisi: " + String(nutrientPumpOn ? "ON" : "OFF") + "</button><br>";
+    html += "<button class='btn' onclick='togglePump(\"phup\")'>Pompa pH Up: " + String(phUpPumpOn ? "ON" : "OFF") + "</button><br>";
+    html += "<button class='btn' onclick='togglePump(\"phdown\")'>Pompa pH Down: " + String(phDownPumpOn ? "ON" : "OFF") + "</button><br>";
+    html += "</div>";
+    
+    if (currentDay >= 25) {
+      html += "<div class='card' style='background:#fff3e0;'><h2>🚀 Siap Panen!</h2>";
+      html += "<p>Tanaman Pakcoy Anda telah mencapai hari ke-25 dan siap dipanen.</p>";
+      html += "</div>";
+    }
+    
+    html += "<div class='card'><h2>Pengaturan</h2>";
+    html += "<p>Parameter Optimal:</p>";
+    html += "<p>PPM: " + String(ppmMin, 0) + "-" + String(ppmMax, 0) + "</p>";
+    html += "<p>pH: " + String(phMin, 1) + "-" + String(phMax, 1) + "</p>";
+    html += "<button class='btn btn-warning' onclick='resetDay()'>Reset Hari</button>";
+    html += "</div>";
+    
+    html += "<script>";
+    html += "function toggleMode() { fetch('/toggle-mode'); setTimeout(function(){ location.reload(); }, 500); }";
+    html += "function togglePump(pump) { fetch('/toggle-pump?pump=' + pump); setTimeout(function(){ location.reload(); }, 500); }";
+    html += "function resetDay() { if(confirm('Reset hari ke-1?')) { fetch('/reset-day'); setTimeout(function(){ location.reload(); }, 500); } }";
+    html += "setInterval(function() { location.reload(); }, 30000);"; // Auto refresh every 30 seconds
+    html += "</script></body></html>";
+    
+    request->send(200, "text/html", html);
+  });
+  
+  // API untuk mendapatkan data sensor dalam format JSON
+  server.on("/api/data", HTTP_GET, [](AsyncWebServerRequest *request) {
+    DynamicJsonDocument doc(256);
+    doc["ppm"] = currentPPM;
+    doc["ph"] = currentPH;
+    doc["temperature"] = currentTemp;
+    doc["day"] = currentDay;
+    doc["auto_mode"] = autoMode;
+    doc["nutrient_pump"] = nutrientPumpOn;
+    doc["ph_up_pump"] = phUpPumpOn;
+    doc["ph_down_pump"] = phDownPumpOn;
+    doc["ppm_min"] = ppmMin;
+    doc["ppm_max"] = ppmMax;
+    doc["ph_min"] = phMin;
+    doc["ph_max"] = phMax;
+    
+    String jsonString;
+    serializeJson(doc, jsonString);
+    request->send(200, "application/json", jsonString);
+  });
+  
+  // API untuk mendapatkan data log dalam format JSON
+  server.on("/api/log", HTTP_GET, [](AsyncWebServerRequest *request) {
+    DynamicJsonDocument doc(16384);
+    JsonArray array = doc.to<JsonArray>();
+    
+    for (int i = 0; i < MAX_LOG_ENTRIES; i++) {
+      if (dataLog[i].timestamp > 0) {
+        JsonObject entry = array.createNestedObject();
+        entry["timestamp"] = dataLog[i].timestamp;
+        entry["ppm"] = dataLog[i].ppm;
+        entry["ph"] = dataLog[i].ph;
+        entry["temperature"] = dataLog[i].temp;
+      }
+    }
+    
+    String jsonString;
+    serializeJson(doc, jsonString);
+    request->send(200, "application/json", jsonString);
+  });
+  
+  // API untuk mengubah mode (otomatis/manual)
+  server.on("/toggle-mode", HTTP_GET, [](AsyncWebServerRequest *request) {
+    autoMode = !autoMode;
+    EEPROM.writeBool(EEPROM_AUTO_MODE_ADDR, autoMode);
+    EEPROM.commit();
+    request->send(200, "text/plain", "Mode changed");
+  });
+  
+  // API untuk mengontrol pompa
+  server.on("/toggle-pump", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("pump")) {
+      String pump = request->getParam("pump")->value();
+      
+      if (pump == "nutrient") {
+        nutrientPumpOn = !nutrientPumpOn;
+        digitalWrite(NUTRIENT_PUMP_PIN, nutrientPumpOn ? HIGH : LOW);
+      } else if (pump == "phup") {
+        phUpPumpOn = !phUpPumpOn;
+        digitalWrite(PH_UP_PUMP_PIN, phUpPumpOn ? HIGH : LOW);
+        if (phUpPumpOn) {
+          phDownPumpOn = false;
+          digitalWrite(PH_DOWN_PUMP_PIN, LOW);
+        }
+      } else if (pump == "phdown") {
+        phDownPumpOn = !phDownPumpOn;
+        digitalWrite(PH_DOWN_PUMP_PIN, phDownPumpOn ? HIGH : LOW);
+        if (phDownPumpOn) {
+          phUpPumpOn = false;
+          digitalWrite(PH_UP_PUMP_PIN, LOW);
+        }
+      }
+      
+      request->send(200, "text/plain", "Pump toggled");
+    } else {
+      request->send(400, "text/plain", "Missing pump parameter");
+    }
+  });
+  
+  // API untuk mengatur hari
+  server.on("/set-day", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("day")) {
+      int newDay = request->getParam("day")->value().toInt();
+      if (newDay >= 1 && newDay <= 25) {
+        currentDay = newDay;
+        EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
+        EEPROM.commit();
+        updateParameters();
+        request->send(200, "text/plain", "Day updated");
+      } else {
+        request->send(400, "text/plain", "Invalid day value");
+      }
+    } else {
+      request->send(400, "text/plain", "Missing day parameter");
+    }
+  });
+  
+  // API untuk reset hari ke-1
+  server.on("/reset-day", HTTP_GET, [](AsyncWebServerRequest *request) {
+    currentDay = 1;
+    EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
+    EEPROM.commit();
+    updateParameters();
+    request->send(200, "text/plain", "Day reset to 1");
+  });
+  
+  // API untuk mengatur parameter
+  server.on("/set-parameters", HTTP_POST, [](AsyncWebServerRequest *request) {
+    request->send(200, "text/plain", "Parameters updated");
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, data, len);
+    
+    if (!error) {
+      if (doc.containsKey("ppm_min")) ppmMin = doc["ppm_min"];
+      if (doc.containsKey("ppm_max")) ppmMax = doc["ppm_max"];
+      if (doc.containsKey("ph_min")) phMin = doc["ph_min"];
+      if (doc.containsKey("ph_max")) phMax = doc["ph_max"];
+      
+      saveParameters();
+    }
+  });
+  
+  // Setup OTA
+  AsyncElegantOTA.begin(&server);
+  
+  // Start server
+  server.begin();
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Inisialisasi EEPROM
+  EEPROM.begin(32);
+  
+  // Inisialisasi pin relay
+  pinMode(NUTRIENT_PUMP_PIN, OUTPUT);
+  pinMode(PH_UP_PUMP_PIN, OUTPUT);
+  pinMode(PH_DOWN_PUMP_PIN, OUTPUT);
+  
+  // Matikan semua relay
+  digitalWrite(NUTRIENT_PUMP_PIN, LOW);
+  digitalWrite(PH_UP_PUMP_PIN, LOW);
+  digitalWrite(PH_DOWN_PUMP_PIN, LOW);
+  
+  // Load parameter dari EEPROM
+  loadParameters();
+  
+  // Update parameter berdasarkan hari
+  updateParameters();
+  
+  // Koneksi WiFi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.print("Connected! IP address: ");
+  Serial.println(WiFi.localIP());
+  
+  // Setup web server
+  setupServer();
+  
+  Serial.println("System ready!");
+}
+
+void loop() {
+  // Baca sensor setiap 2 detik
+  static unsigned long lastSensorRead = 0;
+  if (millis() - lastSensorRead > 2000) {
+    readSensors();
+    lastSensorRead = millis();
+  }
+  
+  // Increment hari setiap 24 jam
+  static unsigned long lastDayIncrement = 0;
+  if (millis() - lastDayIncrement > 86400000) { // 24 jam dalam milidetik
+    if (currentDay < 25) {
+      currentDay++;
+      EEPROM.writeInt(EEPROM_DAY_ADDR, currentDay);
+      EEPROM.commit();
+      updateParameters();
+    }
+    lastDayIncrement = millis();
+  }
+}
+</pre>
+                    </div>
+                    
+                    <button id="copy-firmware-btn">Salin Kode</button>
+                    <button id="download-firmware-btn" class="secondary">Download sebagai File</button>
+                </div>
+            </div>
+            
+            <div class="result-box" id="result-box" style="display: none;">
+                <h3>Hasil Perhitungan</h3>
+                <p><strong>Parameter optimal untuk minggu ini:</strong></p>
+                <p>PPM: <span id="result-ppm"></span> <span id="ppm-status" class="status-badge"></span></p>
+                <p>pH: <span id="result-ph"></span> <span id="ph-status" class="status-badge"></span></p>
+                
+                <div class="decision-info" id="decision-info">
+                    <p>Keputusan algoritma: <span id="decision-text"></span></p>
+                </div>
+                
+                <h4>Rekomendasi untuk Perangkat:</h4>
+                <div class="param-card">
+                    <p>Gunakan nilai-nilai berikut sebagai setpoint:</p>
+                    <p><strong>PPM:</strong> <span id="device-ppm"></span></p>
+                    <p><strong>pH:</strong> <span id="device-ph"></span></p>
+                    <p><strong>Hari ke:</strong> <span id="device-day"></span>/25</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Optimal parameters for Pakcoy (25 days growth)
+        const weekParameters = {
+            1: { ppmMin: 400, ppmMax: 500, phMin: 5.5, phMax: 6.0 },
+            2: { ppmMin: 600, ppmMax: 800, phMin: 5.8, phMax: 6.2 },
+            3: { ppmMin: 800, ppmMax: 1000, phMin: 6.0, phMax: 6.3 },
+            4: { ppmMin: 1000, ppmMax: 1200, phMin: 6.0, phMax: 6.5 }
+        };
+
+        // DOM elements
+        const weekElements = document.querySelectorAll('.week');
+        const currentWeekSelect = document.getElementById('current-week');
+        const ppmValuesInput = document.getElementById('ppm-values');
+        const phValuesInput = document.getElementById('ph-values');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultBox = document.getElementById('result-box');
+        const resultPpm = document.getElementById('result-ppm');
+        const resultPh = document.getElementById('result-ph');
+        const devicePpm = document.getElementById('device-ppm');
+        const devicePh = document.getElementById('device-ph');
+        const deviceDay = document.getElementById('device-day');
+        const csvFileInput = document.getElementById('csv-file');
+        const csvWeekSelect = document.getElementById('csv-week');
+        const csvPreview = document.getElementById('csv-preview');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const decisionText = document.getElementById('decision-text');
+        const ppmStatus = document.getElementById('ppm-status');
+        const phStatus = document.getElementById('ph-status');
+        const harvestNotification = document.getElementById('harvest-notification');
+        const dayInput = document.getElementById('day-input');
+        const deviceIpInput = document.getElementById('device-ip');
+        const devicePortInput = document.getElementById('device-port');
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const sendParamsBtn = document.getElementById('send-params-btn');
+        const otaFileInput = document.getElementById('ota-file');
+        const otaBtn = document.getElementById('ota-btn');
+        const otaStatus = document.getElementById('ota-status');
+        const exportJsonBtn = document.getElementById('export-json-btn');
+        const exportCsvBtn = document.getElementById('export-csv-btn');
+        const copyFirmwareBtn = document.getElementById('copy-firmware-btn');
+        const downloadFirmwareBtn = document.getElementById('download-firmware-btn');
+        const growthChartCtx = document.getElementById('growthChart').getContext('2d');
+        const currentPpmDisplay = document.getElementById('current-ppm');
+        const currentPhDisplay = document.getElementById('current-ph');
+        const currentDayDisplay = document.getElementById('current-day-display');
+        const ppmReadingStatus = document.getElementById('ppm-reading-status');
+        const phReadingStatus = document.getElementById('ph-reading-status');
+        const nutrientStatus = document.getElementById('nutrient-status');
+        const phUpStatus = document.getElementById('ph-up-status');
+        const phDownStatus = document.getElementById('ph-down-status');
+        const autoStatus = document.getElementById('auto-status');
+        const nutrientToggle = document.getElementById('nutrient-toggle');
+        const phUpToggle = document.getElementById('ph-up-toggle');
+        const phDownToggle = document.getElementById('ph-down-toggle');
+        const autoToggle = document.getElementById('auto-toggle');
+
+        // Global variables
+        let currentData = null;
+        let growthChart = null;
+        let deviceConnected = false;
+        let currentDay = 1;
+        let deviceIP = '';
+        let devicePort = 80;
+        let updateInterval = null;
+
+        // Initialize
+        function init() {
+            setupEventListeners();
+            updateHarvestNotification();
+            renderGrowthChart();
+            simulateSensorData();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Week selection
+            weekElements.forEach(el => {
+                el.addEventListener('click', function() {
+                    weekElements.forEach(w => w.classList.remove('active'));
+                    this.classList.add('active');
+                    currentWeekSelect.value = this.dataset.week;
+                    csvWeekSelect.value = this.dataset.week;
+                    updateDayRange();
+                });
+            });
+            
+            // Current week select change
+            currentWeekSelect.addEventListener('change', function() {
+                weekElements.forEach(w => w.classList.remove('active'));
+                document.getElementById(`week${this.value}`).classList.add('active');
+                csvWeekSelect.value = this.value;
+                updateDayRange();
+            });
+            
+            // CSV week select change
+            csvWeekSelect.addEventListener('change', function() {
+                weekElements.forEach(w => w.classList.remove('active'));
+                document.getElementById(`week${this.value}`).classList.add('active');
+                currentWeekSelect.value = this.value;
+                updateDayRange();
+            });
+            
+            // Calculate button
+            calculateBtn.addEventListener('click', calculateOptimalParameters);
+            
+            // Analyze button
+            analyzeBtn.addEventListener('click', analyzeCSVData);
+            
+            // CSV file input
+            csvFileInput.addEventListener('change', handleCSVUpload);
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.dataset.tab;
+                    
+                    // Update tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // Day input
+            dayInput.addEventListener('change', function() {
+                currentDay = parseInt(this.value);
+                currentDayDisplay.textContent = currentDay;
+                updateHarvestNotification();
+            });
+            
+            // Device connection
+            connectBtn.addEventListener('click', connectToDevice);
+            disconnectBtn.addEventListener('click', disconnectFromDevice);
+            sendParamsBtn.addEventListener('click', sendParametersToDevice);
+            
+            // OTA update
+            otaFileInput.addEventListener('change', function() {
+                otaBtn.disabled = !this.files[0];
+            });
+            otaBtn.addEventListener('click', performOtaUpdate);
+            
+            // Data export
+            exportJsonBtn.addEventListener('click', exportToJson);
+            exportCsvBtn.addEventListener('click', exportToCsv);
+            
+            // Firmware actions
+            copyFirmwareBtn.addEventListener('click', copyFirmwareCode);
+            downloadFirmwareBtn.addEventListener('click', downloadFirmware);
+            
+            // Device control toggles
+            nutrientToggle.addEventListener('change', function() {
+                nutrientStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
+                if (deviceConnected) {
+                    sendDeviceCommand('toggle-pump', { pump: 'nutrient' });
+                }
+            });
+            
+            phUpToggle.addEventListener('change', function() {
+                phUpStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
+                if (this.checked && phDownToggle.checked) {
+                    phDownToggle.checked = false;
+                    phDownStatus.className = 'control-status status-off';
+                }
+                if (deviceConnected) {
+                    sendDeviceCommand('toggle-pump', { pump: 'phup' });
+                }
+            });
+            
+            phDownToggle.addEventListener('change', function() {
+                phDownStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
+                if (this.checked && phUpToggle.checked) {
+                    phUpToggle.checked = false;
+                    phUpStatus.className = 'control-status status-off';
+                }
+                if (deviceConnected) {
+                    sendDeviceCommand('toggle-pump', { pump: 'phdown' });
+                }
+            });
+            
+            autoToggle.addEventListener('change', function() {
+                autoStatus.className = this.checked ? 'control-status status-on' : 'control-status status-off';
+                if (deviceConnected) {
+                    sendDeviceCommand('toggle-mode');
+                }
+            });
+        }
+        
+        // Update day range based on selected week
+        function updateDayRange() {
+            const week = parseInt(currentWeekSelect.value);
+            let minDay = 1, maxDay = 7;
+            
+            if (week === 2) {
+                minDay = 8;
+                maxDay = 14;
+            } else if (week === 3) {
+                minDay = 15;
+                maxDay = 21;
+            } else if (week === 4) {
+                minDay = 22;
+                maxDay = 25;
+            }
+            
+            dayInput.min = minDay;
+            dayInput.max = maxDay;
+            dayInput.value = minDay;
+            currentDay = minDay;
+            currentDayDisplay.textContent = currentDay;
+            updateHarvestNotification();
+        }
+        
+        // Update harvest notification visibility
+        function updateHarvestNotification() {
+            if (currentDay >= 25) {
+                harvestNotification.style.display = 'block';
+            } else {
+                harvestNotification.style.display = 'none';
+            }
+        }
+
+        // Handle CSV file upload
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            analyzeBtn.disabled = true;
+            exportJsonBtn.disabled = true;
+            exportCsvBtn.disabled = true;
+            csvPreview.innerHTML = "<p>Memproses file CSV...</p>";
+            
+            Papa.parse(file, {
+                header: true,
+                complete: function(results) {
+                    if (results.data.length === 0) {
+                        csvPreview.innerHTML = "<p>File CSV tidak mengandung data</p>";
+                        return;
+                    }
+                    
+                    // Validate required columns
+                    const firstRow = results.data[0];
+                    if (!firstRow.hasOwnProperty('ppm') || !firstRow.hasOwnProperty('ph')) {
+                        csvPreview.innerHTML = "<p>File CSV harus memiliki kolom 'ppm' dan 'ph'</p>";
+                        return;
+                    }
+                    
+                    // Store the parsed data
+                    currentData = results.data;
+                    
+                    // Display sample data
+                    let previewHTML = `<p>Data CSV (${results.data.length} baris):</p>`;
+                    previewHTML += `<div style="overflow-x:auto;"><table><tr>${Object.keys(firstRow).map(k => `<th>${k}</th>`).join('')}</tr>`;
+                    
+                    // Show first 3 rows
+                    for (let i = 0; i < Math.min(3, results.data.length); i++) {
+                        previewHTML += `<tr>${Object.values(results.data[i]).map(v => `<td>${v}</td>`).join('')}</tr>`;
+                    }
+                    
+                    if (results.data.length > 3) {
+                        previewHTML += `<tr><td colspan="${Object.keys(firstRow).length}">... dan ${results.data.length - 3} baris lainnya</td></tr>`;
+                    }
+                    
+                    previewHTML += "</table></div>";
+                    csvPreview.innerHTML = previewHTML;
+                    
+                    analyzeBtn.disabled = false;
+                    exportJsonBtn.disabled = false;
+                    exportCsvBtn.disabled = false;
+                },
+                error: function(error) {
+                    csvPreview.innerHTML = `<p>Error membaca file CSV: ${error.message}</p>`;
+                }
+            });
+        }
+
+        // Decision Tree Algorithm
+        function analyzeWithDecisionTree(week, values, parameter) {
+            const params = weekParameters[week];
+            const min = parameter === 'ppm' ? params.ppmMin : params.phMin;
+            const max = parameter === 'ppm' ? params.ppmMax : params.phMax;
+            
+            // Calculate statistics
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const range = Math.max(...values) - Math.min(...values);
+            const stability = range / (max - min);
+            
+            // Decision tree rules
+            if (values.some(v => v < min * 0.8 || v > max * 1.2)) {
+                return {
+                    decision: "Terdapat nilai ekstrim yang perlu diperiksa",
+                    adjustment: 0,
+                    confidence: "rendah",
+                    status: "danger"
+                };
+            } else if (stability > 0.5) {
+                return {
+                    decision: "Parameter tidak stabil, perlu penyesuaian",
+                    adjustment: (avg - (min + max)/2) * 0.5,
+                    confidence: "sedang",
+                    status: "warning"
+                };
+            } else if (avg < min) {
+                return {
+                    decision: "Parameter terlalu rendah, perlu dinaikkan",
+                    adjustment: (min - avg) * 0.7,
+                    confidence: "tinggi",
+                    status: "warning"
+                };
+            } else if (avg > max) {
+                return {
+                    decision: "Parameter terlalu tinggi, perlu diturunkan",
+                    adjustment: (max - avg) * 0.7,
+                    confidence: "tinggi",
+                    status: "warning"
+                };
+            } else {
+                return {
+                    decision: "Parameter dalam range optimal",
+                    adjustment: 0,
+                    confidence: "tinggi",
+                    status: "good"
+                };
+            }
+        }
+
+        // Analyze CSV data
+        function analyzeCSVData() {
+            const week = parseInt(csvWeekSelect.value);
+            const params = weekParameters[week];
+            
+            if (!currentData) {
+                alert("Tidak ada data CSV yang valid untuk dianalisis");
+                return;
+            }
+            
+            // Extract ppm and ph values
+            const ppmValues = currentData.map(row => parseFloat(row.ppm)).filter(val => !isNaN(val));
+            const phValues = currentData.map(row => parseFloat(row.ph)).filter(val => !isNaN(val));
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Data CSV tidak mengandung nilai PPM atau pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values (more robust than average)
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
+        }
+
+        // Calculate optimal parameters
+        function calculateOptimalParameters() {
+            const week = parseInt(currentWeekSelect.value);
+            const params = weekParameters[week];
+            
+            // Parse input values
+            const ppmValues = parseInputValues(ppmValuesInput.value);
+            const phValues = parseInputValues(phValuesInput.value);
+            
+            if (ppmValues.length === 0 || phValues.length === 0) {
+                alert("Masukkan data PPM dan pH yang valid!");
+                return;
+            }
+            
+            // Calculate median values
+            const medianPpm = calculateMedian(ppmValues);
+            const medianPh = calculateMedian(phValues);
+            
+            // Apply decision tree analysis
+            const ppmAnalysis = analyzeWithDecisionTree(week, ppmValues, 'ppm');
+            const phAnalysis = analyzeWithDecisionTree(week, phValues, 'ph');
+            
+            // Adjust to optimal range with decision tree recommendations
+            const optimalPpm = Math.max(params.ppmMin, Math.min(params.ppmMax, medianPpm + ppmAnalysis.adjustment));
+            const optimalPh = Math.max(params.phMin, Math.min(params.phMax, medianPh + phAnalysis.adjustment));
+            
+            // Display results
+            showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis);
+        }
+
+        // Show calculation results
+        function showResults(week, optimalPpm, optimalPh, params, ppmAnalysis, phAnalysis) {
+            // Format numbers to show 1 decimal place for PPM and 2 for pH
+            resultPpm.textContent = `${optimalPpm.toFixed(1)} (range optimal: ${params.ppmMin}-${params.ppmMax})`;
+            resultPh.textContent = `${optimalPh.toFixed(2)} (range optimal: ${params.phMin}-${params.phMax})`;
+            
+            // Display status badges
+            ppmStatus.textContent = ppmAnalysis.status === "good" ? "Optimal" : 
+                                  ppmAnalysis.status === "warning" ? "Perhatian" : "Kritis";
+            ppmStatus.className = `status-badge status-${ppmAnalysis.status}`;
+            
+            phStatus.textContent = phAnalysis.status === "good" ? "Optimal" : 
+                                 phAnalysis.status === "warning" ? "Perhatian" : "Kritis";
+            phStatus.className = `status-badge status-${phAnalysis.status}`;
+            
+            // Display decision tree analysis
+            const decisions = [];
+            if (ppmAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`PPM: ${ppmAnalysis.decision}`);
+            }
+            if (phAnalysis.decision !== "Parameter dalam range optimal") {
+                decisions.push(`pH: ${phAnalysis.decision}`);
+            }
+            
+            if (decisions.length > 0) {
+                decisionText.textContent = decisions.join(" | ");
+                document.getElementById('decision-info').style.display = 'block';
+            } else {
+                decisionText.textContent = "Semua parameter dalam range optimal";
+                document.getElementById('decision-info').style.display = 'block';
+            }
+            
+            // Device recommended values
+            devicePpm.textContent = optimalPpm.toFixed(1);
+            devicePh.textContent = optimalPh.toFixed(2);
+            deviceDay.textContent = currentDay;
+            
+            // Enable send params button if device is connected
+            if (deviceConnected) {
+                sendParamsBtn.disabled = false;
+            }
+            
+            resultBox.style.display = 'block';
+            
+            // Scroll to results
+            resultBox.scrollIntoView({ behavior: 'smooth' });
+            
+            // Update chart with new data
+            updateGrowthChart(week, optimalPpm, optimalPh);
+        }
+
+        // Parse comma-separated input values
+        function parseInputValues(input) {
+            return input.split(',')
+                .map(val => parseFloat(val.trim()))
+                .filter(val => !isNaN(val));
+        }
+
+        // Calculate median of an array
+        function calculateMedian(values) {
+            if (values.length === 0) return 0;
+            
+            const sorted = [...values].sort((a, b) => a - b);
+            const half = Math.floor(sorted.length / 2);
+            
+            if (sorted.length % 2) {
+                return sorted[half];
+            }
+            return (sorted[half - 1] + sorted[half]) / 2;
+        }
+        
+        // Connect to ESP32-S3 device
+        function connectToDevice() {
+            const ip = deviceIpInput.value.trim();
+            const port = devicePortInput.value.trim();
+            
+            if (!ip) {
+                alert("Masukkan alamat IP perangkat!");
+                return;
+            }
+            
+            deviceIP = ip;
+            devicePort = parseInt(port) || 80;
+            
+            // Simulate connection (in a real implementation, you would test the connection here)
+            deviceConnected = true;
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            sendParamsBtn.disabled = false;
+            otaBtn.disabled = !otaFileInput.files[0];
+            
+            // Start polling device data
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(fetchDeviceData, 5000);
+            
+            // Fetch initial data
+            fetchDeviceData();
+            
+            alert(`Terhubung ke perangkat di ${ip}:${port}`);
+        }
+        
+        // Disconnect from device
+        function disconnectFromDevice() {
+            deviceConnected = false;
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            sendParamsBtn.disabled = true;
+            otaBtn.disabled = true;
+            
+            // Stop polling
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            
+            alert("Koneksi ke perangkat diputus");
+        }
+        
+        // Fetch data from device
+        function fetchDeviceData() {
+            // In a real implementation, you would fetch data from the device
+            // For this example, we'll just simulate data
+            simulateSensorData();
+        }
+        
+        // Send parameters to device
+        function sendParametersToDevice() {
+            if (!deviceConnected) {
+                alert("Tidak terhubung ke perangkat!");
+                return;
+            }
+            
+            const ppm = devicePpm.textContent;
+            const ph = devicePh.textContent;
+            const day = dayInput.value;
+            
+            // In a real implementation, you would send this data to the device
+            // For this example, we'll just show a confirmation
+            alert(`Parameter dikirim ke perangkat:\nPPM: ${ppm}\npH: ${ph}\nHari: ${day}/25`);
+            
+            // Update current day
+            currentDay = parseInt(day);
+            currentDayDisplay.textContent = currentDay;
+            updateHarvestNotification();
+        }
+        
+        // Send command to device
+        function sendDeviceCommand(command, params = {}) {
+            if (!deviceConnected) return;
+            
+            // In a real implementation, you would send this command to the device
+            console.log(`Sending command: ${command}`, params);
+        }
+        
+        // Perform OTA update
+        function performOtaUpdate() {
+            if (!deviceConnected) {
+                alert("Tidak terhubung ke perangkat!");
+                return;
+            }
+            
+            const file = otaFileInput.files[0];
+            if (!file) {
+                alert("Pilih file firmware terlebih dahulu!");
+                return;
+            }
+            
+            // In a real implementation, you would upload the firmware to the device
+            // For this example, we'll just simulate the process
+            otaStatus.className = 'ota-status ota-success';
+            otaStatus.textContent = 'Memulai update firmware...';
+            otaStatus.style.display = 'block';
+            
+            setTimeout(() => {
+                otaStatus.textContent = 'Update firmware berhasil! Perangkat akan restart.';
+                setTimeout(() => {
+                    disconnectFromDevice();
+                    alert('Perangkat telah di-restart. Silakan hubungkan kembali setelah beberapa saat.');
+                }, 2000);
+            }, 3000);
+        }
+        
+        // Export data to JSON
+        function exportToJson() {
+            if (!currentData) {
+                alert("Tidak ada data untuk diekspor!");
+                return;
+            }
+            
+            const dataStr = JSON.stringify(currentData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'hidroponik_data.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Export data to CSV
+        function exportToCsv() {
+            if (!currentData) {
+                alert("Tidak ada data untuk diekspor!");
+                return;
+            }
+            
+            const csv = Papa.unparse(currentData);
+            const dataUri = 'data:text/csv;charset=utf-8,'+ encodeURIComponent(csv);
+            
+            const exportFileDefaultName = 'hidroponik_data.csv';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Copy firmware code
+        function copyFirmwareCode() {
+            const code = document.getElementById('firmware-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Kode firmware berhasil disalin ke clipboard!');
+            }, (err) => {
+                console.error('Gagal menyalin kode: ', err);
+                alert('Gagal menyalin kode. Silakan coba lagi.');
+            });
+        }
+        
+        // Download firmware as file
+        function downloadFirmware() {
+            const code = document.getElementById('firmware-code').textContent;
+            const dataUri = 'data:text/plain;charset=utf-8,'+ encodeURIComponent(code);
+            
+            const exportFileDefaultName = 'hidroponik_esp32s3.ino';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Render growth chart
+        function renderGrowthChart() {
+            const labels = Array.from({length: 25}, (_, i) => `Hari ${i+1}`);
+            const ppmData = [];
+            const phData = [];
+            
+            // Generate data based on optimal parameters
+            for (let day = 1; day <= 25; day++) {
+                let week = 1;
+                if (day > 7 && day <= 14) week = 2;
+                else if (day > 14 && day <= 21) week = 3;
+                else if (day > 21) week = 4;
+                
+                const params = weekParameters[week];
+                ppmData.push((params.ppmMin + params.ppmMax) / 2);
+                phData.push((params.phMin + params.phMax) / 2);
+            }
+            
+            growthChart = new Chart(growthChartCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'PPM Optimal',
+                            data: ppmData,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'pH Optimal',
+                            data: phData,
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'PPM'
+                            },
+                            min: 300,
+                            max: 1300
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'pH'
+                            },
+                            min: 5,
+                            max: 7,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update growth chart with new data
+        function updateGrowthChart(week, ppm, ph) {
+            if (!growthChart) return;
+            
+            // Add a point for the current calculation
+            const dayIndex = currentDay - 1;
+            
+            // Create a copy of the datasets
+            const ppmData = [...growthChart.data.datasets[0].data];
+            const phData = [...growthChart.data.datasets[1].data];
+            
+            // Update the data for the current day
+            ppmData[dayIndex] = ppm;
+            phData[dayIndex] = ph;
+            
+            // Update the chart
+            growthChart.data.datasets[0].data = ppmData;
+            growthChart.data.datasets[1].data = phData;
+            growthChart.update();
+        }
+        
+        // Simulate sensor data for demo purposes
+        function simulateSensorData() {
+            // Get optimal ranges for current day
+            let week = 1;
+            if (currentDay > 7 && currentDay <= 14) week = 2;
+            else if (currentDay > 14 && currentDay <= 21) week = 3;
+            else if (currentDay > 21) week = 4;
+            
+            const params = weekParameters[week];
+            
+            // Generate random values within optimal range +/- some variation
+            const ppmVariation = (params.ppmMax - params.ppmMin) * 0.2;
+            const phVariation = (params.phMax - params.phMin) * 0.2;
+            
+            const ppmMid = (params.ppmMin + params.ppmMax) / 2;
+            const phMid = (params.phMin + params.phMax) / 2;
+            
+            const ppm = ppmMid + (Math.random() * 2 - 1) * ppmVariation;
+            const ph = phMid + (Math.random() * 2 - 1) * phVariation;
+            
+            // Update display
+            currentPpmDisplay.textContent = ppm.toFixed(1);
+            currentPhDisplay.textContent = ph.toFixed(2);
+            
+            // Update status
+            if (ppm < params.ppmMin) {
+                ppmReadingStatus.textContent = "Di bawah optimal";
+                ppmReadingStatus.style.color = "var(--warning)";
+                nutrientToggle.checked = true;
+                nutrientStatus.className = 'control-status status-on';
+            } else if (ppm > params.ppmMax) {
+                ppmReadingStatus.textContent = "Di atas optimal";
+                ppmReadingStatus.style.color = "var(--warning)";
+                nutrientToggle.checked = false;
+                nutrientStatus.className = 'control-status status-off';
+            } else {
+                ppmReadingStatus.textContent = "Optimal";
+                ppmReadingStatus.style.color = "var(--success)";
+                nutrientToggle.checked = false;
+                nutrientStatus.className = 'control-status status-off';
+            }
+            
+            if (ph < params.phMin) {
+                phReadingStatus.textContent = "Di bawah optimal";
+                phReadingStatus.style.color = "var(--warning)";
+                phUpToggle.checked = true;
+                phDownToggle.checked = false;
+                phUpStatus.className = 'control-status status-on';
+                phDownStatus.className = 'control-status status-off';
+            } else if (ph > params.phMax) {
+                phReadingStatus.textContent = "Di atas optimal";
+                phReadingStatus.style.color = "var(--warning)";
+                phUpToggle.checked = false;
+                phDownToggle.checked = true;
+                phUpStatus.className = 'control-status status-off';
+                phDownStatus.className = 'control-status status-on';
+            } else {
+                phReadingStatus.textContent = "Optimal";
+                phReadingStatus.style.color = "var(--success)";
+                phUpToggle.checked = false;
+                phDownToggle.checked = false;
+                phUpStatus.className = 'control-status status-off';
+                phDownStatus.className = 'control-status status-off';
+            }
+            
+            // Set auto status
+            autoStatus.className = autoToggle.checked ? 'control-status status-on' : 'control-status status-off';
+        }
+        
+        // Initialize the application
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
