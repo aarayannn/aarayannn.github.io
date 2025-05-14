@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventRecon Vise - Advanced Event Reconstruction System</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #3a86ff;
+      --secondary-color: #8338ec;
+      --accent-color: #ff006e;
+      --success-color: #38b000;
+      --warning-color: #ffbe0b;
+      --danger-color: #ff5400;
+      --dark-color: #1a1a2e;
+      --darker-color: #16213e;
+      --light-color: #e9ecef;
+      --text-color: #f8f9fa;
+      --text-secondary: #adb5bd;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--darker-color);
+      color: var(--text-color);
+      overflow: hidden;
+    }
+    
+    .container {
+      display: grid;
+      grid-template-rows: 60px 1fr;
+      height: 100vh;
+    }
+    
+    /* Header Styles */
+    header {
+      background-color: var(--dark-color);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--box-shadow);
+      z-index: 100;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo img {
+      height: 36px;
+    }
+    
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .logo span {
+      color: var(--secondary-color);
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--border-radius);
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #2a75f0;
+    }
+    
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text-color);
+      border: 1px solid var(--text-secondary);
+    }
+    
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-accent {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-accent:hover {
+      background-color: #e0005e;
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      display: grid;
+      grid-template-columns: 300px 1fr 300px;
+      gap: 15px;
+      padding: 15px;
+      height: calc(100vh - 60px);
+    }
+    
+    .panel {
+      background-color: var(--dark-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .panel-header {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .panel-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .panel-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .panel-icon:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .panel-content {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    
+    /* Left Panel - Data Sources */
+    .data-sources {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .data-source {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .data-source:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .data-source.active {
+      background-color: rgba(58, 134, 255, 0.2);
+      border-left: 3px solid var(--primary-color);
+    }
+    
+    .data-source-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .data-source-title {
+      font-weight: 600;
+    }
+    
+    .data-source-status {
+      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background-color: var(--success-color);
+    }
+    
+    .data-source-status.warning {
+      background-color: var(--warning-color);
+      color: var(--dark-color);
+    }
+    
+    .data-source-status.error {
+      background-color: var(--danger-color);
+    }
+    
+    .data-source-info {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .data-source-info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 20px;
+    }
+    
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      background-color: rgba(58, 134, 255, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 2rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+    
+    .upload-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Center Panel - Visualization */
+    .visualization-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .visualization-tabs {
+      display: flex;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .visualization-tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      border-bottom: 3px solid transparent;
+    }
+    
+    .visualization-tab:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .visualization-tab.active {
+      border-bottom-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+    
+    .visualization-content {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .visualization-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    
+    .visualization-view.active {
+      display: block;
+    }
+    
+    #scene-3d, #map-view, #chart-view {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .camera-controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10;
+    }
+    
+    .camera-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .camera-btn:hover {
+      background-color: var(--primary-color);
+    }
+    
+    .camera-btn.active {
+      background-color: var(--primary-color);
+    }
+    
+    .playback-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 30px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 10;
+    }
+    
+    .playback-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .playback-btn:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .playback-btn.play-pause {
+      width: 48px;
+      height: 48px;
+      background-color: var(--primary-color);
+    }
+    
+    .playback-btn.play-pause:hover {
+      background-color: #2a75f0;
+    }
+    
+    .timeline-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .timeline-slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+    }
+    
+    .timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      cursor: pointer;
+    }
+    
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .speed-value {
+      font-size: 0.9rem;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    /* Right Panel - Analysis */
+    .data-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--border-radius);
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .data-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .data-card-title {
+      font-weight: 600;
+    }
+    
+    .data-card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+    
+    .data-card-footer {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+    
+    .sensor-readings {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    
+    .sensor-reading {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: var(--border-radius);
+      padding: 12px;
+    }
+    
+    .sensor-reading-title {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    
+    .sensor-reading-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .sensor-reading-unit {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-left: 3px;
+    }
+    
+    .event-timeline {
+      margin-top: 20px;
+    }
+    
+    .event-item {
+      display: flex;
+      margin-bottom: 15px;
+      position: relative;
+    }
+    
+    .event-item::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 30px;
+      bottom: -15px;
+      width: 2px;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .event-item:last-child::before {
+      display: none;
+    }
+    
+    .event-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      z-index: 1;
+    }
+    
+    .event-icon.warning {
+      background-color: var(--warning-color);
+      color: var(--dark-color);
+    }
+    
+    .event-icon.danger {
+      background-color: var(--danger-color);
+    }
+    
+    .event-content {
+      flex: 1;
+    }
+    
+    .event-time {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+    
+    .event-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .event-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 1200px) {
+      .main-content {
+        grid-template-columns: 250px 1fr 250px;
+      }
+    }
+    
+    @media (max-width: 992px) {
+      .main-content {
+        grid-template-columns: 220px 1fr;
+      }
+      
+      .panel:last-child {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+      }
+      
+      .panel:first-child {
+        display: none;
+      }
+      
+      .logo h1 {
+        font-size: 1.2rem;
+      }
+      
+      .header-actions .btn span {
+        display: none;
+      }
+    }
+    
+    /* Animation Keyframes */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjM2E4NmZmIiBkPSJNMjU2IDhDMTE5IDggOCAxMTkgOCAyNTZzMTExIDI0OCAyNDggMjQ4IDI0OC0xMTEgMjQ4LTI0OFMzOTMgOCAyNTYgOHptMCA0NDhjLTExMC41IDAtMjAwLTg5LjUtMjAwLTIwMFMxNDUuNSA1NiAyNTYgNTZzMjAwIDg5LjUgMjAwIDIwMC04OS41IDIwMC0yMDAgMjAweiIvPjxwYXRoIGZpbGw9IiNmZjAwNmUiIGQ9Ik0zMTcuOCAzNTEuNmMtLjcgMC0xLjQtLjEtMi4xLS4zLTQuMi0xLjItNi43LTUuNS01LjUtOS43bDMyLjQtMTE0LjdjMS4yLTQuMiA1LjUtNi43IDkuNy01LjUgNC4yIDEuMiA2LjcgNS41IDUuNSA5LjdMMzI1LjQgMzQ2YzEgMy4zLTEuNCA2LjctNC43IDcuOWwtMi45LTIuM3oiLz48cGF0aCBmaWxsPSIjODMzOGVjIiBkPSJNMjU2IDI5OC43Yy0yMy4yIDAtNDIuMS0xOC45LTQyLjEtNDIuMXMxOC45LTQyLjEgNDIuMS00Mi4xIDQyLjEgMTguOSA0Mi4xIDQyLjEtMTguOSA0Mi4xLTQyLjEgNDIuMXptMC02NC4yYy0xMi4yIDAtMjIuMSA5LjktMjIuMSAyMi4xczEwIDIyLjEgMjIuMSAyMi4xIDIyLjEtOS45IDIyLjEtMjIuMS05LjktMjIuMS0yMi4xLTIyLjF6Ii8+PC9zdmc+" alt="Logo">
+        <h1>EventRecon <span>Vise</span></h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </button>
+        <button class="btn btn-secondary">
+          <i class="fas fa-question-circle"></i>
+          <span>Help</span>
+        </button>
+        <button class="btn btn-primary">
+          <i class="fas fa-file-export"></i>
+          <span>Export Report</span>
+        </button>
+      </div>
+    </header>
+    
+    <div class="main-content">
+      <!-- Left Panel - Data Sources -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Data Sources</div>
+          <div class="panel-actions">
+            <div class="panel-icon">
+              <i class="fas fa-plus"></i>
+            </div>
+            <div class="panel-icon">
+              <i class="fas fa-sync-alt"></i>
+            </div>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div class="data-sources">
+            <div class="data-source active">
+              <div class="data-source-header">
+                <div class="data-source-title">Vehicle IMU Data</div>
+                <div class="data-source-status">Active</div>
+              </div>
+              <div class="data-source-info">
+                <div class="data-source-info-item">
+                  <i class="fas fa-file"></i>
+                  <span>vehicle_imu_data.csv</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-clock"></i>
+                  <span>Duration: 2m 34s</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-chart-line"></i>
+                  <span>1,240 data points</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="data-source">
+              <div class="data-source-header">
+                <div class="data-source-title">GPS Tracking Data</div>
+                <div class="data-source-status">Active</div>
+              </div>
+              <div class="data-source-info">
+                <div class="data-source-info-item">
+                  <i class="fas fa-file"></i>
+                  <span>gps_tracking.gpx</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-clock"></i>
+                  <span>Duration: 2m 34s</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>128 location points</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="data-source">
+              <div class="data-source-header">
+                <div class="data-source-title">Dashboard Camera</div>
+                <div class="data-source-status warning">Partial</div>
+              </div>
+              <div class="data-source-info">
+                <div class="data-source-info-item">
+                  <i class="fas fa-file-video"></i>
+                  <span>dashcam_footage.mp4</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-clock"></i>
+                  <span>Duration: 1m 47s</span>
+                </div>
+                <div class="data-source-info-item">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <span>Missing 47s of footage</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="upload-area">
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <div class="upload-text">
+                <p>Drag & drop files here</p>
+                <p>or click to browse</p>
+                <p><small>Supported formats: CSV, GPX, MP4, JSON</small></p>
+              </div>
+              <input type="file" id="file-upload" style="display: none;" multiple>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Center Panel - Visualization -->
+      <div class="panel">
+        <div class="visualization-container">
+          <div class="visualization-tabs">
+            <div class="visualization-tab active" data-view="3d">3D Reconstruction</div>
+            <div class="visualization-tab" data-view="map">GPS Map</div>
+            <div class="visualization-tab" data-view="chart">Sensor Data</div>
+            <div class="visualization-tab" data-view="video">Video Sync</div>
+          </div>
+          
+          <div class="visualization-content">
+            <div class="visualization-view active" id="view-3d">
+              <div id="scene-3d"></div>
+              
+              <div class="camera-controls">
+                <div class="camera-btn active" data-camera="follow">
+                  <i class="fas fa-car"></i>
+                </div>
+                <div class="camera-btn" data-camera="top">
+                  <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="camera-btn" data-camera="side">
+                  <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="camera-btn" data-camera="free">
+                  <i class="fas fa-street-view"></i>
+                </div>
+              </div>
+              
+              <div class="playback-controls">
+                <div class="playback-btn">
+                  <i class="fas fa-step-backward"></i>
+                </div>
+                <div class="playback-btn">
+                  <i class="fas fa-backward"></i>
+                </div>
+                <div class="playback-btn play-pause">
+                  <i class="fas fa-play"></i>
+                </div>
+                <div class="playback-btn">
+                  <i class="fas fa-forward"></i>
+                </div>
+                <div class="playback-btn">
+                  <i class="fas fa-step-forward"></i>
+                </div>
+                
+                <div class="timeline-container">
+                  <input type="range" class="timeline-slider" min="0" max="100" value="0">
+                  <div class="timeline-labels">
+                    <span>00:00</span>
+                    <span>02:34</span>
+                  </div>
+                </div>
+                
+                <div class="speed-control">
+                  <i class="fas fa-tachometer-alt"></i>
+                  <input type="range" min="0.25" max="4" step="0.25" value="1" class="timeline-slider" style="width: 60px;">
+                  <span class="speed-value">1.0x</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="visualization-view" id="view-map">
+              <div id="map-view"></div>
+            </div>
+            
+            <div class="visualization-view" id="view-chart">
+              <div id="chart-view"></div>
+            </div>
+            
+            <div class="visualization-view" id="view-video">
+              <div id="video-view"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Panel - Analysis -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Event Analysis</div>
+          <div class="panel-actions">
+            <div class="panel-icon">
+              <i class="fas fa-download"></i>
+            </div>
+            <div class="panel-icon">
+              <i class="fas fa-ellipsis-v"></i>
+            </div>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div class="data-card">
+            <div class="data-card-header">
+              <div class="data-card-title">Current Time</div>
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="data-card-value">00:42.35</div>
+            <div class="data-card-footer">27.3% of total event duration</div>
+          </div>
+          
+          <div class="sensor-readings">
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Acceleration</div>
+              <div class="sensor-reading-value">2.34<span class="sensor-reading-unit">m/s²</span></div>
+            </div>
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Speed</div>
+              <div class="sensor-reading-value">42.8<span class="sensor-reading-unit">km/h</span></div>
+            </div>
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Roll</div>
+              <div class="sensor-reading-value">3.2<span class="sensor-reading-unit">°</span></div>
+            </div>
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Pitch</div>
+              <div class="sensor-reading-value">-1.7<span class="sensor-reading-unit">°</span></div>
+            </div>
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Yaw</div>
+              <div class="sensor-reading-value">12.5<span class="sensor-reading-unit">°</span></div>
+            </div>
+            <div class="sensor-reading">
+              <div class="sensor-reading-title">Altitude</div>
+              <div class="sensor-reading-value">124<span class="sensor-reading-unit">m</span></div>
+            </div>
+          </div>
+          
+          <div class="event-timeline">
+            <h3>Event Timeline</h3>
+            
+            <div class="event-item">
+              <div class="event-icon">
+                <i class="fas fa-car"></i>
+              </div>
+              <div class="event-content">
+                <div class="event-time">00:00.00</div>
+                <div class="event-title">Recording Started</div>
+                <div class="event-description">Vehicle started moving from initial position</div>
+              </div>
+            </div>
+            
+            <div class="event-item">
+              <div class="event-icon">
+                <i class="fas fa-turn-up"></i>
+              </div>
+              <div class="event-content">
+                <div class="event-time">00:32.45</div>
+                <div class="event-title">Left Turn</div>
+                <div class="event-description">Vehicle made a left turn at intersection</div>
+              </div>
+            </div>
+            
+            <div class="event-item">
+              <div class="event-icon warning">
+                <i class="fas fa-exclamation"></i>
+              </div>
+              <div class="event-content">
+                <div class="event-time">01:12.78</div>
+                <div class="event-title">Sudden Braking</div>
+                <div class="event-description">Deceleration of -4.2 m/s² detected</div>
+              </div>
+            </div>
+            
+            <div class="event-item">
+              <div class="event-icon danger">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <div class="event-content">
+                <div class="event-time">01:15.32</div>
+                <div class="event-title">Impact Detected</div>
+                <div class="event-description">Significant acceleration spike of 12.7 m/s²</div>
+              </div>
+            </div>
+            
+            <div class="event-item">
+              <div class="event-icon">
+                <i class="fas fa-stop"></i>
+              </div>
+              <div class="event-content">
+                <div class="event-time">02:34.12</div>
+                <div class="event-title">Recording Ended</div>
+                <div class="event-description">Vehicle came to complete stop</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+  
+  <script>
+    // DOM Elements
+    const visualizationTabs = document.querySelectorAll('.visualization-tab');
+    const visualizationViews = document.querySelectorAll('.visualization-view');
+    const cameraBtns = document.querySelectorAll('.camera-btn');
+    const playPauseBtn = document.querySelector('.play-pause');
+    const timelineSlider = document.querySelector('.timeline-slider');
+    const speedSlider = document.querySelector('input[type="range"][min="0.25"]');
+    const speedValue = document.querySelector('.speed-value');
+    const uploadArea = document.querySelector('.upload-area');
+    const fileUpload = document.getElementById('file-upload');
+    
+    // Tab switching
+    visualizationTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const view = tab.getAttribute('data-view');
+        
+        // Update active tab
+        visualizationTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Update active view
+        visualizationViews.forEach(v => v.classList.remove('active'));
+        document.getElementById(`view-${view}`).classList.add('active');
+        
+        // Initialize the appropriate view
+        if (view === 'map' && !mapInitialized) {
+          initMap();
+          mapInitialized = true;
+        } else if (view === 'chart' && !chartInitialized) {
+          initChart();
+          chartInitialized = true;
+        }
+      });
+    });
+    
+    // Camera controls
+    cameraBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const camera = btn.getAttribute('data-camera');
+        
+        // Update active camera
+        cameraBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update camera view in 3D scene
+        updateCameraView(camera);
+      });
+    });
+    
+    // Play/Pause button
+    let isPlaying = false;
+    playPauseBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playPauseBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+      
+      if (isPlaying) {
+        startAnimation();
+      } else {
+        stopAnimation();
+      }
+    });
+    
+    // Timeline slider
+    timelineSlider.addEventListener('input', () => {
+      const value = timelineSlider.value;
+      updateTimePosition(value);
+    });
+    
+    // Speed slider
+    speedSlider.addEventListener('input', () => {
+      const value = speedSlider.value;
+      speedValue.textContent = `${value}x`;
+      updatePlaybackSpeed(value);
+    });
+    
+    // File upload handling
+    uploadArea.addEventListener('click', () => {
+      fileUpload.click();
+    });
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'var(--primary-color)';
+      uploadArea.style.backgroundColor = 'rgba(58, 134, 255, 0.05)';
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      uploadArea.style.backgroundColor = 'transparent';
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      uploadArea.style.backgroundColor = 'transparent';
+      
+      if (e.dataTransfer.files.length) {
+        handleFiles(e.dataTransfer.files);
+      }
+    });
+    
+    fileUpload.addEventListener('change', () => {
+      if (fileUpload.files.length) {
+        handleFiles(fileUpload.files);
+      }
+    });
+    
+    function handleFiles(files) {
+      // Process uploaded files
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        console.log(`Processing file: ${file.name}`);
+        
+        // Here you would add code to parse and process different file types
+        // For CSV, GPX, JSON, etc.
+      }
+    }
+    
+    // Initialize 3D Scene
+    let scene, camera, renderer, vehicle;
+    let animationId = null;
+    
+    function init3DScene() {
+      // Create scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a1a2e);
+      
+      // Create camera
+      camera = new THREE.PerspectiveCamera(75, document.getElementById('scene-3d').clientWidth / document.getElementById('scene-3d').clientHeight, 0.1, 1000);
+      camera.position.set(0, 5, 10);
+      
+      // Create renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(document.getElementById('scene-3d').clientWidth, document.getElementById('scene-3d').clientHeight);
+      document.getElementById('scene-3d').appendChild(renderer.domElement);
+      
+      // Add lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(10, 20, 10);
+      scene.add(directionalLight);
+      
+      // Create ground
+      const groundGeometry = new THREE.PlaneGeometry(100, 100);
+      const groundMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x1e3a8a, 
+        side: THREE.DoubleSide 
+      });
+      const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -1;
+      scene.add(ground);
+      
+      // Create grid
+      const gridHelper = new THREE.GridHelper(100, 100, 0x3f3f3f, 0x3f3f3f);
+      gridHelper.position.y = -0.99;
+      scene.add(gridHelper);
+      
+      // Create vehicle
+      vehicle = createVehicle();
+      scene.add(vehicle);
+      
+      // Start animation loop
+      animate();
+      
+      // Handle window resize
+      window.addEventListener('resize', () => {
+        camera.aspect = document.getElementById('scene-3d').clientWidth / document.getElementById('scene-3d').clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(document.getElementById('scene-3d').clientWidth, document.getElementById('scene-3d').clientHeight);
+      });
+    }
+    
+    function createVehicle() {
+      const vehicle = new THREE.Group();
+      
+      // Car body
+      const bodyGeometry = new THREE.BoxGeometry(2, 1, 4);
+      const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x3a86ff });
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.position.y = 0.5;
+      vehicle.add(body);
+      
+      // Car roof
+      const roofGeometry = new THREE.BoxGeometry(1.8, 0.7, 2);
+      const roofMaterial = new THREE.MeshStandardMaterial({ color: 0x2563eb });
+      const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+      roof.position.set(0, 1.35, -0.5);
+      vehicle.add(roof);
+      
+      // Car wheels
+      const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
+      const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+      
+      const wheelPositions = [
+        { x: -1.1, y: 0, z: 1.3 },
+        { x: 1.1, y: 0, z: 1.3 },
+        { x: -1.1, y: 0, z: -1.3 },
+        { x: 1.1, y: 0, z: -1.3 }
+      ];
+      
+      wheelPositions.forEach(pos => {
+        const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(pos.x, pos.y, pos.z);
+        vehicle.add(wheel);
+      });
+      
+      // Add headlights
+      const headlightGeometry = new THREE.SphereGeometry(0.2, 16, 16);
+      const headlightMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xffff00,
+        emissive: 0xffff00,
+        emissiveIntensity: 0.5
+      });
+      
+      const leftHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+      leftHeadlight.position.set(-0.8, 0.5, 2);
+      leftHeadlight.scale.z = 0.5;
+      vehicle.add(leftHeadlight);
+      
+      const rightHeadlight = new THREE.Mesh(headlightGeometry, headlightMaterial);
+      rightHeadlight.position.set(0.8, 0.5, 2);
+      rightHeadlight.scale.z = 0.5;
+      vehicle.add(rightHeadlight);
+      
+      return vehicle;
+    }
+    
+    function animate() {
+      animationId = requestAnimationFrame(animate);
+      
+      // Update vehicle position and rotation based on current time
+      
+      // Render scene
+      renderer.render(scene, camera);
+    }
+    
+    function updateCameraView(view) {
+      switch (view) {
+        case 'follow':
+          // Position camera behind vehicle
+          camera.position.set(vehicle.position.x, vehicle.position.y + 3, vehicle.position.z - 8);
+          camera.lookAt(vehicle.position);
+          break;
+        case 'top':
+          // Position camera above vehicle
+          camera.position.set(vehicle.position.x, vehicle.position.y + 10, vehicle.position.z);
+          camera.lookAt(vehicle.position);
+          break;
+        case 'side':
+          // Position camera to the side of vehicle
+          camera.position.set(vehicle.position.x + 8, vehicle.position.y + 3, vehicle.position.z);
+          camera.lookAt(vehicle.position);
+          break;
+        case 'free':
+          // Free camera mode - don't update automatically
+          break;
+      }
+    }
+    
+    function startAnimation() {
+      // Start playback animation
+    }
+    
+    function stopAnimation() {
+      // Stop playback animation
+    }
+    
+    function updateTimePosition(value) {
+      // Update visualization based on timeline position
+    }
+    
+    function updatePlaybackSpeed(value) {
+      // Update playback speed
+    }
+    
+    // Initialize Map
+    let map;
+    let mapInitialized = false;
+    
+    function initMap() {
+      map = L.map('map-view').setView([51.505, -0.09], 13);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      // Add sample GPS track
+      const gpxTrack = [
+        [51.505, -0.09],
+        [51.51, -0.1],
+        [51.51, -0.12],
+        [51.52, -0.12],
+        [51.52, -0.1],
+        [51.51, -0.08]
+      ];
+      
+      const polyline = L.polyline(gpxTrack, {color: 'var(--primary-color)', weight: 5}).addTo(map);
+      
+      // Add vehicle marker
+      const vehicleIcon = L.divIcon({
+        html: '<i class="fas fa-car" style="color: var(--primary-color); font-size: 24px;"></i>',
+        className: 'vehicle-marker',
+        iconSize: [24, 24],
+        iconAnchor: [12, 12]
+      });
+      
+      const vehicleMarker = L.marker(gpxTrack[0], {icon: vehicleIcon}).addTo(map);
+      
+      // Fit map to track
+      map.fitBounds(polyline.getBounds());
+    }
+    
+    // Initialize Chart
+    let chart;
+    let chartInitialized = false;
+    
+    function initChart() {
+      const ctx = document.createElement('canvas');
+      document.getElementById('chart-view').appendChild(ctx);
+      
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 100}, (_, i) => i / 10),
+          datasets: [
+            {
+              label: 'Acceleration X',
+              data: Array.from({length: 100}, () => Math.random() * 4 - 2),
+              borderColor: 'rgb(255, 99, 132)',
+              tension: 0.2,
+              borderWidth: 2
+            },
+            {
+              label: 'Acceleration Y',
+              data: Array.from({length: 100}, () => Math.random() * 4 - 2),
+              borderColor: 'rgb(75, 192, 192)',
+              tension: 0.2,
+              borderWidth: 2
+            },
+            {
+              label: 'Acceleration Z',
+              data: Array.from({length: 100}, () => Math.random() * 4 + 8),
+              borderColor: 'rgb(54, 162, 235)',
+              tension: 0.2,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time (s)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Acceleration (m/s²)'
+              },
+              grid: {
+                color: 'rgba(255, 255, 255, 0.1)'
+              },
+              ticks: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: 'rgba(255, 255, 255, 0.7)'
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    // Initialize the 3D scene on page load
+    init3DScene();
+    
+    // Make data sources clickable
+    const dataSources = document.querySelectorAll('.data-source');
+    dataSources.forEach(source => {
+      source.addEventListener('click', () => {
+        dataSources.forEach(s => s.classList.remove('active'));
+        source.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
