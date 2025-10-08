@@ -1,0 +1,34 @@
+<svg width="520" height="420" viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="device-body" x1="40" y1="40" x2="460" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0EA45A"/>
+      <stop offset="50%" stop-color="#30C873"/>
+      <stop offset="100%" stop-color="#E9C941"/>
+    </linearGradient>
+    <linearGradient id="device-handle" x1="170" y1="40" x2="350" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0C5E3A"/>
+      <stop offset="100%" stop-color="#1F8751"/>
+    </linearGradient>
+    <linearGradient id="device-shadow" x1="80" y1="360" x2="440" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0C402A" stop-opacity="0.0"/>
+      <stop offset="50%" stop-color="#0C402A" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0C402A" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="260" cy="360" rx="180" ry="28" fill="url(#device-shadow)"/>
+  <rect x="120" y="80" width="280" height="240" rx="36" fill="url(#device-body)"/>
+  <rect x="150" y="110" width="220" height="120" rx="24" fill="rgba(255,255,255,0.85)"/>
+  <rect x="190" y="136" width="140" height="68" rx="16" fill="#0EA45A" opacity="0.18"/>
+  <rect x="150" y="250" width="220" height="54" rx="18" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="200" cy="277" r="14" fill="#0EA45A"/>
+  <circle cx="260" cy="277" r="14" fill="#9EE58E"/>
+  <circle cx="320" cy="277" r="14" fill="#F5D05A"/>
+  <rect x="200" y="48" width="120" height="52" rx="26" fill="url(#device-handle)"/>
+  <path d="M230 74C230 66.268 236.268 60 244 60H276C283.732 60 290 66.268 290 74" stroke="#83F2B4" stroke-width="6" stroke-linecap="round"/>
+  <path d="M174 198C190 166 226 164 258 184C290 204 332 194 348 162" stroke="#0EA45A" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+  <path d="M164 198C180 230 214 232 246 212C278 192 320 202 336 234" stroke="#F5D05A" stroke-width="10" stroke-linecap="round" opacity="0.4"/>
+  <g opacity="0.25">
+    <path d="M74 300C96 260 146 230 200 226" stroke="#0EA45A" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 14"/>
+    <path d="M446 300C424 260 374 230 320 226" stroke="#F1BD37" stroke-width="6" stroke-linecap="round" stroke-dasharray="12 14"/>
+  </g>
+</svg>
